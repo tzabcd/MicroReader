@@ -1,4 +1,4 @@
-package name.caiyao.microreader.ui;
+package name.caiyao.microreader.ui.activity;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +20,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
+import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private Fragment currentFragment;
 
     private WeixinFragment weixinFragment = new WeixinFragment();
+    private ZhihuFragment zhihuFragment = new ZhihuFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,10 +54,11 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        switchFragment(weixinFragment, "微信精选");
     }
 
-    private void setStatusBar(){
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT){
+    private void setStatusBar() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             // create our manager instance after the content view is set
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity
             tintManager.setStatusBarTintEnabled(true);
             // enable navigation bar tint
             tintManager.setNavigationBarTintEnabled(true);
-            tintManager.setTintColor(ContextCompat.getColor(this,R.color.colorPrimary));
+            tintManager.setTintColor(ContextCompat.getColor(this, R.color.colorPrimary));
         }
     }
 
@@ -78,9 +81,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void switchFragment(Fragment fragment) {
+    private void switchFragment(Fragment fragment, String title) {
         if (currentFragment == null || !currentFragment.getClass().getName().equals(fragment.getClass().getName())) {
             getSupportFragmentManager().beginTransaction().replace(R.id.replace, fragment).commit();
+            currentFragment = fragment;
+            getSupportActionBar().setTitle(title);
         }
     }
 
@@ -88,10 +93,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (id == R.id.nav_camera) {
-            switchFragment(weixinFragment);
-        } else if (id == R.id.nav_gallery) {
-
+        if (id == R.id.nav_weixin) {
+            switchFragment(weixinFragment, "微信精选");
+        } else if (id == R.id.nav_zhihu) {
+            switchFragment(zhihuFragment, "知乎日报");
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
