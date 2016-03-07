@@ -9,7 +9,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,16 +21,14 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.ZhihuRequest;
-import name.caiyao.microreader.bean.ZhihuDaily;
-import name.caiyao.microreader.bean.ZhihuStory;
-import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
+import name.caiyao.microreader.api.zhihu.ZhihuRequest;
+import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
+import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
+import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.view.LoaderMoreView;
 import name.caiyao.microreader.ui.view.RefreshHeaderView;
 import name.caiyao.microreader.utils.TimeUtils;
@@ -53,7 +50,7 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
 
     String currentLoadedDate;
     ZhihuAdapter zhihuAdapter;
-    ArrayList<ZhihuStory> zhihuStories = new ArrayList<>();
+    ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
 
     public ZhihuFragment() {
     }
@@ -159,9 +156,9 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
     class ZhihuAdapter extends RecyclerView.Adapter<ZhihuAdapter.ZhihuViewHolder> {
 
 
-        private ArrayList<ZhihuStory> zhihuStories;
+        private ArrayList<ZhihuDailyItem> zhihuStories;
 
-        public ZhihuAdapter(ArrayList<ZhihuStory> zhihuStories) {
+        public ZhihuAdapter(ArrayList<ZhihuDailyItem> zhihuStories) {
             this.zhihuStories = zhihuStories;
         }
 
@@ -171,12 +168,15 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
         }
 
         @Override
-        public void onBindViewHolder(ZhihuViewHolder holder, int position) {
+        public void onBindViewHolder(final ZhihuViewHolder holder, int position) {
             holder.tvZhihuDaily.setText(zhihuStories.get(position).getTitle());
             holder.cvZhihu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
+                    Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
+                    intent.putExtra("id", zhihuStories.get(holder.getAdapterPosition()).getId());
+                    intent.putExtra("title", zhihuStories.get(holder.getAdapterPosition()).getTitle());
+                    startActivity(intent);
                 }
             });
             Glide.with(getActivity()).load(zhihuStories.get(position).getImages()[0]).into(holder.ivZhihuDaily);

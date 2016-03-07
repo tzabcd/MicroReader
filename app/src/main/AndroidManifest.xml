@@ -24,6 +24,10 @@
             android:name=".ui.activity.WeixinNewsActivity"
             android:hardwareAccelerated="true"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.activity.ZhihuStoryActivity"
+            android:hardwareAccelerated="true"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package name.caiyao.microreader.bean
+package name.caiyao.microreader.bean.weixin
 
 import java.util.*
 

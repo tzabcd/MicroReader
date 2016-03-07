@@ -39,12 +39,13 @@ public class WeixinNewsActivity extends AppCompatActivity {
             }
         });
         if (actionBar != null) {
-            //actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setUseWideViewPort(true);
+        webSettings.setDomStorageEnabled(true);
+        webSettings.setAppCacheEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         wvWeixin.setWebChromeClient(new WebChromeClient());
         wvWeixin.loadUrl(url);
@@ -76,5 +77,11 @@ public class WeixinNewsActivity extends AppCompatActivity {
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        wvWeixin.destroy();
     }
 }

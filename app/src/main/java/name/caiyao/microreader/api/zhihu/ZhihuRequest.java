@@ -1,4 +1,4 @@
-package name.caiyao.microreader.api;
+package name.caiyao.microreader.api.zhihu;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

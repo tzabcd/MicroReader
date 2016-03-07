@@ -1,6 +1,6 @@
-package name.caiyao.microreader.api;
+package name.caiyao.microreader.api.weixin;
 
-import name.caiyao.microreader.bean.TxWeixinResponse;
+import name.caiyao.microreader.bean.weixin.TxWeixinResponse;
 import name.caiyao.microreader.config.Config;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
