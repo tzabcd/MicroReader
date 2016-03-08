@@ -12,8 +12,8 @@
             android:title="知乎日报" />
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:icon="@drawable/icon_guokr"
+            android:title="果壳热门" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"

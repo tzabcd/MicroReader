@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * Created by 蔡小木 on 2016/3/6 0006.
  */
-public class TimeUtils {
+public class TimeUtil {
 
     /**
      * 获得指定日期的前一天

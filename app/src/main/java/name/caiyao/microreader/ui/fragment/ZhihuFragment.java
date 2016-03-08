@@ -1,5 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +13,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
@@ -31,7 +34,8 @@ import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.view.LoaderMoreView;
 import name.caiyao.microreader.ui.view.RefreshHeaderView;
-import name.caiyao.microreader.utils.TimeUtils;
+import name.caiyao.microreader.utils.ScreenUtil;
+import name.caiyao.microreader.utils.TimeUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -51,6 +55,8 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
     String currentLoadedDate;
     ZhihuAdapter zhihuAdapter;
     ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
 
     public ZhihuFragment() {
     }
@@ -84,7 +90,7 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
                 .subscribe(new Observer<ZhihuDaily>() {
                     @Override
                     public void onCompleted() {
-
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
@@ -112,7 +118,7 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
 
     private void getMoreZhihuDaily() {
         if (!TextUtils.isEmpty(currentLoadedDate)) {
-            ZhihuRequest.getZhihuApi().getTheDaily(TimeUtils.getSpecifiedDayBefore(currentLoadedDate))
+            ZhihuRequest.getZhihuApi().getTheDaily(TimeUtil.getSpecifiedDayBefore(currentLoadedDate))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<ZhihuDaily>() {
@@ -174,12 +180,29 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
+                    ActivityOptions options = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                        options = ActivityOptions
+                                .makeSceneTransitionAnimation(getActivity(), holder.itemView, "robot");
+                    }
+                    intent.putExtra("type", ZhihuStoryActivity.TYPE_ZHIHU);
                     intent.putExtra("id", zhihuStories.get(holder.getAdapterPosition()).getId());
                     intent.putExtra("title", zhihuStories.get(holder.getAdapterPosition()).getTitle());
-                    startActivity(intent);
+                    startActivity(intent,options.toBundle());
                 }
             });
+            runEnterAnimation(holder.itemView,position);
             Glide.with(getActivity()).load(zhihuStories.get(position).getImages()[0]).into(holder.ivZhihuDaily);
+        }
+
+        private void runEnterAnimation(View view, int position) {
+            view.setTranslationX(ScreenUtil.getScreenWidth(getActivity()));
+            view.animate()
+                    .translationX(0)
+                    .setStartDelay(100 * (position % 6))
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
         }
 
         @Override

@@ -10,6 +10,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -19,6 +21,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.ui.fragment.GuokrFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity
 
     private WeixinFragment weixinFragment = new WeixinFragment();
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
+    private GuokrFragment guokrFragment = new GuokrFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +49,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        //setStatusBar();
+        setStatusBar();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -82,6 +88,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void switchFragment(Fragment fragment, String title) {
+        // Transition for fragment1
+        Slide slideTransition;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            slideTransition = new Slide(Gravity.START);
+            slideTransition.setDuration(700);
+            fragment.setEnterTransition(slideTransition);
+            fragment.setExitTransition(slideTransition);
+        }
         if (currentFragment == null || !currentFragment.getClass().getName().equals(fragment.getClass().getName())) {
             getSupportFragmentManager().beginTransaction().replace(R.id.replace, fragment).commit();
             currentFragment = fragment;
@@ -98,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, "知乎日报");
         } else if (id == R.id.nav_slideshow) {
-
+            switchFragment(guokrFragment, "果壳热门");
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {

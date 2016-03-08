@@ -4,6 +4,7 @@ import name.caiyao.microreader.bean.guokr.GuokrArticle;
 import name.caiyao.microreader.bean.guokr.GuokrHot;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -11,8 +12,8 @@ import rx.Observable;
  */
 public interface GuokrApi {
 
-    @GET("hot")
-    Observable<GuokrHot> getGuokrHot();
+    @GET("/apis/minisite/article.json?retrieve_type=by_channel&channel_key=hot")
+    Observable<GuokrHot> getGuokrHot(@Query("offset") int offset);
 
     @GET("http://apis.guokr.com/minisite/article/{id}.json")
     Observable<GuokrArticle> getGuokrArticle(@Path("id") String id);

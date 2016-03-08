@@ -1,5 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,20 +11,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.api.guokr.GuokrRequest;
+import name.caiyao.microreader.bean.guokr.GuokrHot;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
+import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.view.LoaderMoreView;
 import name.caiyao.microreader.ui.view.RefreshHeaderView;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoadMoreListener {
 
@@ -35,9 +44,12 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
     LoaderMoreView swipeLoadMoreFooter;
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
 
     private ArrayList<GuokrHotItem> guokrHotItems = new ArrayList<>();
     private GuokrAdapter guokrAdapter;
+    private int currentOffset;
 
     public GuokrFragment() {
     }
@@ -59,10 +71,36 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
         swipeTarget.setHasFixedSize(true);
         guokrAdapter = new GuokrAdapter(guokrHotItems);
         swipeTarget.setAdapter(guokrAdapter);
+        currentOffset = 0;
+        getGuokrHot(currentOffset);
     }
 
-    private void getGuokrHot(){
+    private void getGuokrHot(int offset) {
+        GuokrRequest.getGuokrApi().getGuokrHot(offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<GuokrHot>() {
+                    @Override
+                    public void onCompleted() {
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
 
+                    @Override
+                    public void onError(Throwable e) {
+                        swipeToLoadLayout.setRefreshing(false);
+                        swipeToLoadLayout.setLoadingMore(false);
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(GuokrHot guokrHot) {
+                        swipeToLoadLayout.setRefreshing(false);
+                        swipeToLoadLayout.setLoadingMore(false);
+                        currentOffset++;
+                        guokrHotItems.addAll(guokrHot.getResult());
+                        guokrAdapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     @Override
@@ -73,12 +111,14 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
 
     @Override
     public void onRefresh() {
-
+        currentOffset = 0;
+        guokrHotItems.clear();
+        getGuokrHot(currentOffset);
     }
 
     @Override
     public void onLoadMore() {
-
+        getGuokrHot(currentOffset);
     }
 
     class GuokrAdapter extends RecyclerView.Adapter<GuokrAdapter.GuokrViewHolder> {
@@ -95,13 +135,25 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
         }
 
         @Override
-        public void onBindViewHolder(GuokrViewHolder holder, int position) {
-
+        public void onBindViewHolder(final GuokrViewHolder holder, int position) {
+            holder.tvTitle.setText(guokrHotItems.get(position).getTitle());
+            holder.tvSummary.setText(guokrHotItems.get(position).getSummary());
+            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmall_image()).into(holder.ivGuokr);
+            holder.cvGuokr.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
+                    intent.putExtra("type", ZhihuStoryActivity.TYPE_GUOKR);
+                    intent.putExtra("id", guokrHotItems.get(holder.getAdapterPosition()).getId());
+                    intent.putExtra("title", guokrHotItems.get(holder.getAdapterPosition()).getTitle());
+                    startActivity(intent);
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            return guokrHotItems.size();
         }
 
         public class GuokrViewHolder extends RecyclerView.ViewHolder {
@@ -117,7 +169,7 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
 
             public GuokrViewHolder(View itemView) {
                 super(itemView);
-                ButterKnife.bind(this,itemView);
+                ButterKnife.bind(this, itemView);
             }
         }
     }

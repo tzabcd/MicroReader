@@ -12,7 +12,9 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
@@ -30,6 +32,7 @@ import name.caiyao.microreader.api.weixin.TxRequest;
 import name.caiyao.microreader.bean.weixin.TxWeixinResponse;
 import name.caiyao.microreader.bean.weixin.WeixinNews;
 import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
+import name.caiyao.microreader.utils.ScreenUtil;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -43,6 +46,8 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
     RecyclerView swipeTarget;
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
 
     private int[] defaultImgs = new int[]{
             R.mipmap.default_img_1,
@@ -83,6 +88,7 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
                 .subscribe(new Subscriber<TxWeixinResponse>() {
                     @Override
                     public void onCompleted() {
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
@@ -159,15 +165,26 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
             } else {
                 holder.ivWeixin.setImageResource(defaultImgs[new Random().nextInt(3)]);
             }
+            runEnterAnimation(holder.itemView, position);
             holder.cvMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
                     intent.putExtra("url", weixinNewses.get(holder.getAdapterPosition()).getUrl());
-                    intent.putExtra("title",weixinNewses.get(holder.getAdapterPosition()).getTitle());
+                    intent.putExtra("title", weixinNewses.get(holder.getAdapterPosition()).getTitle());
                     startActivity(intent);
                 }
             });
+        }
+
+        private void runEnterAnimation(View view, int position) {
+            view.setTranslationY(ScreenUtil.getScreenHight(getActivity()));
+            view.animate()
+                    .translationY(0)
+                    .setStartDelay(100 * (position % 6))
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
         }
 
         @Override

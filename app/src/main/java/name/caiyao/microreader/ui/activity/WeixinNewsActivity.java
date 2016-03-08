@@ -41,6 +41,7 @@ public class WeixinNewsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        overridePendingTransition(R.anim.zoomin,R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setUseWideViewPort(true);
@@ -83,5 +84,11 @@ public class WeixinNewsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         wvWeixin.destroy();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.zoomin,R.anim.zoomout);
     }
 }
