@@ -13,9 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.bugtags.library.Bugtags;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.Bind;
@@ -25,7 +27,7 @@ import name.caiyao.microreader.ui.fragment.GuokrFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Bind(R.id.toolbar)
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -111,15 +113,16 @@ public class MainActivity extends AppCompatActivity
             switchFragment(weixinFragment, "微信精选");
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, "知乎日报");
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, "果壳热门");
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_video) {
 
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
 
         }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

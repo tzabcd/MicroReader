@@ -87,15 +87,19 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
 
                     @Override
                     public void onError(Throwable e) {
-                        swipeToLoadLayout.setRefreshing(false);
-                        swipeToLoadLayout.setLoadingMore(false);
+                        if (swipeToLoadLayout != null) {//不加可能会崩溃
+                            swipeToLoadLayout.setRefreshing(false);
+                            swipeToLoadLayout.setLoadingMore(false);
+                        }
                         e.printStackTrace();
                     }
 
                     @Override
                     public void onNext(GuokrHot guokrHot) {
-                        swipeToLoadLayout.setRefreshing(false);
-                        swipeToLoadLayout.setLoadingMore(false);
+                        if (swipeToLoadLayout != null) {//不加可能会崩溃
+                            swipeToLoadLayout.setRefreshing(false);
+                            swipeToLoadLayout.setLoadingMore(false);
+                        }
                         currentOffset++;
                         guokrHotItems.addAll(guokrHot.getResult());
                         guokrAdapter.notifyDataSetChanged();

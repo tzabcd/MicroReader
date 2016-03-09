@@ -2,20 +2,29 @@ package name.caiyao.microreader.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
+
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.api.video.VideoRequest;
+import okhttp3.ResponseBody;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
-public class WeixinNewsActivity extends AppCompatActivity {
+public class WeixinNewsActivity extends BaseActivity {
 
     @Bind(R.id.wv_weixin)
     WebView wvWeixin;
@@ -41,7 +50,7 @@ public class WeixinNewsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        overridePendingTransition(R.anim.zoomin,R.anim.zoomout);
+        overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setUseWideViewPort(true);
@@ -49,7 +58,33 @@ public class WeixinNewsActivity extends AppCompatActivity {
         webSettings.setAppCacheEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         wvWeixin.setWebChromeClient(new WebChromeClient());
-        wvWeixin.loadUrl(url);
+        VideoRequest.getVideoApi().getVideoUrl("http://weibo.com/p/230444d3263ce9d1a1c46cafb56b1033c8feb6")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<ResponseBody>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(ResponseBody s) {
+                        try {
+                            Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
+                            Matcher matcher = pattern.matcher(s.string());
+                            if (matcher.find())
+                                wvWeixin.loadUrl(matcher.group(1));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+        //wvWeixin.loadUrl(url);
     }
 
     @Override
@@ -89,6 +124,6 @@ public class WeixinNewsActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        overridePendingTransition(R.anim.zoomin,R.anim.zoomout);
+        overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
     }
 }

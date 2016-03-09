@@ -9,7 +9,7 @@ import android.view.Window;
 
 import name.caiyao.microreader.R;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

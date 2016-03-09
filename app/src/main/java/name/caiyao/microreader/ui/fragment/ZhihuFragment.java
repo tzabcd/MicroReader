@@ -1,6 +1,5 @@
 package name.caiyao.microreader.ui.fragment;
 
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -107,7 +106,9 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
 
                     @Override
                     public void onNext(ZhihuDaily zhihuDaily) {
-                        swipeToLoadLayout.setRefreshing(false);
+                        if (swipeToLoadLayout != null) {//不加可能会崩溃
+                            swipeToLoadLayout.setLoadingMore(false);
+                        }
                         currentLoadedDate = zhihuDaily.getDate();
                         zhihuStories.addAll(zhihuDaily.getStories());
                         zhihuAdapter.notifyDataSetChanged();
@@ -134,7 +135,9 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
 
                         @Override
                         public void onNext(ZhihuDaily zhihuDaily) {
-                            swipeToLoadLayout.setLoadingMore(false);
+                            if (swipeToLoadLayout != null) {//不加可能会崩溃
+                                swipeToLoadLayout.setLoadingMore(false);
+                            }
                             currentLoadedDate = zhihuDaily.getDate();
                             zhihuStories.addAll(zhihuDaily.getStories());
                             zhihuAdapter.notifyDataSetChanged();
@@ -180,26 +183,21 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
-                    ActivityOptions options = null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        options = ActivityOptions
-                                .makeSceneTransitionAnimation(getActivity(), holder.itemView, "robot");
-                    }
                     intent.putExtra("type", ZhihuStoryActivity.TYPE_ZHIHU);
                     intent.putExtra("id", zhihuStories.get(holder.getAdapterPosition()).getId());
                     intent.putExtra("title", zhihuStories.get(holder.getAdapterPosition()).getTitle());
-                    startActivity(intent,options.toBundle());
+                    startActivity(intent);
                 }
             });
-            runEnterAnimation(holder.itemView,position);
+            runEnterAnimation(holder.itemView);
             Glide.with(getActivity()).load(zhihuStories.get(position).getImages()[0]).into(holder.ivZhihuDaily);
         }
 
-        private void runEnterAnimation(View view, int position) {
+        private void runEnterAnimation(View view) {
             view.setTranslationX(ScreenUtil.getScreenWidth(getActivity()));
             view.animate()
                     .translationX(0)
-                    .setStartDelay(100 * (position % 6))
+                    .setStartDelay(100)
                     .setInterpolator(new DecelerateInterpolator(3.f))
                     .setDuration(700)
                     .start();

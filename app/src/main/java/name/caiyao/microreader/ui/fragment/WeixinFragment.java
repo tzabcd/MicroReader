@@ -88,13 +88,16 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
                 .subscribe(new Subscriber<TxWeixinResponse>() {
                     @Override
                     public void onCompleted() {
-                        progressBar.setVisibility(View.INVISIBLE);
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        swipeToLoadLayout.setRefreshing(false);
-                        swipeToLoadLayout.setLoadingMore(false);
+                        if (swipeToLoadLayout != null) {//不加可能会崩溃
+                            swipeToLoadLayout.setRefreshing(false);
+                            swipeToLoadLayout.setLoadingMore(false);
+                        }
                         Snackbar.make(swipeTarget, e.toString(), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -105,8 +108,10 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
 
                     @Override
                     public void onNext(TxWeixinResponse txWeixinResponse) {
-                        swipeToLoadLayout.setRefreshing(false);
-                        swipeToLoadLayout.setLoadingMore(false);
+                        if (swipeToLoadLayout != null) {//不加可能会崩溃
+                            swipeToLoadLayout.setRefreshing(false);
+                            swipeToLoadLayout.setLoadingMore(false);
+                        }
                         if (txWeixinResponse.getCode() == 200) {
                             weixinNewses.addAll(txWeixinResponse.getNewslist());
                             weixinAdapter.notifyDataSetChanged();

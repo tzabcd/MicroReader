@@ -28,7 +28,7 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class ZhihuStoryActivity extends AppCompatActivity {
+public class ZhihuStoryActivity extends BaseActivity {
 
     public static final int TYPE_ZHIHU = 1;
     public static final int TYPE_GUOKR = 2;
