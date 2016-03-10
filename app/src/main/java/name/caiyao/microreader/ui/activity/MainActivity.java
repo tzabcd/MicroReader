@@ -8,22 +8,20 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.bugtags.library.Bugtags;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
+import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 
@@ -44,6 +42,7 @@ public class MainActivity extends BaseActivity
     private WeixinFragment weixinFragment = new WeixinFragment();
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
     private GuokrFragment guokrFragment = new GuokrFragment();
+    private VideoFragment videoFragment = new VideoFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +115,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, "果壳热门");
         } else if (id == R.id.nav_video) {
-
+            switchFragment(videoFragment, "视频推荐");
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {

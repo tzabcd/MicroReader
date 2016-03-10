@@ -1,4 +1,4 @@
-package name.caiyao.microreader.api.video;
+package name.caiyao.microreader.api.util;
 
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;

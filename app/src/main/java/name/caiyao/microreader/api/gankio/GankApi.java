@@ -1,9 +1,8 @@
 package name.caiyao.microreader.api.gankio;
 
-import okhttp3.ResponseBody;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.POST;
+import name.caiyao.microreader.bean.gankio.GankVideo;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 import rx.Observable;
 
 /**
@@ -11,4 +10,6 @@ import rx.Observable;
  */
 public interface GankApi {
 
+    @GET("/api/data/休息视频/10/{page}")
+    Observable<GankVideo> getVideoList(@Path("page") int page);
 }

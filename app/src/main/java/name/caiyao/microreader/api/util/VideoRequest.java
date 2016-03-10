@@ -1,9 +1,7 @@
-package name.caiyao.microreader.api.video;
+package name.caiyao.microreader.api.util;
 
-import name.caiyao.microreader.api.gankio.GankApi;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by 蔡小木 on 2016/3/9 0009.
