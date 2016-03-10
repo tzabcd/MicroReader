@@ -82,7 +82,8 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
                 .subscribe(new Observer<GuokrHot>() {
                     @Override
                     public void onCompleted() {
-                        progressBar.setVisibility(View.INVISIBLE);
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
@@ -128,6 +129,7 @@ public class GuokrFragment extends Fragment implements OnRefreshListener, OnLoad
     class GuokrAdapter extends RecyclerView.Adapter<GuokrAdapter.GuokrViewHolder> {
 
         private ArrayList<GuokrHotItem> guokrHotItems;
+
         public GuokrAdapter(ArrayList<GuokrHotItem> guokrHotItems) {
             this.guokrHotItems = guokrHotItems;
         }

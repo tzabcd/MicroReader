@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
@@ -159,6 +158,8 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
+            holder.pbVideo.setVisibility(View.INVISIBLE);
+            holder.ivVideo.setVisibility(View.VISIBLE);
             holder.tvTitle.setText(gankVideoItems.get(position).getDesc());
             holder.tvTime.setText(gankVideoItems.get(position).getPublishedAt());
             holder.vpvVideo.addMediaPlayerListener(new MediaPlayerWrapper.MainThreadMediaPlayerListener() {
@@ -170,26 +171,30 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
                 @Override
                 public void onVideoPreparedMainThread() {
                     holder.ivVideo.setVisibility(View.INVISIBLE);
+                    holder.pbVideo.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onVideoCompletionMainThread() {
                     holder.ivVideo.setVisibility(View.VISIBLE);
+                    holder.pbVideo.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onErrorMainThread(int what, int extra) {
-
+                    holder.ivVideo.setVisibility(View.VISIBLE);
+                    holder.pbVideo.setVisibility(View.INVISIBLE);
                 }
 
                 @Override
                 public void onBufferingUpdateMainThread(int percent) {
-
+                    holder.pbVideo.setProgress(percent);
                 }
 
                 @Override
                 public void onVideoStoppedMainThread() {
                     holder.ivVideo.setVisibility(View.VISIBLE);
+                    holder.pbVideo.setVisibility(View.INVISIBLE);
                 }
             });
             VideoRequest.getVideoApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
@@ -216,6 +221,8 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
 
                                         @Override
                                         public void onClick(View v) {
+                                            holder.pbVideo.setVisibility(View.VISIBLE);
+                                            holder.ivVideo.setVisibility(View.INVISIBLE);
                                             mVideoPlayerManager.playNewVideo(null, holder.vpvVideo, matcher.group(1));
                                         }
                                     });
@@ -243,8 +250,8 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
             VideoPlayerView vpvVideo;
             @Bind(R.id.iv_video)
             ImageView ivVideo;
-            @Bind(R.id.rl_video)
-            RelativeLayout rlVideo;
+            @Bind(R.id.pb_video)
+            ProgressBar pbVideo;
             @Bind(R.id.cv_video)
             CardView cvVideo;
 
