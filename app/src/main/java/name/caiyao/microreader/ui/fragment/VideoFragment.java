@@ -101,6 +101,7 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
+                        e.printStackTrace();
                     }
 
                     @Override
@@ -197,42 +198,42 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
                     holder.pbVideo.setVisibility(View.INVISIBLE);
                 }
             });
-            VideoRequest.getVideoApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onCompleted() {
 
-                        }
+            holder.ivVideo.setOnClickListener(new View.OnClickListener() {
 
-                        @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                        }
+                @Override
+                public void onClick(View v) {
+                    holder.pbVideo.setVisibility(View.VISIBLE);
+                    holder.ivVideo.setVisibility(View.INVISIBLE);
+                    VideoRequest.getVideoApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Observer<ResponseBody>() {
+                                @Override
+                                public void onCompleted() {
 
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            try {
-                                Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
-                                final Matcher matcher = pattern.matcher(responseBody.string());
-                                if (matcher.find()) {
-                                    holder.ivVideo.setOnClickListener(new View.OnClickListener() {
+                                }
 
-                                        @Override
-                                        public void onClick(View v) {
-                                            holder.pbVideo.setVisibility(View.VISIBLE);
-                                            holder.ivVideo.setVisibility(View.INVISIBLE);
+                                @Override
+                                public void onError(Throwable e) {
+                                    e.printStackTrace();
+                                }
+
+                                @Override
+                                public void onNext(ResponseBody responseBody) {
+                                    try {
+                                        Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
+                                        final Matcher matcher = pattern.matcher(responseBody.string());
+                                        if (matcher.find()) {
                                             mVideoPlayerManager.playNewVideo(null, holder.vpvVideo, matcher.group(1));
                                         }
-                                    });
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
+                            });
+                }
+            });
         }
 
         @Override
