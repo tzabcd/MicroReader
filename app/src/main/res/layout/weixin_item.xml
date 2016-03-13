@@ -24,7 +24,8 @@
             <ImageView
                 android:id="@+id/iv_weixin"
                 android:layout_width="0dp"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_weight="1"
                 android:contentDescription="@string/action_settings"
                 android:scaleType="fitCenter" />
@@ -41,6 +42,8 @@
                     android:id="@+id/tv_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_above="@+id/tv_description"
                     android:textColor="@android:color/black"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 

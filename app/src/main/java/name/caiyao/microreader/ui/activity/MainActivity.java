@@ -1,5 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,8 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
@@ -24,6 +29,7 @@ import name.caiyao.microreader.ui.fragment.GuokrFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -61,6 +67,12 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View headerLayout = navigationView.getHeaderView(0);
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), getFilesDir().getPath() + "/bg.jpg");
+        LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
+        TextView imageDescription = (TextView) headerLayout.findViewById(R.id.image_description);
+        llImage.setBackground(bitmapDrawable);
+        imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
         switchFragment(weixinFragment, "微信精选");
     }
 
@@ -116,9 +128,9 @@ public class MainActivity extends BaseActivity
             switchFragment(guokrFragment, "果壳热门");
         } else if (id == R.id.nav_video) {
             switchFragment(videoFragment, "视频推荐");
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_setting) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_help) {
 
         }
 

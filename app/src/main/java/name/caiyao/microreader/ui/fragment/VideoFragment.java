@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
+import com.orhanobut.logger.Logger;
 import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
 import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
 import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
@@ -32,7 +33,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.gankio.GankRequest;
-import name.caiyao.microreader.api.util.VideoRequest;
+import name.caiyao.microreader.api.util.UtilRequest;
 import name.caiyao.microreader.bean.gankio.GankVideo;
 import name.caiyao.microreader.bean.gankio.GankVideoItem;
 import okhttp3.ResponseBody;
@@ -205,7 +206,7 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
                 public void onClick(View v) {
                     holder.pbVideo.setVisibility(View.VISIBLE);
                     holder.ivVideo.setVisibility(View.INVISIBLE);
-                    VideoRequest.getVideoApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
+                    UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Observer<ResponseBody>() {
@@ -225,6 +226,7 @@ public class VideoFragment extends Fragment implements OnRefreshListener, OnLoad
                                         Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
                                         final Matcher matcher = pattern.matcher(responseBody.string());
                                         if (matcher.find()) {
+                                            Logger.i(matcher.group(1));
                                             mVideoPlayerManager.playNewVideo(null, holder.vpvVideo, matcher.group(1));
                                         }
                                     } catch (IOException e) {

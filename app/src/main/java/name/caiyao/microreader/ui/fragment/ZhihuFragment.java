@@ -107,7 +107,7 @@ public class ZhihuFragment extends Fragment implements OnRefreshListener, OnLoad
                     @Override
                     public void onNext(ZhihuDaily zhihuDaily) {
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setLoadingMore(false);
+                            swipeToLoadLayout.setRefreshing(false);
                         }
                         currentLoadedDate = zhihuDaily.getDate();
                         zhihuStories.addAll(zhihuDaily.getStories());

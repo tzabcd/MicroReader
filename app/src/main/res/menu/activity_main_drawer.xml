@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/news" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_weixin"
             android:icon="@drawable/icon_weixin"
@@ -20,17 +20,15 @@
             android:title="视频推荐" />
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+    <group android:id="@+id/settings" android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_settings_black_24px"
+            android:title="设置" />
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help_black_24px"
+            android:title="帮助与反馈" />
+    </group>
 
 </menu>
