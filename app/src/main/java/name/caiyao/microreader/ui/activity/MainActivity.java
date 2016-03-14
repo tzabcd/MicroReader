@@ -68,11 +68,15 @@ public class MainActivity extends BaseActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View headerLayout = navigationView.getHeaderView(0);
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), getFilesDir().getPath() + "/bg.jpg");
         LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
         TextView imageDescription = (TextView) headerLayout.findViewById(R.id.image_description);
-        llImage.setBackground(bitmapDrawable);
-        imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
+        if (getIntent().getBooleanExtra(SharePreferenceUtil.HAS_GET_IMAGE, false)) {
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), getFilesDir().getPath() + "/bg.jpg");
+            llImage.setBackground(bitmapDrawable);
+            imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
+        }else{
+            llImage.setBackground(ContextCompat.getDrawable(this,R.mipmap.default_img_2));
+        }
         switchFragment(weixinFragment, "微信精选");
     }
 

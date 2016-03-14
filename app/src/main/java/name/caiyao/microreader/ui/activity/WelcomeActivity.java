@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
-import com.orhanobut.logger.Logger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,7 +40,7 @@ public class WelcomeActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class).putExtra(SharePreferenceUtil.HAS_GET_IMAGE,false));
                                 finish();
                             }
                         });
@@ -51,7 +49,6 @@ public class WelcomeActivity extends BaseActivity {
                     @Override
                     public void onNext(ImageReponse imageReponse) {
                         if (imageReponse.getData() != null && imageReponse.getData().getImages() != null) {
-                            Logger.i(imageReponse.getData().getImages().get(0).getImage_url());
                             getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).edit().putString(SharePreferenceUtil.IMAGE_DESCRIPTION, imageReponse.getData().getImages().get(0).getDescription()).apply();
                             try {
                                 Bitmap bitmap = BitmapFactory.decodeStream(new URL("http://wpstatic.zuimeia.com/" + imageReponse.getData().getImages().get(0).getImage_url() + "?imageMogr/v2/auto-orient/thumbnail/480x320/quality/100").openConnection().getInputStream());
@@ -63,7 +60,7 @@ public class WelcomeActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
+                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class).putExtra(SharePreferenceUtil.HAS_GET_IMAGE,true));
                                 finish();
                             }
                         });
