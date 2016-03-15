@@ -26,14 +26,14 @@
         <activity
             android:name=".ui.activity.WeixinNewsActivity"
             android:hardwareAccelerated="true"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.activity.ZhihuStoryActivity"
             android:hardwareAccelerated="true"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity android:name=".ui.activity.BaseActivity" />
     </application>
 
