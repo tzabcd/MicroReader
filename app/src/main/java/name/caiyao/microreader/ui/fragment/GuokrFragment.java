@@ -3,6 +3,7 @@ package name.caiyao.microreader.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -74,7 +75,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         getGuokrHot(currentOffset);
     }
 
-    private void getGuokrHot(int offset) {
+    private void getGuokrHot(final int offset) {
         GuokrRequest.getGuokrApi().getGuokrHot(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -92,6 +93,12 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setLoadingMore(false);
                         }
                         e.printStackTrace();
+                        Snackbar.make(swipeToLoadLayout,"加载失败,请检查您的网络！" ,Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getGuokrHot(offset);
+                            }
+                        });
                     }
 
                     @Override

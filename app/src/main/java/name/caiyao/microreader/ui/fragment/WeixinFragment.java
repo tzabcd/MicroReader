@@ -97,7 +97,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        Snackbar.make(swipeTarget, "数据加载失败!"+e.toString(), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeTarget, "加载失败,请检查您的网络！" , Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getWeixinNews(page);
@@ -116,7 +116,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             weixinAdapter.notifyDataSetChanged();
                             currentPage++;
                         } else {
-                            Snackbar.make(swipeTarget, "获取失败！", Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                            Snackbar.make(swipeTarget, "获取失败！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     getWeixinNews(page);
