@@ -34,17 +34,16 @@ public class GuokrRequest {
                 int maxAge = 60; // 在线缓存在1分钟内可读取
                 Logger.i("在线缓存！");
                 return originalResponse.newBuilder()
+                        .removeHeader("Pragma")
+                        .removeHeader("Cache-Control")
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .build();
             } else {
                 Logger.i("离线缓存！");
-                Request request = chain.request();
-                request = request.newBuilder()
-                        .cacheControl(CacheControl.FORCE_CACHE)
-                        .build();
-                originalResponse = chain.proceed(request);
                 int maxStale = 60 * 60 * 24 * 28; // 离线时缓存保存4周
                 return originalResponse.newBuilder()
+                        .removeHeader("Pragma")
+                        .removeHeader("Cache-Control")
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                         .build();
             }
