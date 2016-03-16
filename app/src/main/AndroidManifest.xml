@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <!--友盟-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <application
         android:name=".MicroApplication"
         android:allowBackup="true"
@@ -35,6 +40,10 @@
             android:name=".ui.activity.MainActivity"
             android:theme="@style/AppTheme" />
         <activity android:name=".ui.activity.BaseActivity" />
+
+        <meta-data android:value="56e8f45ae0f55ae1e5000480" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="Wandoujia" android:name="UMENG_CHANNEL"/>
+
     </application>
 
 </manifest>

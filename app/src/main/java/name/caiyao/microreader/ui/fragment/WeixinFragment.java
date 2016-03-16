@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,7 +36,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoadMoreListener {
+public class WeixinFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
 
 
     int currentPage = 1;
@@ -98,7 +97,7 @@ public class WeixinFragment extends Fragment implements OnRefreshListener, OnLoa
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        Snackbar.make(swipeTarget, e.toString(), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeTarget, "数据加载失败!"+e.toString(), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getWeixinNews(page);
