@@ -1,11 +1,12 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -13,8 +14,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-
-import java.io.UnsupportedEncodingException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,6 +40,8 @@ public class ZhihuStoryActivity extends BaseActivity {
 
     int type;
     String id;
+    String title;
+    String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         ButterKnife.bind(this);
         type = getIntent().getIntExtra("type", 0);
         id = getIntent().getStringExtra("id");
-        String title = getIntent().getStringExtra("title");
+        title = getIntent().getStringExtra("title");
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -62,16 +63,32 @@ public class ZhihuStoryActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         if (type == TYPE_ZHIHU) {
             getZhihuDaily();
         } else if (type == TYPE_GUOKR) {
             getGuokr();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_share:
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, title+"\r\n"+url);
+                shareIntent.setType("text/plain");
+                //设置分享列表的标题，并且每次都显示分享列表
+                startActivity(Intent.createChooser(shareIntent, "分享到"));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void getZhihuDaily() {
@@ -92,6 +109,7 @@ public class ZhihuStoryActivity extends BaseActivity {
                     @Override
                     public void onNext(ZhihuStory zhihuStory) {
                         Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
+                        url = zhihuStory.getShare_url();
                         if (TextUtils.isEmpty(zhihuStory.getBody())) {
                             WebSettings settings = wvZhihu.getSettings();
                             settings.setJavaScriptEnabled(true);
@@ -125,9 +143,11 @@ public class ZhihuStoryActivity extends BaseActivity {
                     @Override
                     public void onNext(GuokrArticle guokrArticle) {
                         Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmall_image()).into(ivZhihuStory);
+                        url = guokrArticle.getResult().getUrl();
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             WebSettings settings = wvZhihu.getSettings();
                             settings.setJavaScriptEnabled(true);
+                            settings.setBuiltInZoomControls(true);
                             settings.setDomStorageEnabled(true);
                             settings.setAppCacheEnabled(true);
                             wvZhihu.setWebChromeClient(new WebChromeClient());
