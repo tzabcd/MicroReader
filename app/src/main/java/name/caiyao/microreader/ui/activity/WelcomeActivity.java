@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
@@ -66,7 +67,7 @@ public class WelcomeActivity extends BaseActivity {
     }
 
     private void getBackground() {
-        ZhihuRequest.getZhihuApi().getImage().subscribeOn(Schedulers.io())
+        ZhihuRequest.getZhihuApi().getImage().subscribeOn(Schedulers.io()).delay(1, TimeUnit.SECONDS)
                 .subscribe(new Observer<ImageReponse>() {
                     @Override
                     public void onCompleted() {
