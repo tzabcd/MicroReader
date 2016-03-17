@@ -31,6 +31,7 @@ import name.caiyao.microreader.api.weixin.TxRequest;
 import name.caiyao.microreader.bean.weixin.TxWeixinResponse;
 import name.caiyao.microreader.bean.weixin.WeixinNews;
 import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
+import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -48,6 +49,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
 
+    private CacheUtil cacheUtil;
     private int[] defaultImgs = new int[]{
             R.mipmap.default_img_1,
             R.mipmap.default_img_2,
@@ -76,6 +78,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         swipeTarget.setHasFixedSize(true);
         weixinAdapter = new WeixinAdapter(weixinNewses);
         swipeTarget.setAdapter(weixinAdapter);
+        cacheUtil =  CacheUtil.get(getActivity());
         currentPage = 1;
         weixinNewses.clear();
         getWeixinNews(currentPage);

@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import java.io.File;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
@@ -60,22 +62,24 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        assert drawer != null;
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
         View headerLayout = navigationView.getHeaderView(0);
         LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
         TextView imageDescription = (TextView) headerLayout.findViewById(R.id.image_description);
-        if (getIntent().getBooleanExtra(SharePreferenceUtil.HAS_GET_IMAGE, false)) {
+        if (new File(getFilesDir().getPath() + "/bg.jpg").exists()) {
             BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), getFilesDir().getPath() + "/bg.jpg");
             llImage.setBackground(bitmapDrawable);
             imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
-        }else{
-            llImage.setBackground(ContextCompat.getDrawable(this,R.mipmap.default_img_2));
+        } else {
+            llImage.setBackground(ContextCompat.getDrawable(this, R.mipmap.default_img_2));
         }
         switchFragment(weixinFragment, "微信精选");
     }
@@ -97,6 +101,7 @@ public class MainActivity extends BaseActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -105,7 +110,6 @@ public class MainActivity extends BaseActivity
     }
 
     private void switchFragment(Fragment fragment, String title) {
-        // Transition for fragment1
         Slide slideTransition;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             slideTransition = new Slide(Gravity.START);
@@ -139,6 +143,7 @@ public class MainActivity extends BaseActivity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

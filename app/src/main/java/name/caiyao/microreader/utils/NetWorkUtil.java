@@ -11,7 +11,7 @@ import com.orhanobut.logger.Logger;
  */
 public class NetWorkUtil {
 
-    public static boolean isNetWorkAvaliable(Context context) {
+    public static boolean isNetWorkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         Logger.i("网络是否可用:"+(networkInfo != null && networkInfo.isConnected()));

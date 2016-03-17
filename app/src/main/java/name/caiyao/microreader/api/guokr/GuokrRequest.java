@@ -8,10 +8,8 @@ import java.io.IOException;
 import name.caiyao.microreader.MicroApplication;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import okhttp3.Cache;
-import okhttp3.CacheControl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -30,7 +28,7 @@ public class GuokrRequest {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Response originalResponse = chain.proceed(chain.request());
-            if (NetWorkUtil.isNetWorkAvaliable(MicroApplication.getContext())) {
+            if (NetWorkUtil.isNetWorkAvailable(MicroApplication.getContext())) {
                 int maxAge = 60; // 在线缓存在1分钟内可读取
                 Logger.i("在线缓存！");
                 return originalResponse.newBuilder()

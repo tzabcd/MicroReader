@@ -26,8 +26,8 @@ public class TxRequest {
         @Override
         public Response intercept(Chain chain) throws IOException {
             Response originalResponse = chain.proceed(chain.request());
-            if (NetWorkUtil.isNetWorkAvaliable(MicroApplication.getContext())) {
-                int maxAge = 60 * 20; // 在线缓存在1分钟内可读取
+            if (NetWorkUtil.isNetWorkAvailable(MicroApplication.getContext())) {
+                int maxAge = 60; // 在线缓存在1分钟内可读取
                 Logger.i("在线缓存！");
                 return originalResponse.newBuilder()
                         .removeHeader("Pragma")

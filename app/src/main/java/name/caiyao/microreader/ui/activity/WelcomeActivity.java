@@ -79,7 +79,7 @@ public class WelcomeActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class).putExtra(SharePreferenceUtil.HAS_GET_IMAGE, false));
+                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                                 finish();
                             }
                         });
@@ -99,7 +99,7 @@ public class WelcomeActivity extends BaseActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class).putExtra(SharePreferenceUtil.HAS_GET_IMAGE, true));
+                                startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                                 finish();
                             }
                         });
