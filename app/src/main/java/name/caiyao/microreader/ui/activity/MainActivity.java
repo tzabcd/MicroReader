@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void setStatusBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             // create our manager instance after the content view is set
@@ -132,6 +132,7 @@ public class MainActivity extends BaseActivity
             switchFragment(weixinFragment, "微信精选");
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, "知乎日报");
+            setTheme(R.style.BlueTheme);
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, "果壳热门");
         } else if (id == R.id.nav_video) {

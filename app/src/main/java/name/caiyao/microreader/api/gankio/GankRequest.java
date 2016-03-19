@@ -11,6 +11,7 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -42,6 +43,8 @@ public class GankRequest {
      * 例：•http://gank.avosapps.com/api/random/data/Android/20
      */
     private static GankApi gankApi = null;
+    public static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
+
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -67,14 +70,15 @@ public class GankRequest {
     static Cache cache = new Cache(httpCacheDirectory, cacheSize);
 
     static OkHttpClient client = new OkHttpClient.Builder()
-            .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
+            //.addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)
+            .addInterceptor(interceptor)
             .build();
 
     public static GankApi getGankApi() {
         if (gankApi == null) {
             gankApi = new Retrofit.Builder()
-                    .baseUrl("http://gank.avosapps.com")
+                    .baseUrl("http://gank.io")
                     .client(client)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())

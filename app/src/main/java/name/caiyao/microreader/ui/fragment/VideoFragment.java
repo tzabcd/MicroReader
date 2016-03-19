@@ -1,27 +1,21 @@
 package name.caiyao.microreader.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
-import com.orhanobut.logger.Logger;
-import com.volokh.danylo.video_player_manager.manager.PlayerItemChangeListener;
-import com.volokh.danylo.video_player_manager.manager.SingleVideoPlayerManager;
-import com.volokh.danylo.video_player_manager.manager.VideoPlayerManager;
-import com.volokh.danylo.video_player_manager.meta.MetaData;
-import com.volokh.danylo.video_player_manager.ui.MediaPlayerWrapper;
-import com.volokh.danylo.video_player_manager.ui.VideoPlayerView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,6 +29,7 @@ import name.caiyao.microreader.api.gankio.GankRequest;
 import name.caiyao.microreader.api.util.UtilRequest;
 import name.caiyao.microreader.bean.gankio.GankVideo;
 import name.caiyao.microreader.bean.gankio.GankVideoItem;
+import name.caiyao.microreader.ui.activity.VideoActivity;
 import okhttp3.ResponseBody;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -52,12 +47,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     private ArrayList<GankVideoItem> gankVideoItems = new ArrayList<>();
     private int currentPage;
     private VideoAdapter videoAdapter;
-    private VideoPlayerManager<MetaData> mVideoPlayerManager = new SingleVideoPlayerManager(new PlayerItemChangeListener() {
-        @Override
-        public void onPlayerItemChanged(MetaData metaData) {
-
-        }
-    });
 
     public VideoFragment() {
     }
@@ -84,7 +73,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         getVideo(currentPage);
     }
 
-    private void getVideo(int page) {
+    private void getVideo(final int page) {
         GankRequest.getGankApi().getVideoList(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -102,6 +91,12 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setLoadingMore(false);
                         }
                         e.printStackTrace();
+                        Snackbar.make(swipeTarget,"加载失败，请检查网络！",Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getVideo(page);
+                            }
+                        }).show();
                     }
 
                     @Override
@@ -127,7 +122,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
     @Override
     public void onRefresh() {
-        mVideoPlayerManager.resetMediaPlayer();
         currentPage = 1;
         gankVideoItems.clear();
         getVideo(currentPage);
@@ -136,7 +130,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onPause() {
         super.onPause();
-        mVideoPlayerManager.resetMediaPlayer();
     }
 
     @Override
@@ -159,82 +152,52 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
-            holder.pbVideo.setVisibility(View.INVISIBLE);
-            holder.ivVideo.setVisibility(View.VISIBLE);
             holder.tvTitle.setText(gankVideoItems.get(position).getDesc());
             holder.tvTime.setText(gankVideoItems.get(position).getPublishedAt());
-            holder.vpvVideo.addMediaPlayerListener(new MediaPlayerWrapper.MainThreadMediaPlayerListener() {
-                @Override
-                public void onVideoSizeChangedMainThread(int width, int height) {
 
-                }
-
-                @Override
-                public void onVideoPreparedMainThread() {
-                    holder.ivVideo.setVisibility(View.INVISIBLE);
-                    holder.pbVideo.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void onVideoCompletionMainThread() {
-                    holder.ivVideo.setVisibility(View.VISIBLE);
-                    holder.pbVideo.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void onErrorMainThread(int what, int extra) {
-                    holder.ivVideo.setVisibility(View.VISIBLE);
-                    holder.pbVideo.setVisibility(View.INVISIBLE);
-                }
-
-                @Override
-                public void onBufferingUpdateMainThread(int percent) {
-                    holder.pbVideo.setProgress(percent);
-                }
-
-                @Override
-                public void onVideoStoppedMainThread() {
-                    holder.ivVideo.setVisibility(View.VISIBLE);
-                    holder.pbVideo.setVisibility(View.INVISIBLE);
-                }
-            });
-
-            holder.ivVideo.setOnClickListener(new View.OnClickListener() {
+            holder.cvVideo.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    holder.pbVideo.setVisibility(View.VISIBLE);
-                    holder.ivVideo.setVisibility(View.INVISIBLE);
-                    UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Observer<ResponseBody>() {
-                                @Override
-                                public void onCompleted() {
-
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    e.printStackTrace();
-                                }
-
-                                @Override
-                                public void onNext(ResponseBody responseBody) {
-                                    try {
-                                        Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
-                                        final Matcher matcher = pattern.matcher(responseBody.string());
-                                        if (matcher.find()) {
-                                            Logger.i(matcher.group(1));
-                                            mVideoPlayerManager.playNewVideo(null, holder.vpvVideo, matcher.group(1));
-                                        }
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
+                    getPlayUrl(holder);
                 }
             });
+        }
+
+        private void getPlayUrl(final VideoViewHolder holder){
+            UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<ResponseBody>() {
+                        @Override
+                        public void onCompleted() {
+
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                            Snackbar.make(swipeTarget,"获取播放地址失败，请检查网络！",Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getPlayUrl(holder);
+                                }
+                            }).show();
+                        }
+
+                        @Override
+                        public void onNext(ResponseBody responseBody) {
+                            try {
+                                Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
+                                final Matcher matcher = pattern.matcher(responseBody.string());
+                                if (matcher.find()) {
+                                    startActivity(new Intent(getActivity(), VideoActivity.class).putExtra("url", matcher.group(1)));
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
         }
 
         @Override
@@ -248,12 +211,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             TextView tvTitle;
             @Bind(R.id.tv_time)
             TextView tvTime;
-            @Bind(R.id.vpv_video)
-            VideoPlayerView vpvVideo;
-            @Bind(R.id.iv_video)
-            ImageView ivVideo;
-            @Bind(R.id.pb_video)
-            ProgressBar pbVideo;
             @Bind(R.id.cv_video)
             CardView cvVideo;
 

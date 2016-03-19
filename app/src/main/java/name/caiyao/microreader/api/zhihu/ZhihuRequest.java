@@ -47,7 +47,7 @@ public class ZhihuRequest {
     static Cache cache = new Cache(httpCacheDirectory, cacheSize);
 
     static OkHttpClient client = new OkHttpClient.Builder()
-            .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
+            //.addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .addInterceptor(interceptor)
             .cache(cache)
             .build();
