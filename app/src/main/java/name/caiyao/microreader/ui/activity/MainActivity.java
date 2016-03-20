@@ -1,7 +1,10 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -58,7 +61,6 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
-        setStatusBar();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,6 +73,18 @@ public class MainActivity extends BaseActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+        int[][] state = new int[][]{
+                new int[] {-android.R.attr.state_checked}, // unchecked
+                new int[] { android.R.attr.state_checked}  // pressed
+        };
+
+        int[] color = new int[] {
+                Color.BLACK,
+                getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME,Context.MODE_PRIVATE).getInt(SharePreferenceUtil.MUTED,ContextCompat.getColor(this,R.color.colorAccent))
+        };
+        navigationView.setItemTextColor(new ColorStateList(state,color));
+        navigationView.setItemIconTintList(new ColorStateList(state,color));
+
         View headerLayout = navigationView.getHeaderView(0);
         LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
         TextView imageDescription = (TextView) headerLayout.findViewById(R.id.image_description);
@@ -81,21 +95,9 @@ public class MainActivity extends BaseActivity
         } else {
             llImage.setBackground(ContextCompat.getDrawable(this, R.mipmap.default_img_2));
         }
-        switchFragment(weixinFragment, "微信精选");
-    }
 
-    private void setStatusBar() {
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            // create our manager instance after the content view is set
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            // enable status bar tint
-            tintManager.setStatusBarTintEnabled(true);
-            // enable navigation bar tint
-            tintManager.setNavigationBarTintEnabled(true);
-            tintManager.setTintColor(ContextCompat.getColor(this, R.color.colorPrimary));
-        }
+        setToolBar(toolbar);
+        switchFragment(weixinFragment, "微信精选");
     }
 
     @Override
@@ -132,7 +134,6 @@ public class MainActivity extends BaseActivity
             switchFragment(weixinFragment, "微信精选");
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, "知乎日报");
-            setTheme(R.style.BlueTheme);
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, "果壳热门");
         } else if (id == R.id.nav_video) {
@@ -142,6 +143,8 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_help) {
 
         }
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;

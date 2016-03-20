@@ -17,7 +17,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/OrangeTheme">
         <activity
             android:name=".ui.activity.WelcomeActivity"
             android:label="@string/app_name"
@@ -31,14 +31,14 @@
         <activity
             android:name=".ui.activity.WeixinNewsActivity"
             android:hardwareAccelerated="true"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.ZhihuStoryActivity"
             android:hardwareAccelerated="true"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.MainActivity"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/OrangeTheme" />
         <activity android:name=".ui.activity.BaseActivity" />
 
         <meta-data

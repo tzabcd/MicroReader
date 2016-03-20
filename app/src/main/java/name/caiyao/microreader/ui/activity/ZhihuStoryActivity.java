@@ -1,8 +1,11 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -24,6 +27,7 @@ import name.caiyao.microreader.api.guokr.GuokrRequest;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.guokr.GuokrArticle;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import name.caiyao.microreader.utils.WebUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -44,6 +48,8 @@ public class ZhihuStoryActivity extends BaseActivity {
     String id;
     String title;
     String url;
+    @Bind(R.id.ctl)
+    CollapsingToolbarLayout ctl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,21 +79,23 @@ public class ZhihuStoryActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         }
+        ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this,R.color.colorPrimary)));
+        ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this,R.color.colorPrimaryDark)));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_share,menu);
+        getMenuInflater().inflate(R.menu.menu_share, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, title+"\r\n"+url);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, title + "\r\n" + url);
                 shareIntent.setType("text/plain");
                 //设置分享列表的标题，并且每次都显示分享列表
                 startActivity(Intent.createChooser(shareIntent, "分享到"));

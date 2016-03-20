@@ -1,5 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -165,6 +166,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         }
 
         private void getPlayUrl(final VideoViewHolder holder){
+            final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+            progressDialog.setMessage("正在获取播放地址...");
+            progressDialog.show();
             UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
@@ -177,6 +181,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
+                            progressDialog.dismiss();
                             Snackbar.make(swipeTarget,"获取播放地址失败，请检查网络！",Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -187,11 +192,19 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
                         @Override
                         public void onNext(ResponseBody responseBody) {
+                            progressDialog.dismiss();
                             try {
                                 Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
                                 if (matcher.find()) {
                                     startActivity(new Intent(getActivity(), VideoActivity.class).putExtra("url", matcher.group(1)));
+                                }else{
+                                    Snackbar.make(swipeTarget,"获取播放地址失败，请检查网络！",Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            getPlayUrl(holder);
+                                        }
+                                    }).show();
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
