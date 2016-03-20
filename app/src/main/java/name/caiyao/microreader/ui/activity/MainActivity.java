@@ -1,12 +1,14 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -31,6 +33,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
+import name.caiyao.microreader.ui.fragment.SettingsFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
@@ -54,6 +57,7 @@ public class MainActivity extends BaseActivity
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
     private GuokrFragment guokrFragment = new GuokrFragment();
     private VideoFragment videoFragment = new VideoFragment();
+    private SettingsFragment settingsFragment = new SettingsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,7 +143,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_video) {
             switchFragment(videoFragment, "视频推荐");
         } else if (id == R.id.nav_setting) {
-
+            startActivity(new Intent(this,SettingsActivity.class));
         } else if (id == R.id.nav_help) {
 
         }

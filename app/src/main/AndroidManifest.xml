@@ -41,17 +41,24 @@
             android:theme="@style/OrangeTheme" />
         <activity android:name=".ui.activity.BaseActivity" />
 
+        <activity
+            android:name=".ui.activity.VideoActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme.FullScreen" />
+
+        <activity
+            android:name=".ui.activity.SettingsActivity"
+            android:theme="@style/OrangeTheme" />
+
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="56e8f45ae0f55ae1e5000480" />
+
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="Wandoujia" />
 
-        <activity android:name=".ui.activity.VideoActivity"
-            android:screenOrientation="landscape"
-            android:theme="@style/AppTheme.FullScreen"
-            android:hardwareAccelerated="true"/>
     </application>
 
 </manifest>

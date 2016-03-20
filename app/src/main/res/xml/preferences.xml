@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="流量控制">
+        <CheckBoxPreference android:layout="@layout/preference_item"
+            android:title="进入自动刷新数据"
+            android:summaryOn="仅在WIFI下"
+            android:summaryOff="在WIFI和移动网络下"
+            android:key="@string/pre_refresh_data"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+
+</PreferenceScreen>
