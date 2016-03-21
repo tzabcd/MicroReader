@@ -106,7 +106,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        if (!gankVideo.getError()) {
+                        if (!gankVideo.isError()) {
                             currentPage++;
                             gankVideoItems.addAll(gankVideo.getResults());
                             videoAdapter.notifyDataSetChanged();

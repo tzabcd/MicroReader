@@ -25,7 +25,7 @@ import java.util.Date;
 
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
-import name.caiyao.microreader.bean.image.ImageReponse;
+import name.caiyao.microreader.bean.image.ImageResponse;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
@@ -96,7 +96,7 @@ public class WelcomeActivity extends BaseActivity {
 
     private void getBackground() {
         ZhihuRequest.getZhihuApi().getImage().subscribeOn(Schedulers.io())
-                .subscribe(new Observer<ImageReponse>() {
+                .subscribe(new Observer<ImageResponse>() {
                     @Override
                     public void onCompleted() {
 
@@ -115,7 +115,7 @@ public class WelcomeActivity extends BaseActivity {
                     }
 
                     @Override
-                    public void onNext(ImageReponse imageReponse) {
+                    public void onNext(ImageResponse imageReponse) {
                         if (imageReponse.getData() != null && imageReponse.getData().getImages() != null) {
                             try {
                                 Bitmap bitmap = BitmapFactory.decodeStream(new URL("http://wpstatic.zuimeia.com/" + imageReponse.getData().getImages().get(0).getImage_url() + "?imageMogr/v2/auto-orient/thumbnail/480x320/quality/100").openConnection().getInputStream());

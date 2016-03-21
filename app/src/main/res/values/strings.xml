@@ -8,5 +8,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pre_refresh_data">refresh_data</string>
+    <string name="pre_get_image">get_image</string>
+    <string name="pre_cache_size">cache_size</string>
 
 </resources>

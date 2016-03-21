@@ -1,6 +1,6 @@
 package name.caiyao.microreader.api.zhihu;
 
-import name.caiyao.microreader.bean.image.ImageReponse;
+import name.caiyao.microreader.bean.image.ImageResponse;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
 import retrofit2.http.GET;
@@ -22,5 +22,5 @@ public interface ZhihuApi {
     Observable<ZhihuStory> getZhihuStory(@Path("id") String id);
 
     @GET("http://lab.zuimeia.com/wallpaper/category/1/?page_size=1")
-    Observable<ImageReponse> getImage();
+    Observable<ImageResponse> getImage();
 }

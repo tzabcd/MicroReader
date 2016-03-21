@@ -20,6 +20,7 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -50,6 +51,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     ProgressBar progressBar;
 
     private CacheUtil cacheUtil;
+
     private int[] defaultImgs = new int[]{
             R.mipmap.default_img_1,
             R.mipmap.default_img_2,
@@ -82,6 +84,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         currentPage = 1;
         weixinNewses.clear();
         getWeixinNews(currentPage);
+        cacheUtil = CacheUtil.get(getActivity());
     }
 
     private void getWeixinNews(final int page) {
@@ -100,6 +103,13 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
+                        if (cacheUtil.getAsJSONObject("weixin"+page) != null){
+                            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject("weixin"+page).toString(),TxWeixinResponse.class);
+                            cacheUtil.put("weixin"+page,new Gson().toJson(txWeixinResponse));
+                            weixinNewses.addAll(txWeixinResponse.getNewslist());
+                            weixinAdapter.notifyDataSetChanged();
+                            currentPage++;
+                        }
                         Snackbar.make(swipeTarget, "加载失败,请检查您的网络！" , Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -115,6 +125,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             swipeToLoadLayout.setLoadingMore(false);
                         }
                         if (txWeixinResponse.getCode() == 200) {
+                            cacheUtil.put("weixin"+page,new Gson().toJson(txWeixinResponse));
                             weixinNewses.addAll(txWeixinResponse.getNewslist());
                             weixinAdapter.notifyDataSetChanged();
                             currentPage++;

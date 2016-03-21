@@ -1,10 +1,8 @@
 package name.caiyao.microreader.api.util;
 
-import name.caiyao.microreader.bean.image.ImageReponse;
 import okhttp3.ResponseBody;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
-import retrofit2.http.GET;
 import retrofit2.http.POST;
 import rx.Observable;
 

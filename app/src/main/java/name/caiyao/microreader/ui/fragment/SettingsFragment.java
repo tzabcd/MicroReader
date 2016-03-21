@@ -1,16 +1,15 @@
 package name.caiyao.microreader.ui.fragment;
 
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.preference.PreferenceScreen;
+
+import java.io.File;
 
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.utils.CacheUtil;
 
 
 public class SettingsFragment extends PreferenceFragment {
@@ -28,12 +27,20 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        prefs.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+        final Preference pref = findPreference("cache_size");
+        showCacheSize(pref);
+        pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
-            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-
+            public boolean onPreferenceClick(Preference preference) {
+                CacheUtil.get(getActivity()).clear();
+                showCacheSize(pref);
+                return true;
             }
         });
+    }
+
+    private void showCacheSize(Preference preference){
+        File f = new File(getActivity().getCacheDir(), "ACache");
+        preference.setSummary("缓存大小："+f.length()/1024+"KB");
     }
 }
