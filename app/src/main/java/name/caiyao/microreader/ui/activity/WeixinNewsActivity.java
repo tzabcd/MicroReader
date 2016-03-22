@@ -45,7 +45,7 @@ public class WeixinNewsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar,true,true);
+        setToolBar(toolbar,true,true,false);
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 
@@ -51,14 +54,13 @@ public class MainActivity extends BaseActivity
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
     private GuokrFragment guokrFragment = new GuokrFragment();
     private VideoFragment videoFragment = new VideoFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setToolBar(toolbar,false,true);
+        setToolBar(toolbar,false,true,true);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.orhanobut.logger.Logger;
+
 import name.caiyao.microreader.R;
 
 /**
@@ -19,6 +21,7 @@ public class Config {
 
     public static boolean isChangeThemeAuto(Context context){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(context.getResources().getString(R.string.pre_get_image), false);
+        Logger.i("获取图片："+sharedPreferences.getBoolean(context.getResources().getString(R.string.pre_get_image), true));
+        return sharedPreferences.getBoolean(context.getResources().getString(R.string.pre_get_image), true);
     }
 }

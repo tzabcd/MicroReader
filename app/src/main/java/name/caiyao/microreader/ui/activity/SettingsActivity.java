@@ -37,7 +37,7 @@ public class SettingsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar,true,true);
+        setToolBar(toolbar,true,true,false);
         getFragmentManager().beginTransaction().replace(R.id.fl_preference, settingsFragment).commit();
     }
 }

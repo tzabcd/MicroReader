@@ -12,7 +12,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -61,7 +60,8 @@ public class ZhihuStoryActivity extends BaseActivity {
         title = getIntent().getStringExtra("title");
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
-        setToolBar(toolbar,false,false);
+        boolean isKitkat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
+        setToolBar(toolbar, isKitkat, false, false);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,11 +77,8 @@ public class ZhihuStoryActivity extends BaseActivity {
         } else if (type == TYPE_GUOKR) {
             getGuokr();
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        }
-        ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this,R.color.colorPrimary)));
-        ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this,R.color.colorPrimaryDark)));
+        ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
+        ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
     }
 
     @Override

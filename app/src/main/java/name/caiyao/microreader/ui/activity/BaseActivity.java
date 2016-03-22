@@ -37,15 +37,20 @@ public class BaseActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    public void setToolBar(Toolbar toolbar, boolean isChangeStatusBar, boolean isChangeToolbar) {
+    public void setToolBar(Toolbar toolbar, boolean isChangeStatusBar, boolean isChangeToolbar,boolean marginTop) {
         if (isChangeToolbar)
             toolbar.setBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            if (isChangeStatusBar)
+            if (isChangeStatusBar){
                 tintManager.setStatusBarTintEnabled(true);
+            }
+            if (marginTop && Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT){
+                SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
+                getWindow().getDecorView().getRootView().setPadding(0, toolbar.getHeight(), config.getPixelInsetRight(), 0);
+            }
             tintManager.setNavigationBarTintEnabled(true);
             tintManager.setTintColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
         }
