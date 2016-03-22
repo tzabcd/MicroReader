@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="流量控制">
-        <CheckBoxPreference android:layout="@layout/preference_item"
-            android:title="进入自动刷新数据"
-            android:summaryOn="仅在WIFI下"
-            android:summaryOff="在WIFI和移动网络下"
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="流量控制">
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="@string/pre_refresh_data"
-            android:defaultValue="false"/>
-        <CheckBoxPreference android:layout="@layout/preference_item"
-            android:title="加载图片"
-            android:summaryOn="仅在WIFI下"
+            android:layout="@layout/preference_item"
             android:summaryOff="在WIFI和移动网络下"
+            android:summaryOn="仅在WIFI下"
+            android:title="进入自动刷新数据" />
+        <CheckBoxPreference
+            android:checked="true"
+            android:defaultValue="true"
             android:key="@string/pre_get_image"
-            android:defaultValue="false"/>
+            android:layout="@layout/preference_item"
+            android:summaryOff="关闭"
+            android:summaryOn="打开"
+            android:title="每日自动更换主题" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="缓存管理">
-         <Preference android:layout="@layout/preference_item"
-             android:summary="缓存大小:0B"
-             android:key="@string/pre_cache_size"
-             android:title="清除缓存"/>
+        <Preference
+            android:key="@string/pre_cache_size"
+            android:layout="@layout/preference_item"
+            android:summary="缓存大小:0B"
+            android:title="清除缓存" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -5,10 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -20,12 +17,9 @@ import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import java.io.File;
 
@@ -64,11 +58,13 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+        setToolBar(toolbar,false,true);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
+        drawer.setStatusBarBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME,Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK,ContextCompat.getColor(this,R.color.colorPrimaryDark)));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        assert drawer != null;
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -100,7 +96,6 @@ public class MainActivity extends BaseActivity
             llImage.setBackground(ContextCompat.getDrawable(this, R.mipmap.default_img_2));
         }
 
-        setToolBar(toolbar);
         switchFragment(weixinFragment, "微信精选");
     }
 

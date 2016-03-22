@@ -20,6 +20,7 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -29,9 +30,12 @@ import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.view.LoaderMoreView;
 import name.caiyao.microreader.ui.view.RefreshHeaderView;
+import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
 import name.caiyao.microreader.utils.TimeUtil;
 import rx.Observer;
@@ -49,12 +53,14 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     LoaderMoreView swipeLoadMoreFooter;
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
+    @Bind(R.id.progressBar)
+    ProgressBar progressBar;
 
     String currentLoadedDate;
     ZhihuAdapter zhihuAdapter;
     ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
-    @Bind(R.id.progressBar)
-    ProgressBar progressBar;
+    CacheUtil cacheUtil;
+    Gson gson = new Gson();
 
     public ZhihuFragment() {
     }
@@ -76,9 +82,26 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
         swipeTarget.setHasFixedSize(true);
         zhihuAdapter = new ZhihuAdapter(zhihuStories);
         swipeTarget.setAdapter(zhihuAdapter);
-        getZhihuDaily();
+        cacheUtil = CacheUtil.get(getActivity());
+        getFromCache();
+        if (Config.isRefreshOnlyWifi(getActivity())){
+            if (NetWorkUtil.isWifiConnected(getActivity())){
+                onRefresh();
+            }
+        }else{
+            onRefresh();
+        }
     }
 
+    private void getFromCache(){
+        if (cacheUtil.getAsJSONObject(CacheUtil.ZHIHU) != null) {
+            zhihuStories.clear();
+            ZhihuDaily zhihuDaily = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.ZHIHU).toString(),ZhihuDaily.class);
+            currentLoadedDate = zhihuDaily.getDate();
+            zhihuStories.addAll(zhihuDaily.getStories());
+            zhihuAdapter.notifyDataSetChanged();
+        }
+    }
 
     private void getZhihuDaily() {
         zhihuStories.clear();
@@ -88,13 +111,15 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                 .subscribe(new Observer<ZhihuDaily>() {
                     @Override
                     public void onCompleted() {
-                        progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setRefreshing(false);
+                        getFromCache();
                         e.printStackTrace();
                         Snackbar.make(swipeTarget, "加载失败,请检查您的网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                             @Override
@@ -106,6 +131,8 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
                     @Override
                     public void onNext(ZhihuDaily zhihuDaily) {
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                         }

@@ -1,14 +1,10 @@
 package name.caiyao.microreader.ui.activity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
-
-import com.orhanobut.logger.Logger;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,10 +37,7 @@ public class SettingsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isRe = sharedPreferences.getBoolean(getResources().getString(R.string.pre_refresh_data),false);
-        Logger.i(isRe+"");
+        setToolBar(toolbar,true,true);
         getFragmentManager().beginTransaction().replace(R.id.fl_preference, settingsFragment).commit();
     }
 }

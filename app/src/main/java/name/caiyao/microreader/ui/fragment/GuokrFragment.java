@@ -13,11 +13,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -27,9 +29,12 @@ import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.guokr.GuokrRequest;
 import name.caiyao.microreader.bean.guokr.GuokrHot;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.view.LoaderMoreView;
 import name.caiyao.microreader.ui.view.RefreshHeaderView;
+import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.NetWorkUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -49,6 +54,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
     private ArrayList<GuokrHotItem> guokrHotItems = new ArrayList<>();
     private GuokrAdapter guokrAdapter;
+    private CacheUtil cacheUtil;
     private int currentOffset;
 
     public GuokrFragment() {
@@ -71,8 +77,26 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         swipeTarget.setHasFixedSize(true);
         guokrAdapter = new GuokrAdapter(guokrHotItems);
         swipeTarget.setAdapter(guokrAdapter);
-        currentOffset = 0;
-        getGuokrHot(currentOffset);
+        cacheUtil = CacheUtil.get(getActivity());
+        getFromCache(1);
+        if (Config.isRefreshOnlyWifi(getActivity())) {
+            if (NetWorkUtil.isWifiConnected(getActivity())) {
+                onRefresh();
+            } else {
+                Toast.makeText(getActivity(), "非WIFI下不自动加载数据！", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            onRefresh();
+        }
+    }
+
+    private void getFromCache(int offset) {
+        if (cacheUtil.getAsJSONObject(CacheUtil.GUOKR +offset) != null) {
+            GuokrHot guokrHot = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.GUOKR + offset).toString(), GuokrHot.class);
+            currentOffset++;
+            guokrHotItems.addAll(guokrHot.getResult());
+            guokrAdapter.notifyDataSetChanged();
+        }
     }
 
     private void getGuokrHot(final int offset) {
@@ -82,8 +106,6 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                 .subscribe(new Observer<GuokrHot>() {
                     @Override
                     public void onCompleted() {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
                     }
 
                     @Override
@@ -92,8 +114,11 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
+                        getFromCache(offset);
                         e.printStackTrace();
-                        Snackbar.make(swipeToLoadLayout,"加载失败,请检查您的网络！" ,Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeToLoadLayout, "加载失败,请检查您的网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getGuokrHot(offset);
@@ -103,10 +128,13 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
                     @Override
                     public void onNext(GuokrHot guokrHot) {
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
+                        cacheUtil.put(CacheUtil.GUOKR+ offset, new Gson().toJson(guokrHot));
                         currentOffset++;
                         guokrHotItems.addAll(guokrHot.getResult());
                         guokrAdapter.notifyDataSetChanged();

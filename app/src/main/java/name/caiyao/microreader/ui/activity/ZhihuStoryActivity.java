@@ -61,6 +61,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         title = getIntent().getStringExtra("title");
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
+        setToolBar(toolbar,false,false);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
