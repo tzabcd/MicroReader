@@ -17,7 +17,7 @@
     <string name="common_loading">正在加载…</string>
     <string name="common_loading_error">加载失败，请检查网络！</string>
     <string name="comon_retry">重试</string>
-    <string name="share_tail">(分享自微阅，小而美的阅读体验！)</string>
+    <string name="share_tail">\r\n(分享自微阅，小而美的阅读体验！)</string>
     <string name="share">分享到</string>
     <string name="request_storage_permission">请允许此应用的读写文件以便于缓存文件！</string>
     <string name="re_request_permission">没有权限臣妾做不到呀！</string>
@@ -32,8 +32,8 @@
     <string name="description">小而美的阅读体验</string>
     <string name="help_and_suggest">帮助与反馈</string>
     <string name="about">关于</string>
-    <string name="pre_feedback">feedback</string>
-    <string name="pre_author">author</string>
-    <string name="pre_version">version</string>
+    <string name="pre_feedback" translatable="false">feedback</string>
+    <string name="pre_author" translatable="false">author</string>
+    <string name="pre_version" translatable="false">version</string>
 
 </resources>

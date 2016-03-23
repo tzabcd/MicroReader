@@ -10,7 +10,7 @@ public class GuokrHot {
     private String now;
     private boolean ok = false;
     private int limit;
-    private ArrayList<GuokrHotItem> result;
+    private ArrayList<GuokrHotItem> result = new ArrayList<>();
     private int offset;
     private int total;
 

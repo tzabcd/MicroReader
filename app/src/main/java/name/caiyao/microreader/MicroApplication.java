@@ -25,13 +25,13 @@ public class MicroApplication extends Application {
                 .init("MicroReader")             // default PRETTYLOGGER or use just init()
                 .methodCount(3)                 // default 2
                 .hideThreadInfo()               // default shown
-                .logLevel(LogLevel.FULL)        // default LogLevel.FULL
+                .logLevel(LogLevel.NONE)        // default LogLevel.FULL
                 .methodOffset(2)                // default 0
                 .logTool(new AndroidLogTool()); // custom log tool, optional
 
         BugtagsOptions options = new BugtagsOptions.Builder().
                 trackingLocation(true).//是否获取位置
-                trackingCrashLog(false).//是否收集crash
+                trackingCrashLog(true).//是否收集crash
                 trackingConsoleLog(true).//是否收集console log
                 trackingUserSteps(true).//是否收集用户操作步骤
                 build();
