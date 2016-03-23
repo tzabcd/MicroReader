@@ -3,7 +3,7 @@ apply plugin: 'com.bugtags.library.plugin'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '24 rc2'
+    buildToolsVersion '24.0.0 rc1'
     repositories {
         maven { url "https://jitpack.io" }
     }
@@ -17,11 +17,10 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-    productFlavors {
     }
 }
 

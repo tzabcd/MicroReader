@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -22,15 +23,12 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.readystatesoftware.systembartint.SystemBarTintManager;
-
 import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
-import name.caiyao.microreader.ui.fragment.SettingsFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
@@ -47,6 +45,8 @@ public class MainActivity extends BaseActivity
     NavigationView navView;
     @Bind(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+    @Bind(R.id.ctl_main)
+    CoordinatorLayout ctlMain;
 
     private Fragment currentFragment;
 
@@ -60,11 +60,12 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setToolBar(toolbar,false,true,true);
+        setToolBar(toolbar, false, true, true);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
-        drawer.setStatusBarBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME,Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK,ContextCompat.getColor(this,R.color.colorPrimaryDark)));
+        //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
+        ctlMain.setStatusBarBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -76,16 +77,16 @@ public class MainActivity extends BaseActivity
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
         int[][] state = new int[][]{
-                new int[] {-android.R.attr.state_checked}, // unchecked
-                new int[] { android.R.attr.state_checked}  // pressed
+                new int[]{-android.R.attr.state_checked}, // unchecked
+                new int[]{android.R.attr.state_checked}  // pressed
         };
 
-        int[] color = new int[] {
+        int[] color = new int[]{
                 Color.BLACK,
-                getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME,Context.MODE_PRIVATE).getInt(SharePreferenceUtil.MUTED,ContextCompat.getColor(this,R.color.colorAccent))
+                getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.MUTED, ContextCompat.getColor(this, R.color.colorAccent))
         };
-        navigationView.setItemTextColor(new ColorStateList(state,color));
-        navigationView.setItemIconTintList(new ColorStateList(state,color));
+        navigationView.setItemTextColor(new ColorStateList(state, color));
+        navigationView.setItemIconTintList(new ColorStateList(state, color));
 
         View headerLayout = navigationView.getHeaderView(0);
         LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
@@ -94,11 +95,9 @@ public class MainActivity extends BaseActivity
             BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources(), getFilesDir().getPath() + "/bg.jpg");
             llImage.setBackground(bitmapDrawable);
             imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
-        } else {
-            llImage.setBackground(ContextCompat.getDrawable(this, R.mipmap.default_img_2));
         }
 
-        switchFragment(weixinFragment, "微信精选");
+        switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
     }
 
     @Override
@@ -114,7 +113,7 @@ public class MainActivity extends BaseActivity
 
     private void switchFragment(Fragment fragment, String title) {
         Slide slideTransition;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             slideTransition = new Slide(Gravity.START);
             slideTransition.setDuration(700);
             fragment.setEnterTransition(slideTransition);
@@ -132,21 +131,16 @@ public class MainActivity extends BaseActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id == R.id.nav_weixin) {
-            switchFragment(weixinFragment, "微信精选");
+            switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
         } else if (id == R.id.nav_zhihu) {
-            switchFragment(zhihuFragment, "知乎日报");
+            switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
         } else if (id == R.id.nav_guokr) {
-            switchFragment(guokrFragment, "果壳热门");
+            switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
         } else if (id == R.id.nav_video) {
-            switchFragment(videoFragment, "视频推荐");
+            switchFragment(videoFragment, getString(R.string.fragment_video_title));
         } else if (id == R.id.nav_setting) {
-            startActivity(new Intent(this,SettingsActivity.class));
-        } else if (id == R.id.nav_help) {
-
+            startActivity(new Intent(this, SettingsActivity.class));
         }
-
-
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);

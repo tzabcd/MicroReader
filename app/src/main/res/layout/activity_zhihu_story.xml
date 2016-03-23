@@ -28,7 +28,8 @@
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.1" />
+                app:layout_collapseParallaxMultiplier="0.1"
+                tools:ignore="ContentDescription" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

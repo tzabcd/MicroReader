@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MicroReader</string>
+    <string name="activity_setting_title">Settings</string>
+    <string name="cache_size">Cache size:</string>
+    <string name="common_i_know">I see</string>
+    <string name="common_loading">Loading</string>
+    <string name="common_loading_error">Loading error,please check your network!</string>
+    <string name="common_view_loading">Loading hardly...</string>
+    <string name="common_view_loading_ok">Load successfully</string>
+    <string name="common_view_release">Release to load</string>
+    <string name="comon_retry">Retry</string>
+    <string name="default_description">The beauty of life need you to find by your heart, with eye to recording.</string>
+    <string name="description">Small and beautiful reading experience</string>
+    <string name="fragment_guokr_title">Guokr Hot</string>
+    <string name="fragment_video_get_url">Getting player adddress...</string>
+    <string name="fragment_video_get_url_error">Get player address fail!</string>
+    <string name="fragment_video_title">Video</string>
+    <string name="fragment_wexin_title">Wechat Hot</string>
+    <string name="fragment_zhihu_title">Zhihu Daily</string>
+    <string name="help_and_suggest">Help and suggestion</string>
+    <string name="re_request_permission">No permission,Nothing to do!</string>
+    <string name="request_storage_permission">Please give me permission to cache file!</string>
+    <string name="share">Share to</string>
+    <string name="share_tail">(Share from MicroReader,The beauty of life need you to find by your heart, with eye to recording.)</string>
+    <string name="toast_wifi_refresh_data">Data will not be load because no wifi!</string>
+    <string name="about">about</string>
+</resources>

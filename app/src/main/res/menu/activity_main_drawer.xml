@@ -6,30 +6,26 @@
             android:id="@+id/nav_weixin"
             android:icon="@drawable/icon_weixin"
             android:checked="true"
-            android:title="微信精选" />
+            android:title="@string/fragment_wexin_title" />
         <item
             android:id="@+id/nav_zhihu"
             android:icon="@drawable/icon_zhihu"
-            android:title="知乎日报" />
+            android:title="@string/fragment_zhihu_title" />
         <item
             android:id="@+id/nav_guokr"
             android:icon="@drawable/icon_guokr"
-            android:title="果壳热门" />
+            android:title="@string/fragment_guokr_title" />
         <item
             android:id="@+id/nav_video"
             android:icon="@drawable/icon_video"
-            android:title="视频推荐" />
+            android:title="@string/fragment_video_title" />
     </group>
 
     <group android:id="@+id/settings" android:checkableBehavior="none">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_24px"
-            android:title="设置" />
-        <item
-            android:id="@+id/nav_help"
-            android:icon="@drawable/ic_help_black_24px"
-            android:title="帮助与反馈" />
+            android:title="@string/activity_setting_title" />
     </group>
 
 </menu>

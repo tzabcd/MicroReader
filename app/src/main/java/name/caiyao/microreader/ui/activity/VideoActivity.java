@@ -5,12 +5,9 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.MediaController;
 import android.widget.VideoView;
-
-import com.orhanobut.logger.Logger;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,7 +27,7 @@ public class VideoActivity extends AppCompatActivity {
         vvGank.setVideoPath(url);
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.show();
-        progressDialog.setMessage("正在加载...");
+        progressDialog.setMessage(getString(R.string.common_loading));
         vvGank.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -40,7 +37,7 @@ public class VideoActivity extends AppCompatActivity {
         vvGank.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Snackbar.make(vvGank,"加载失败！",Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                Snackbar.make(vvGank, R.string.common_loading_error,Snackbar.LENGTH_SHORT).setAction(R.string.comon_retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         vvGank.start();

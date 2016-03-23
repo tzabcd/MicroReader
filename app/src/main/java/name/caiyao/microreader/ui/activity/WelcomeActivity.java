@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,7 +52,7 @@ public class WelcomeActivity extends BaseActivity {
 
         if (!sharedPreferences.getString(SharePreferenceUtil.IMAGE_GET_TIME, "").equals(date)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                new AlertDialog.Builder(this).setMessage("请允许此应用的读写文件以便于缓存文件！").setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(this).setMessage(getString(R.string.request_storage_permission)).setPositiveButton("知道了", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(WelcomeActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST_CODE);
@@ -73,7 +74,6 @@ public class WelcomeActivity extends BaseActivity {
                     }
                 }
             }.start();
-
         }
     }
 
@@ -84,7 +84,7 @@ public class WelcomeActivity extends BaseActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getBackground();
             } else {
-                new AlertDialog.Builder(this).setMessage("没有权限臣妾做不到呀！").setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(this).setMessage(getString(R.string.re_request_permission)).setPositiveButton(getString(R.string.common_i_know), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(WelcomeActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST_CODE);
@@ -109,6 +109,7 @@ public class WelcomeActivity extends BaseActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Toast.makeText(WelcomeActivity.this,getString(R.string.common_loading_error),Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                                     finish();
                                 }
@@ -134,7 +135,7 @@ public class WelcomeActivity extends BaseActivity {
                                             .putString(SharePreferenceUtil.IMAGE_DESCRIPTION, imageReponse.getData().getImages().get(0).getDescription())
                                             .putInt(SharePreferenceUtil.VIBRANT, vibrant)
                                             .putInt(SharePreferenceUtil.VIBRANT_LIGHT, vibrantLight)
-                                            .putInt(SharePreferenceUtil.VIBRANT_DARK, vibrantDark)
+                                            .putInt(SharePreferenceUtil.VIBRANT_DARK, vibrant)
                                             .putInt(SharePreferenceUtil.MUTED, muted)
                                             .putInt(SharePreferenceUtil.MUTED_LIGHT, mutedLight)
                                             .putInt(SharePreferenceUtil.MUTED_DARK, mutedDark)

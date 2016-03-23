@@ -82,16 +82,16 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
-                Toast.makeText(getActivity(), "非WIFI下不自动加载数据！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.toast_wifi_refresh_data), Toast.LENGTH_SHORT).show();
             }
         } else {
             onRefresh();
         }
     }
 
-    private void getFromCache(int page){
-        if (cacheUtil.getAsJSONObject(CacheUtil.VIDEO +page) != null) {
-            GankVideo gankVideo = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.VIDEO+page).toString(),GankVideo.class);
+    private void getFromCache(int page) {
+        if (cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page) != null) {
+            GankVideo gankVideo = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page).toString(), GankVideo.class);
             currentPage++;
             gankVideoItems.addAll(gankVideo.getResults());
             videoAdapter.notifyDataSetChanged();
@@ -116,7 +116,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         e.printStackTrace();
-                        Snackbar.make(swipeTarget, "加载失败，请检查网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getVideo(page);
@@ -133,7 +133,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setLoadingMore(false);
                         }
                         if (!gankVideo.isError()) {
-                            cacheUtil.put(CacheUtil.VIDEO+page,gson.toJson(gankVideo));
+                            cacheUtil.put(CacheUtil.VIDEO + page, gson.toJson(gankVideo));
                             currentPage++;
                             gankVideoItems.addAll(gankVideo.getResults());
                             videoAdapter.notifyDataSetChanged();
@@ -194,7 +194,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         private void getPlayUrl(final VideoViewHolder holder) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setMessage("正在获取播放地址...");
+            progressDialog.setMessage(getActivity().getString(R.string.fragment_video_get_url));
             progressDialog.show();
             UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
                     .subscribeOn(Schedulers.io())
@@ -209,7 +209,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         public void onError(Throwable e) {
                             e.printStackTrace();
                             progressDialog.dismiss();
-                            Snackbar.make(swipeTarget, "获取播放地址失败，请检查网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                            Snackbar.make(swipeTarget, getString(R.string.fragment_video_get_url_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     getPlayUrl(holder);
@@ -226,7 +226,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                 if (matcher.find()) {
                                     startActivity(new Intent(getActivity(), VideoActivity.class).putExtra("url", matcher.group(1)));
                                 } else {
-                                    Snackbar.make(swipeTarget, "获取播放地址失败，请检查网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                                    Snackbar.make(swipeTarget, getString(R.string.fragment_video_get_url_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
                                             getPlayUrl(holder);

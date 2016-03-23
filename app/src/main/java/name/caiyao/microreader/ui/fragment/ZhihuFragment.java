@@ -121,7 +121,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                         getFromCache();
                         e.printStackTrace();
-                        Snackbar.make(swipeTarget, "加载失败,请检查您的网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getZhihuDaily();

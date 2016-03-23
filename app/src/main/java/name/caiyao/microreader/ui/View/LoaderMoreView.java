@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.aspsine.swipetoloadlayout.SwipeLoadMoreTrigger;
 import com.aspsine.swipetoloadlayout.SwipeTrigger;
 
+import name.caiyao.microreader.R;
+
 /**
  * Created by 蔡小木 on 2016/3/6 0006.
  */
@@ -32,7 +34,7 @@ public class LoaderMoreView extends TextView implements SwipeTrigger, SwipeLoadM
 
     @Override
     public void onLoadMore() {
-        setText("正在拼命加载数据...");
+        setText(R.string.common_view_loading);
     }
 
     @Override
@@ -42,7 +44,7 @@ public class LoaderMoreView extends TextView implements SwipeTrigger, SwipeLoadM
 
     @Override
     public void onSwipe(int i, boolean b) {
-        setText("释放加载");
+        setText(R.string.common_view_release);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class LoaderMoreView extends TextView implements SwipeTrigger, SwipeLoadM
 
     @Override
     public void complete() {
-        setText("加载成功");
+        setText(R.string.common_view_loading_ok);
     }
 
     @Override

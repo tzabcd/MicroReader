@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -55,12 +54,6 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
 
     private CacheUtil cacheUtil;
 
-    private int[] defaultImgs = new int[]{
-            R.mipmap.default_img_1,
-            R.mipmap.default_img_2,
-            R.mipmap.default_img_3
-    };
-
     private ArrayList<WeixinNews> weixinNewses = new ArrayList<>();
 
     public WeixinFragment() {
@@ -89,7 +82,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             }else {
-                Toast.makeText(getActivity(), "非WIFI下不自动加载数据！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.toast_wifi_refresh_data), Toast.LENGTH_SHORT).show();
             }
         } else {
             onRefresh();
@@ -123,7 +116,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         getFromCache(page);
-                        Snackbar.make(swipeTarget, "加载失败,请检查您的网络！", Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getWeixinNews(page);
@@ -145,7 +138,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             weixinAdapter.notifyDataSetChanged();
                             currentPage++;
                         } else {
-                            Snackbar.make(swipeTarget, "获取失败！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
                                     getWeixinNews(page);
@@ -194,9 +187,9 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             holder.tvTitle.setText(weixinNewses.get(position).getTitle());
             holder.tvTime.setText(weixinNewses.get(position).getHottime());
             if (!TextUtils.isEmpty(weixinNewses.get(position).getPicUrl())) {
-                Glide.with(getActivity()).load(weixinNewses.get(position).getPicUrl()).placeholder(R.mipmap.default_img_1).into(holder.ivWeixin);
+                Glide.with(getActivity()).load(weixinNewses.get(position).getPicUrl()).placeholder(R.drawable.bg).into(holder.ivWeixin);
             } else {
-                holder.ivWeixin.setImageResource(defaultImgs[new Random().nextInt(3)]);
+                holder.ivWeixin.setImageResource(R.drawable.bg);
             }
             runEnterAnimation(holder.itemView, position);
             holder.cvMain.setOnClickListener(new View.OnClickListener() {

@@ -83,7 +83,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
-                Toast.makeText(getActivity(), "非WIFI下不自动加载数据！", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), R.string.toast_wifi_refresh_data, Toast.LENGTH_SHORT).show();
             }
         } else {
             onRefresh();
@@ -91,7 +91,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     private void getFromCache(int offset) {
-        if (cacheUtil.getAsJSONObject(CacheUtil.GUOKR +offset) != null) {
+        if (cacheUtil.getAsJSONObject(CacheUtil.GUOKR + offset) != null) {
             GuokrHot guokrHot = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.GUOKR + offset).toString(), GuokrHot.class);
             currentOffset++;
             guokrHotItems.addAll(guokrHot.getResult());
@@ -118,7 +118,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                             progressBar.setVisibility(View.INVISIBLE);
                         getFromCache(offset);
                         e.printStackTrace();
-                        Snackbar.make(swipeToLoadLayout, "加载失败,请检查您的网络！", Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 getGuokrHot(offset);
@@ -134,7 +134,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        cacheUtil.put(CacheUtil.GUOKR+ offset, new Gson().toJson(guokrHot));
+                        cacheUtil.put(CacheUtil.GUOKR + offset, new Gson().toJson(guokrHot));
                         currentOffset++;
                         guokrHotItems.addAll(guokrHot.getResult());
                         guokrAdapter.notifyDataSetChanged();

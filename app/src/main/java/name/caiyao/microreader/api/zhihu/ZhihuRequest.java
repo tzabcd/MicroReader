@@ -49,7 +49,7 @@ public class ZhihuRequest {
     static OkHttpClient client = new OkHttpClient.Builder()
             //.addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .addInterceptor(interceptor)
-            .cache(cache)
+            //.cache(cache)
             .build();
 
     public static ZhihuApi getZhihuApi() {

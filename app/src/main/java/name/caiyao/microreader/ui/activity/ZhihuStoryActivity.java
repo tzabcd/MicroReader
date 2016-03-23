@@ -93,10 +93,10 @@ public class ZhihuStoryActivity extends BaseActivity {
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, title + "\r\n" + url);
+                shareIntent.putExtra(Intent.EXTRA_TEXT, title + "\r\n" + url+getString(R.string.share_tail));
                 shareIntent.setType("text/plain");
                 //设置分享列表的标题，并且每次都显示分享列表
-                startActivity(Intent.createChooser(shareIntent, "分享到"));
+                startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
                 break;
         }
         return super.onOptionsItemSelected(item);

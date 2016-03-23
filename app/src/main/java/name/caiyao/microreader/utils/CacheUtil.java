@@ -46,7 +46,7 @@ public class CacheUtil {
     public static final int TIME_DAY = TIME_HOUR * 24;
     private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
     private static final int MAX_COUNT = Integer.MAX_VALUE; // 不限制存放数据的数量
-    private static Map<String, CacheUtil> mInstanceMap = new HashMap<String, CacheUtil>();
+    private static Map<String, CacheUtil> mInstanceMap = new HashMap<>();
     private ACacheManager mCache;
 
     public static CacheUtil get(Context ctx) {
@@ -86,6 +86,7 @@ public class CacheUtil {
                 }
             }
         }
+        assert dir != null;
         return dir.delete();
     }
 
@@ -470,7 +471,7 @@ public class CacheUtil {
      * @param saveTime 保存的时间，单位：秒
      */
     public void put(String key, Serializable value, int saveTime) {
-        ByteArrayOutputStream baos = null;
+        ByteArrayOutputStream baos;
         ObjectOutputStream oos = null;
         try {
             baos = new ByteArrayOutputStream();
@@ -486,8 +487,10 @@ public class CacheUtil {
             e.printStackTrace();
         } finally {
             try {
-                oos.close();
-            } catch (IOException e) {
+                if (oos != null) {
+                    oos.close();
+                }
+            } catch (IOException ignored) {
             }
         }
     }
@@ -762,6 +765,7 @@ public class CacheUtil {
             }
 
             long fileSize = calculateSize(mostLongUsedFile);
+            assert mostLongUsedFile != null;
             if (mostLongUsedFile.delete()) {
                 lastUsageDates.remove(mostLongUsedFile);
             }

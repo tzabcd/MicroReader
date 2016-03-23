@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.aspsine.swipetoloadlayout.SwipeRefreshTrigger;
 import com.aspsine.swipetoloadlayout.SwipeTrigger;
 
+import name.caiyao.microreader.R;
+
 /**
  * Created by 蔡小木 on 2016/3/6 0006.
  */
@@ -33,7 +35,7 @@ public class RefreshHeaderView extends TextView implements SwipeRefreshTrigger, 
 
     @Override
     public void onRefresh() {
-        setText("正在拼命加载数据...");
+        setText(R.string.common_view_loading);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class RefreshHeaderView extends TextView implements SwipeRefreshTrigger, 
 
     @Override
     public void onSwipe(int i, boolean b) {
-        setText("释放刷新");
+        setText(R.string.common_view_release);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class RefreshHeaderView extends TextView implements SwipeRefreshTrigger, 
 
     @Override
     public void complete() {
-        setText("刷新成功");
+        setText(R.string.common_view_loading_ok);
     }
 
     @Override

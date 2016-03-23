@@ -26,4 +26,22 @@
             android:title="清除缓存" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="更多">
+        <Preference
+            android:key="@string/pre_author"
+            android:layout="@layout/preference_item"
+            android:summary="一个无聊的程序员"
+            android:title="作者:蔡小木" />
+        <Preference
+            android:key="@string/pre_feedback"
+            android:layout="@layout/preference_item"
+            android:summary="me@caiyao.name"
+            android:title="反馈和建议" />
+        <Preference
+            android:key="@string/pre_version"
+            android:layout="@layout/preference_item"
+            android:summary="101"
+            android:title="版本号" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
