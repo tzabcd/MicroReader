@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
  * Created by 蔡小木 on 2016/3/24 0024.
  */
 @Root(name = "item")
-public class ItHomeArtical {
+public class ItHomeArticle {
     @Element
     private String newssource;
     @Element

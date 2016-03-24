@@ -1,21 +1,36 @@
 package name.caiyao.microreader.bean.itHome;
 
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementArray;
 import org.simpleframework.xml.Root;
+
+import java.util.ArrayList;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
  */
-@Root(name = "channel")
+@Root(name = "rss")
 public class ItHomeResponse {
-    @ElementArray(name = "item")
-    ItHomeItem[] item;
+    @Element
+    ItHomeChannel channel;
 
-    public ItHomeItem[] getItem() {
-        return item;
+    @Attribute(name = "version")
+    String version;
+
+    public ItHomeChannel getChannel() {
+        return channel;
     }
 
-    public void setItem(ItHomeItem[] item) {
-        this.item = item;
+    public void setChannel(ItHomeChannel channel) {
+        this.channel = channel;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

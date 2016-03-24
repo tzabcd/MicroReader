@@ -1,6 +1,6 @@
 package name.caiyao.microreader.api.itHome;
 
-import name.caiyao.microreader.bean.itHome.ItHomeArtical;
+import name.caiyao.microreader.bean.itHome.ItHomeArticle;
 import name.caiyao.microreader.bean.itHome.ItHomeResponse;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -18,6 +18,6 @@ public interface ItHomeApi {
     Observable<ItHomeResponse> getMoreItHomeNews(@Path("minNewsId") String minNewsId);
 
     @GET("/xml/newscontent/{id}.xml")
-    Observable<ItHomeArtical> getItHomeArticle(@Path("id") String id);
+    Observable<ItHomeArticle> getItHomeArticle(@Path("id") String id);
 
 }

@@ -1,18 +1,21 @@
 package name.caiyao.microreader.bean.itHome;
 
-import org.simpleframework.xml.Default;
-import org.simpleframework.xml.DefaultType;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
  */
-@Default(value = DefaultType.FIELD)
+@Root(name = "item")
 public class ItHomeItem {
     @Element
     private String newsid;
     @Element
     private String title;
+    @Element(name = "c", required = false)
+    private String c;
+    @Element(required = false)
+    private String v;
     @Element
     private String url;
     @Element
@@ -21,6 +24,14 @@ public class ItHomeItem {
     private String image;
     @Element
     private String description;
+    @Element(required = false)
+    private int hitcount;
+    @Element(required = false)
+    private int commentcount;
+    @Element(required = false)
+    private String forbidcomment;
+    @Element(required = false)
+    private String tags;
 
     public String getNewsid() {
         return newsid;

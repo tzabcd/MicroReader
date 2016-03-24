@@ -25,7 +25,6 @@
                 android:id="@+id/iv_weixin"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
-                android:minHeight="80dp"
                 android:layout_weight="1"
                 android:scaleType="fitCenter"
                 card_view:ignore="ContentDescription" />
