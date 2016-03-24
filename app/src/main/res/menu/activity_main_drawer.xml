@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:id="@+id/news" android:checkableBehavior="single">
+    <group
+        android:id="@+id/news"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_weixin"
-            android:icon="@drawable/icon_weixin"
             android:checked="true"
+            android:icon="@drawable/icon_weixin"
             android:title="@string/fragment_wexin_title" />
+        <item
+            android:id="@+id/nav_it"
+            android:icon="@drawable/icon_video"
+            android:title="IT之家" />
         <item
             android:id="@+id/nav_zhihu"
             android:icon="@drawable/icon_zhihu"
@@ -21,7 +27,9 @@
             android:title="@string/fragment_video_title" />
     </group>
 
-    <group android:id="@+id/settings" android:checkableBehavior="none">
+    <group
+        android:id="@+id/settings"
+        android:checkableBehavior="none">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_24px"

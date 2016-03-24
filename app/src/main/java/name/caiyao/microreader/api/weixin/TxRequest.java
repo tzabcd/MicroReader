@@ -1,6 +1,6 @@
 package name.caiyao.microreader.api.weixin;
 
-import com.orhanobut.logger.Logger;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,14 +28,14 @@ public class TxRequest {
             Response originalResponse = chain.proceed(chain.request());
             if (NetWorkUtil.isNetWorkAvailable(MicroApplication.getContext())) {
                 int maxAge = 60; // 在线缓存在1分钟内可读取
-                Logger.i("在线缓存！");
+                Log.i("TAG","在线缓存！");
                 return originalResponse.newBuilder()
                         .removeHeader("Pragma")
                         .removeHeader("Cache-Control")
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .build();
             } else {
-                Logger.i("离线缓存！");
+                Log.i("TAG","离线缓存！");
                 int maxStale = 60 * 60 * 24 * 28; // 离线时缓存保存4周
                 return originalResponse.newBuilder()
                         .removeHeader("Pragma")

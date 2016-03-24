@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
+import name.caiyao.microreader.ui.fragment.ItHomeFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
@@ -51,6 +52,7 @@ public class MainActivity extends BaseActivity
     private Fragment currentFragment;
 
     private WeixinFragment weixinFragment = new WeixinFragment();
+    private ItHomeFragment itHomeFragment = new ItHomeFragment();
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
     private GuokrFragment guokrFragment = new GuokrFragment();
     private VideoFragment videoFragment = new VideoFragment();
@@ -134,6 +136,8 @@ public class MainActivity extends BaseActivity
             switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
+        }else if(id == R.id.nav_it){
+            switchFragment(itHomeFragment,"IT之家");
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
         } else if (id == R.id.nav_video) {
