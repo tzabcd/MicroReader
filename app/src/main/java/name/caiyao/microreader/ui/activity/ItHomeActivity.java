@@ -74,14 +74,14 @@ public class ItHomeActivity extends BaseActivity {
                     public void onNext(ItHomeArticle itHomeArticle) {
                         if (TextUtils.isEmpty(itHomeArticle.getDetail())) {
                             WebSettings settings = wvWeixin.getSettings();
-                            settings.setJavaScriptEnabled(true);
                             settings.setBuiltInZoomControls(true);
                             settings.setDomStorageEnabled(true);
                             settings.setAppCacheEnabled(true);
                             wvWeixin.setWebChromeClient(new WebChromeClient());
                             wvWeixin.loadUrl(itHomeItem.getUrl());
                         } else {
-                            wvWeixin.loadDataWithBaseURL(WebUtil.BASE_URL, itHomeArticle.getDetail(), WebUtil.MIME_TYPE, WebUtil.ENCODING, itHomeItem.getUrl());
+                            String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(),new String[]{"news.css"},false);
+                            wvWeixin.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, itHomeItem.getUrl());
                         }
                     }
                 });

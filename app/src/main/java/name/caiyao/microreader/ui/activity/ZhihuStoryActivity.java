@@ -157,14 +157,13 @@ public class ZhihuStoryActivity extends BaseActivity {
                         url = guokrArticle.getResult().getUrl();
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             WebSettings settings = wvZhihu.getSettings();
-                            settings.setJavaScriptEnabled(true);
                             settings.setBuiltInZoomControls(true);
                             settings.setDomStorageEnabled(true);
                             settings.setAppCacheEnabled(true);
                             wvZhihu.setWebChromeClient(new WebChromeClient());
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[0], false);
+                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[]{"default.css"}, false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
                         }
                     }
