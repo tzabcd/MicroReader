@@ -31,8 +31,6 @@ import name.caiyao.microreader.bean.guokr.GuokrHot;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
-import name.caiyao.microreader.ui.view.LoaderMoreView;
-import name.caiyao.microreader.ui.view.RefreshHeaderView;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import rx.Observer;
@@ -41,12 +39,8 @@ import rx.schedulers.Schedulers;
 
 public class GuokrFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
 
-    @Bind(R.id.swipe_refresh_header)
-    RefreshHeaderView swipeRefreshHeader;
     @Bind(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipe_load_more_footer)
-    LoaderMoreView swipeLoadMoreFooter;
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
     @Bind(R.id.progressBar)

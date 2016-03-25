@@ -65,7 +65,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                ZhihuStoryActivity.this.onBackPressed();
             }
         });
         ActionBar actionBar = getSupportActionBar();

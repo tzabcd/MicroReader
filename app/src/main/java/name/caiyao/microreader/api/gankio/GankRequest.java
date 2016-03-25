@@ -1,7 +1,5 @@
 package name.caiyao.microreader.api.gankio;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -51,12 +49,10 @@ public class GankRequest {
             Response originalResponse = chain.proceed(chain.request());
             if (NetWorkUtil.isNetWorkAvailable(MicroApplication.getContext())) {
                 int maxAge = 60; // 在线缓存在1分钟内可读取
-                Log.i("TAG","在线缓存！");
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "public, max-age=" + maxAge)
                         .build();
             } else {
-                Log.i("TAG","离线缓存！");
                 int maxStale = 60 * 60 * 24 * 28; // 离线时缓存保存4周
                 return originalResponse.newBuilder()
                         .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)

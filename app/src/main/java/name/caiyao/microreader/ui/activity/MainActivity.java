@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
         }else if(id == R.id.nav_it){
-            switchFragment(itHomeFragment,"IT之家");
+            switchFragment(itHomeFragment,getString(R.string.fragment_it_title));
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
         } else if (id == R.id.nav_video) {

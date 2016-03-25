@@ -37,7 +37,7 @@ public class VideoActivity extends AppCompatActivity {
         vvGank.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Snackbar.make(vvGank, R.string.common_loading_error,Snackbar.LENGTH_SHORT).setAction(R.string.comon_retry, new View.OnClickListener() {
+                Snackbar.make(vvGank, R.string.common_loading_error, Snackbar.LENGTH_SHORT).setAction(R.string.comon_retry, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         vvGank.start();

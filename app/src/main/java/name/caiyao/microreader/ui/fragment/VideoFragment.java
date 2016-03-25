@@ -34,6 +34,7 @@ import name.caiyao.microreader.bean.gankio.GankVideo;
 import name.caiyao.microreader.bean.gankio.GankVideoItem;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.VideoActivity;
+import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import okhttp3.ResponseBody;
@@ -184,10 +185,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             holder.tvTime.setText(gankVideoItems.get(position).getPublishedAt());
 
             holder.cvVideo.setOnClickListener(new View.OnClickListener() {
-
                 @Override
                 public void onClick(View v) {
-                    getPlayUrl(holder);
+                    VideoAdapter.this.getPlayUrl(holder);
                 }
             });
         }
@@ -226,12 +226,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                 if (matcher.find()) {
                                     startActivity(new Intent(getActivity(), VideoActivity.class).putExtra("url", matcher.group(1)));
                                 } else {
-                                    Snackbar.make(swipeTarget, getString(R.string.fragment_video_get_url_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            getPlayUrl(holder);
-                                        }
-                                    }).show();
+                                    startActivity(new Intent(getActivity(), WeixinNewsActivity.class)
+                                            .putExtra("title", gankVideoItems.get(holder.getAdapterPosition()).getDesc())
+                                            .putExtra("url", gankVideoItems.get(holder.getAdapterPosition()).getUrl()));
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();

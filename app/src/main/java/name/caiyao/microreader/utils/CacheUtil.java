@@ -42,6 +42,7 @@ public class CacheUtil {
     public static final String GUOKR = "guokr";
     public static final String ZHIHU = "zhihu";
     public static final String VIDEO = "video";
+    public static final String IT = "it";
     public static final int TIME_HOUR = 60 * 60;
     public static final int TIME_DAY = TIME_HOUR * 24;
     private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
@@ -159,7 +160,7 @@ public class CacheUtil {
      * Provides a means to save a cached file before the data are available.
      * Since writing about the file is complete, and its close method is called,
      * its contents will be registered in the cache. Example of use:
-     * <p>
+     * <p/>
      * ACache cache = new ACache(this) try { OutputStream stream =
      * cache.put("myFileName") stream.write("some bytes".getBytes()); // now
      * update cache! stream.close(); } catch(FileNotFoundException e){

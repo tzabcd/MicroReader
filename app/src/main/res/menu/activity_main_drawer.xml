@@ -11,8 +11,8 @@
             android:title="@string/fragment_wexin_title" />
         <item
             android:id="@+id/nav_it"
-            android:icon="@drawable/icon_video"
-            android:title="IT之家" />
+            android:icon="@drawable/icon_it"
+            android:title="@string/fragment_it_title" />
         <item
             android:id="@+id/nav_zhihu"
             android:icon="@drawable/icon_zhihu"

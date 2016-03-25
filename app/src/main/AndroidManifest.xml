@@ -47,6 +47,9 @@
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:theme="@style/OrangeTheme" />
+        <activity
+            android:name=".ui.activity.ItHomeActivity"
+            android:theme="@style/OrangeTheme" />
 
         <meta-data
             android:name="UMENG_APPKEY"

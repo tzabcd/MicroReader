@@ -1,5 +1,8 @@
 package name.caiyao.microreader.bean.itHome;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -7,7 +10,7 @@ import org.simpleframework.xml.Root;
  * Created by 蔡小木 on 2016/3/24 0024.
  */
 @Root(name = "item")
-public class ItHomeItem {
+public class ItHomeItem implements Parcelable {
     @Element
     private String newsid;
     @Element
@@ -32,6 +35,39 @@ public class ItHomeItem {
     private String forbidcomment;
     @Element(required = false)
     private String tags;
+    @Element(required = false)
+    private String z;
+
+    public ItHomeItem() {
+    }
+
+    protected ItHomeItem(Parcel in) {
+        newsid = in.readString();
+        title = in.readString();
+        c = in.readString();
+        v = in.readString();
+        url = in.readString();
+        postdate = in.readString();
+        image = in.readString();
+        description = in.readString();
+        hitcount = in.readInt();
+        commentcount = in.readInt();
+        forbidcomment = in.readString();
+        tags = in.readString();
+        z = in.readString();
+    }
+
+    public static final Creator<ItHomeItem> CREATOR = new Creator<ItHomeItem>() {
+        @Override
+        public ItHomeItem createFromParcel(Parcel in) {
+            return new ItHomeItem(in);
+        }
+
+        @Override
+        public ItHomeItem[] newArray(int size) {
+            return new ItHomeItem[size];
+        }
+    };
 
     public String getNewsid() {
         return newsid;
@@ -79,5 +115,27 @@ public class ItHomeItem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(newsid);
+        dest.writeString(title);
+        dest.writeString(c);
+        dest.writeString(v);
+        dest.writeString(url);
+        dest.writeString(postdate);
+        dest.writeString(image);
+        dest.writeString(description);
+        dest.writeInt(hitcount);
+        dest.writeInt(commentcount);
+        dest.writeString(forbidcomment);
+        dest.writeString(tags);
+        dest.writeString(z);
     }
 }

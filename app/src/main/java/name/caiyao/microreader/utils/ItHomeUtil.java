@@ -23,15 +23,7 @@ public class ItHomeUtil {
         }
         try {
             return des(id, new String(bytes));
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
             e.printStackTrace();
         }
         return null;
@@ -69,6 +61,12 @@ public class ItHomeUtil {
         }
 
         return v1.toString();
+    }
+
+    public static String getSplitNewsId(String newsid) {
+        String s1 = newsid.substring(0, 3);
+        String s2 = newsid.substring(3);
+        return s1 + "/" + s2;
     }
 
 }

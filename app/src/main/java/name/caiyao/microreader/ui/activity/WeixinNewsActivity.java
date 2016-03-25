@@ -39,7 +39,7 @@ public class WeixinNewsActivity extends BaseActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                WeixinNewsActivity.this.onBackPressed();
             }
         });
         if (actionBar != null) {

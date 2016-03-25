@@ -11,8 +11,8 @@ android {
         applicationId "name.caiyao.microreader"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 101
-        versionName '0.9-beta'
+        versionCode 120
+        versionName '1.0-beta'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -70,6 +70,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.Aspsine:SwipeToLoadLayout:1.0.2'
     compile 'com.android.support:cardview-v7:23.2.1'
+    compile 'com.apkfuns.logutils:library:1.2.2'
     compile 'com.bugtags.library:bugtags-lib:latest.integration'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'

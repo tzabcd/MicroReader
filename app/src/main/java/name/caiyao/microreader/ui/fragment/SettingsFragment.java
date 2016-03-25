@@ -31,8 +31,8 @@ public class SettingsFragment extends PreferenceFragment {
         prefCache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                CacheUtil.deleteDir(getActivity().getCacheDir());
-                showCacheSize(prefCache);
+                CacheUtil.deleteDir(SettingsFragment.this.getActivity().getCacheDir());
+                SettingsFragment.this.showCacheSize(prefCache);
                 return true;
             }
         });
@@ -40,15 +40,15 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto","me@caiyao.name", null));
-                startActivity(Intent.createChooser(intent, "选择邮件客户端:"));
+                        "mailto", "me@caiyao.name", null));
+                SettingsFragment.this.startActivity(Intent.createChooser(intent, "选择邮件客户端:"));
                 return true;
             }
         });
         findPreference(getString(R.string.pre_author)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://caiyao.name")));
+                SettingsFragment.this.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://caiyao.name")));
                 return true;
             }
         });

@@ -1,19 +1,29 @@
 package name.caiyao.microreader.bean.itHome;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Path;
 import org.simpleframework.xml.Root;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
  */
-@Root(name = "item")
+@Root(name = "rss")
 public class ItHomeArticle {
-    @Element
+    @Path("channel/item")
+    @Element(name = "newssource")
     private String newssource;
+    @Path("channel/item")
     @Element
-    private String author;
+    private String newsauthor;
+    @Path("channel/item")
     @Element
     private String detail;
+    @Path("channel/item")
+    @Element(required = false)
+    private String z;
+    @Path("channel/item")
+    @Element(required = false)
+    private String tags;
 
     public String getNewssource() {
         return newssource;
@@ -24,11 +34,11 @@ public class ItHomeArticle {
     }
 
     public String getAuthor() {
-        return author;
+        return newsauthor;
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.newsauthor = author;
     }
 
     public String getDetail() {
