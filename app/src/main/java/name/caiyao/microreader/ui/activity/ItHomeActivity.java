@@ -1,9 +1,12 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -77,13 +80,41 @@ public class ItHomeActivity extends BaseActivity {
                             settings.setBuiltInZoomControls(true);
                             settings.setDomStorageEnabled(true);
                             settings.setAppCacheEnabled(true);
+                            settings.setJavaScriptEnabled(true);
+                            settings.setPluginState(WebSettings.PluginState.ON);
+                            settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+                            settings.setUseWideViewPort(true);
+                            settings.setDomStorageEnabled(true);
+                            settings.setDatabaseEnabled(true);
+                            settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
+                            settings.setAppCacheEnabled(true);
+                            settings.setLoadWithOverviewMode(true);
                             wvWeixin.setWebChromeClient(new WebChromeClient());
                             wvWeixin.loadUrl(itHomeItem.getUrl());
                         } else {
-                            String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(),new String[]{"news.css"},false);
+                            String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(), new String[]{"news.css"}, false);
                             wvWeixin.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, itHomeItem.getUrl());
                         }
                     }
                 });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_share,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_share){
+            Intent shareIntent = new Intent();
+            shareIntent.setAction(Intent.ACTION_SEND);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, itHomeItem.getTitle() + " http://ithome.com" + itHomeItem.getUrl() + getString(R.string.share_tail));
+            shareIntent.setType("text/plain");
+            //设置分享列表的标题，并且每次都显示分享列表
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

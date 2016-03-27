@@ -3,6 +3,7 @@ package name.caiyao.microreader.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -129,6 +130,13 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                         }
+                        getFromCache();
+                        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getIthomeNews();
+                            }
+                        });
                     }
 
                     @Override
@@ -172,6 +180,12 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                         e.printStackTrace();
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setLoadingMore(false);
+                        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getMoreItHome();
+                            }
+                        });
                     }
 
                     @Override

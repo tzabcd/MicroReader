@@ -52,7 +52,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     SwipeToLoadLayout swipeToLoadLayout;
 
     private ArrayList<GankVideoItem> gankVideoItems = new ArrayList<>();
-    private int currentPage;
+    private int currentPage=1;
     CacheUtil cacheUtil;
     Gson gson = new Gson();
     private VideoAdapter videoAdapter;

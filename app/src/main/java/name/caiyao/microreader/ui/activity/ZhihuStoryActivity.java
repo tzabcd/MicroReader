@@ -77,6 +77,15 @@ public class ZhihuStoryActivity extends BaseActivity {
         } else if (type == TYPE_GUOKR) {
             getGuokr();
         }
+        WebSettings settings = wvZhihu.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setUseWideViewPort(true);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setAppCachePath(getCacheDir().getAbsolutePath()+"/webViewCache");
+        settings.setAppCacheEnabled(true);
+        wvZhihu.setWebChromeClient(new WebChromeClient());
         ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
         ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
     }
@@ -122,11 +131,6 @@ public class ZhihuStoryActivity extends BaseActivity {
                         Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
                         url = zhihuStory.getShare_url();
                         if (TextUtils.isEmpty(zhihuStory.getBody())) {
-                            WebSettings settings = wvZhihu.getSettings();
-                            settings.setJavaScriptEnabled(true);
-                            settings.setDomStorageEnabled(true);
-                            settings.setAppCacheEnabled(true);
-                            wvZhihu.setWebChromeClient(new WebChromeClient());
                             wvZhihu.loadUrl(zhihuStory.getShare_url());
                         } else {
                             String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
@@ -156,11 +160,6 @@ public class ZhihuStoryActivity extends BaseActivity {
                         Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmall_image()).into(ivZhihuStory);
                         url = guokrArticle.getResult().getUrl();
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
-                            WebSettings settings = wvZhihu.getSettings();
-                            settings.setBuiltInZoomControls(true);
-                            settings.setDomStorageEnabled(true);
-                            settings.setAppCacheEnabled(true);
-                            wvZhihu.setWebChromeClient(new WebChromeClient());
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
                             String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[]{"default.css"}, false);

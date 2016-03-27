@@ -30,13 +30,17 @@
         <activity
             android:name=".ui.activity.WeixinNewsActivity"
             android:hardwareAccelerated="true"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.ZhihuStoryActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:hardwareAccelerated="true"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.MainActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/OrangeTheme" />
         <activity android:name=".ui.activity.BaseActivity" />
         <activity
@@ -46,9 +50,12 @@
             android:theme="@style/AppTheme.FullScreen" />
         <activity
             android:name=".ui.activity.SettingsActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.ItHomeActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:hardwareAccelerated="true"
             android:theme="@style/OrangeTheme" />
 
         <meta-data
