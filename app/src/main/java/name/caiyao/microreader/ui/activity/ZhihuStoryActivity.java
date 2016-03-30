@@ -80,7 +80,9 @@ public class ZhihuStoryActivity extends BaseActivity {
         WebSettings settings = wvZhihu.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-        settings.setUseWideViewPort(true);
+        settings.setLoadWithOverviewMode(true);
+        settings.setBuiltInZoomControls(true);
+        //settings.setUseWideViewPort(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setAppCachePath(getCacheDir().getAbsolutePath()+"/webViewCache");
@@ -162,7 +164,7 @@ public class ZhihuStoryActivity extends BaseActivity {
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[]{"default.css"}, false);
+                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[]{"news.css"}, false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
                         }
                     }
