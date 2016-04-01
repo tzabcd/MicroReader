@@ -19,7 +19,6 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
  */
 public class ItHomeRequest {
     private static ItHomeApi itHomeApi;
-    public static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
 
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
@@ -46,7 +45,6 @@ public class ItHomeRequest {
     static OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)
-            .addInterceptor(interceptor)
             .build();
 
     public static ItHomeApi getItHomeApi() {

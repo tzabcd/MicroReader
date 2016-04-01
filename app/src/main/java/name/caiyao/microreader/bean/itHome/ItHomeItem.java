@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
+import org.simpleframework.xml.convert.Convert;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
@@ -25,7 +26,7 @@ public class ItHomeItem implements Parcelable {
     private String postdate;
     @Element
     private String image;
-    @Element
+    @Element(required = false)//处理可能为空的情况
     private String description;
     @Element(required = false)
     private int hitcount;

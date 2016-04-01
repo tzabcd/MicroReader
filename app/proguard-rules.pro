@@ -15,6 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-allowaccessmodification
+-optimizationpasses 3
 -keep public class * extends android.app.Activity
 -keep public class * extends android.app.Application
 -keep public class * extends android.app.Service
@@ -66,7 +68,14 @@
 # platform version. We know about them, and they are safe.
 -dontwarn android.support.**
 -dontwarn com.google.ads.**
-
+#simplexml
+-dontwarn com.bea.xml.stream.**
+-dontwarn org.simpleframework.xml.stream.**
+-keep class org.simpleframework.xml.**{ *; }
+-keepclassmembers,allowobfuscation class * {
+    @org.simpleframework.xml.* <fields>;
+    @org.simpleframework.xml.* <init>(...);
+}
 #retrofit2
 -dontwarn retrofit2.**
 -keep class retrofit2.** { *; }
@@ -75,6 +84,8 @@
 -dontwarn okhttp3.**
 -keep class okhttp3.** { *;}
 -dontwarn okio.*
+#LogUtils
+-dontwarn com.apkfuns.logutils.*
 #需要注意的是，如果没有使用@SerializedName指定Key名，当工程被混淆时，变量名会被混淆得与期望的Key名不符。因此需要将这类Model类统一放到一个工程目录，再在proguard-project文件中加入排除项
 -keep class name.caiyao.microreader.bean.** { *; }
 ##---------------Begin: proguard configuration for Gson  ----------

@@ -21,7 +21,6 @@ public class GuokrRequest {
     public static String[] channel_key = {"hot", "frontier", "review", "interview", "visual", "brief", "fact", "techb"};
     public static String[] channel_title = {"热点", "前沿", "评论", "专访", "视觉", "速读", "谣言粉碎机", "商业科技"};
     public static String science_channel_url = "http://www.guokr.com";
-    public static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -50,7 +49,6 @@ public class GuokrRequest {
 
     static OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
-            .addInterceptor(interceptor)
             .cache(cache)
             .build();
 

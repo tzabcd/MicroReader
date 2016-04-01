@@ -20,7 +20,7 @@ public class MicroApplication extends Application {
     public void onCreate() {
         super.onCreate();
         LogUtils.getLogConfig()
-                .configAllowLog(true)
+                .configAllowLog(BuildConfig.DEBUG)
                 .configTagPrefix("MicroReader-")
                 .configShowBorders(true)
                 .configLevel(LogLevel.TYPE_VERBOSE);

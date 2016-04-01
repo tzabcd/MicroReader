@@ -41,8 +41,6 @@ public class GankRequest {
      * 例：•http://gank.avosapps.com/api/random/data/Android/20
      */
     private static GankApi gankApi = null;
-    public static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
-
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -68,7 +66,6 @@ public class GankRequest {
     static OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)
-            .addInterceptor(interceptor)
             .build();
 
     public static GankApi getGankApi() {

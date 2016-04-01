@@ -89,7 +89,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     private void getFromCache() {
-        if (cacheUtil.getAsJSONArray(CacheUtil.IT) != null) {
+        if (cacheUtil.getAsJSONArray(CacheUtil.IT) != null && cacheUtil.getAsJSONArray(CacheUtil.IT).length() != 0) {
             ArrayList<ItHomeItem> it = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.IT).toString(), new TypeToken<ArrayList<ItHomeItem>>() {
             }.getType());
             itHomeItems.addAll(it);
@@ -136,7 +136,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                             public void onClick(View v) {
                                 getIthomeNews();
                             }
-                        });
+                        }).show();
                     }
 
                     @Override
@@ -185,7 +185,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                             public void onClick(View v) {
                                 getMoreItHome();
                             }
-                        });
+                        }).show();
                     }
 
                     @Override

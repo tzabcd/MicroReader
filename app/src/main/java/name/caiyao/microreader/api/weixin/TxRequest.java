@@ -19,7 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class TxRequest {
     private static TxApi txApi = null;
-    public static HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -48,7 +47,6 @@ public class TxRequest {
 
     static OkHttpClient client = new OkHttpClient.Builder()
             . addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
-            .addInterceptor(interceptor)
             .cache(cache)
             .build();
 

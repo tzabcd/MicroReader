@@ -25,4 +25,5 @@
     <string name="share_tail"> (Share from MicroReader,The beauty of life need you to find by your heart, with eye to recording.)</string>
     <string name="toast_wifi_refresh_data">Data will not be load because no wifi!</string>
     <string name="about">about</string>
+    <string name="fragment_it_title">IT Home</string>
 </resources>

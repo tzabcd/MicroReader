@@ -57,7 +57,7 @@ public class WelcomeActivity extends BaseActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(WelcomeActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST_CODE);
                     }
-                }).show();
+                }).setCancelable(false).show();
             } else {
                 getBackground();
             }
@@ -135,7 +135,7 @@ public class WelcomeActivity extends BaseActivity {
                                             .putString(SharePreferenceUtil.IMAGE_DESCRIPTION, imageReponse.getData().getImages().get(0).getDescription())
                                             .putInt(SharePreferenceUtil.VIBRANT, vibrant)
                                             .putInt(SharePreferenceUtil.VIBRANT_LIGHT, vibrantLight)
-                                            .putInt(SharePreferenceUtil.VIBRANT_DARK, vibrant)
+                                            .putInt(SharePreferenceUtil.VIBRANT, vibrantDark)
                                             .putInt(SharePreferenceUtil.MUTED, muted)
                                             .putInt(SharePreferenceUtil.MUTED_LIGHT, mutedLight)
                                             .putInt(SharePreferenceUtil.MUTED_DARK, mutedDark)

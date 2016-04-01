@@ -130,6 +130,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                         }
+                        cacheUtil.put(CacheUtil.ZHIHU,gson.toJson(zhihuDaily));
                         currentLoadedDate = zhihuDaily.getDate();
                         zhihuStories.addAll(zhihuDaily.getStories());
                         zhihuAdapter.notifyDataSetChanged();

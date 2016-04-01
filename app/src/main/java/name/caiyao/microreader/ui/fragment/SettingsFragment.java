@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
@@ -32,23 +33,32 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 CacheUtil.deleteDir(SettingsFragment.this.getActivity().getCacheDir());
-                SettingsFragment.this.showCacheSize(prefCache);
+                showCacheSize(prefCache);
                 return true;
             }
         });
         findPreference(getString(R.string.pre_feedback)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto", "me@caiyao.name", null));
-                SettingsFragment.this.startActivity(Intent.createChooser(intent, "选择邮件客户端:"));
+                try {
+                    Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                            "mailto", "me@caiyao.name", null));
+                    startActivity(Intent.createChooser(intent, "选择邮件客户端:"));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return true;
             }
         });
         findPreference(getString(R.string.pre_author)).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                SettingsFragment.this.startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("http://caiyao.name")));
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(" http://caiyao.name")));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 return true;
             }
         });
