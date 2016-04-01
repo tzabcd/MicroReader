@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -183,7 +184,13 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
             holder.tvTitle.setText(gankVideoItems.get(position).getDesc());
             holder.tvTime.setText(gankVideoItems.get(position).getPublishedAt());
+            holder.cvVideo.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
 
+                    return true;
+                }
+            });
             holder.cvVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -224,7 +231,10 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                 Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
                                 if (matcher.find()) {
-                                    startActivity(new Intent(getActivity(), VideoActivity.class).putExtra("url", matcher.group(1)));
+                                    startActivity(new Intent(getActivity(), VideoActivity.class)
+                                            .putExtra("url", matcher.group(1))
+                                            .putExtra("shareUrl", gankVideoItems.get(holder.getAdapterPosition()).getUrl())
+                                            .putExtra("title",gankVideoItems.get(holder.getAdapterPosition()).getDesc()));
                                 } else {
                                     startActivity(new Intent(getActivity(), WeixinNewsActivity.class)
                                             .putExtra("title", gankVideoItems.get(holder.getAdapterPosition()).getDesc())
