@@ -135,7 +135,7 @@ public class WelcomeActivity extends BaseActivity {
                                             .putString(SharePreferenceUtil.IMAGE_DESCRIPTION, imageReponse.getData().getImages().get(0).getDescription())
                                             .putInt(SharePreferenceUtil.VIBRANT, vibrant)
                                             .putInt(SharePreferenceUtil.VIBRANT_LIGHT, vibrantLight)
-                                            .putInt(SharePreferenceUtil.VIBRANT, vibrantDark)
+                                            .putInt(SharePreferenceUtil.VIBRANT_DARK, vibrant)
                                             .putInt(SharePreferenceUtil.MUTED, muted)
                                             .putInt(SharePreferenceUtil.MUTED_LIGHT, mutedLight)
                                             .putInt(SharePreferenceUtil.MUTED_DARK, mutedDark)
