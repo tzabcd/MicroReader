@@ -8,6 +8,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.widget.Toast;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
+
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.utils.CacheUtil;
@@ -62,7 +65,24 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
-        findPreference(getString(R.string.pre_version)).setSummary(BuildConfig.VERSION_NAME);
+        Preference version = findPreference(getString(R.string.pre_version));
+        version.setSummary(BuildConfig.VERSION_NAME);
+        version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                AppUpdater appUpdater = new AppUpdater(getActivity());
+                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                        .setDialogDescriptionWhenUpdateAvailable(getString(R.string.update_description))
+                        .setDialogButtonUpdate(getString(R.string.update_button))
+                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                appUpdater.setUpdateFrom(UpdateFrom.XML)
+                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                appUpdater.start();
+                return true;
+            }
+        });
     }
 
     @Override

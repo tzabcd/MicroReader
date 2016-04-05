@@ -16,6 +16,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.widget.Toast;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -95,7 +98,7 @@ public class WelcomeActivity extends BaseActivity {
     }
 
     private void getBackground() {
-        if (Config.isChangeThemeAuto(this)){
+        if (Config.isChangeThemeAuto(this)) {
             ZhihuRequest.getZhihuApi().getImage().subscribeOn(Schedulers.io())
                     .subscribe(new Observer<ImageResponse>() {
                         @Override
@@ -109,7 +112,7 @@ public class WelcomeActivity extends BaseActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(WelcomeActivity.this,getString(R.string.common_loading_error),Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(WelcomeActivity.this, getString(R.string.common_loading_error), Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(WelcomeActivity.this, MainActivity.class));
                                     finish();
                                 }

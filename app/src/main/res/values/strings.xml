@@ -36,5 +36,11 @@
     <string name="pre_author" translatable="false">author</string>
     <string name="pre_version" translatable="false">version</string>
     <string name="fragment_it_title">IT之家</string>
+    <string name="update_button">现在升级？</string>
+    <string name="update_description">检查更新</string>
+    <string name="update_title">有更新可用</string>
+    <string name="update_no_update">没有更新可用</string>
+    <string name="update_no_update_description">没有更新可用，请稍后检查！</string>
+    <string name="update_not_show">不想更新</string>
 
 </resources>

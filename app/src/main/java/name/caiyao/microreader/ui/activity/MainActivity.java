@@ -23,6 +23,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.enums.UpdateFrom;
+
 import java.io.File;
 
 import butterknife.Bind;
@@ -100,6 +103,16 @@ public class MainActivity extends BaseActivity
         }
 
         switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
+        AppUpdater appUpdater = new AppUpdater(this);
+        appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                .setDialogDescriptionWhenUpdateAvailable(getString(R.string.update_description))
+                .setDialogButtonUpdate(getString(R.string.update_button))
+                .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+        appUpdater.setUpdateFrom(UpdateFrom.XML)
+                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+        appUpdater.start();
     }
 
     @Override
