@@ -99,6 +99,8 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
     private void getZhihuDaily() {
         zhihuStories.clear();
+        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
+        zhihuAdapter.notifyDataSetChanged();
         ZhihuRequest.getZhihuApi().getLastDaily()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -132,8 +134,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                         }
                         cacheUtil.put(CacheUtil.ZHIHU,gson.toJson(zhihuDaily));
                         currentLoadedDate = zhihuDaily.getDate();
-                        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
-                        zhihuAdapter.notifyDataSetChanged();
                         zhihuStories.addAll(zhihuDaily.getStories());
                         zhihuAdapter.notifyDataSetChanged();
                     }
