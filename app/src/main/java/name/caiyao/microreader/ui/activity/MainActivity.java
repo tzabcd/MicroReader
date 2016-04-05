@@ -113,16 +113,18 @@ public class MainActivity extends BaseActivity
                 .withListener(new AppUpdaterUtils.UpdateListener() {
                     @Override
                     public void onSuccess(Update update, Boolean isUpdateAvailable) {
-                        AppUpdater appUpdater = new AppUpdater(MainActivity.this);
-                        appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                                .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description),update.getLatestVersion()))
-                                .setDialogButtonUpdate(getString(R.string.update_button))
-                                .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                                .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                                .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                        appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
-                        appUpdater.start();
+                        if (isUpdateAvailable){
+                            AppUpdater appUpdater = new AppUpdater(MainActivity.this);
+                            appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                                    .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description),update.getLatestVersion()))
+                                    .setDialogButtonUpdate(getString(R.string.update_button))
+                                    .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                                    .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                                    .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                            appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
+                                    .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                            appUpdater.start();
+                        }
                     }
 
                     @Override

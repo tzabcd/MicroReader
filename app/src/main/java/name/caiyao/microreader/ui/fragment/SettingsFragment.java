@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.widget.Toast;
 
 import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.AppUpdaterUtils;
+import com.github.javiersantos.appupdater.enums.AppUpdaterError;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
+import com.github.javiersantos.appupdater.objects.Update;
 
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
@@ -47,7 +49,7 @@ public class SettingsFragment extends PreferenceFragment {
                     Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                             "mailto", "me@caiyao.name", null));
                     startActivity(Intent.createChooser(intent, "选择邮件客户端:"));
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -59,7 +61,7 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(" http://caiyao.name")));
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return true;
@@ -70,16 +72,29 @@ public class SettingsFragment extends PreferenceFragment {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AppUpdater appUpdater = new AppUpdater(getActivity());
-                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                        .setDialogDescriptionWhenUpdateAvailable(getString(R.string.update_description))
-                        .setDialogButtonUpdate(getString(R.string.update_button))
-                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                appUpdater.setUpdateFrom(UpdateFrom.XML)
-                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
-                appUpdater.start();
+                AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(getActivity())
+                        .setUpdateFrom(UpdateFrom.XML)
+                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml")
+                        .withListener(new AppUpdaterUtils.UpdateListener() {
+                            @Override
+                            public void onSuccess(Update update, Boolean isUpdateAvailable) {
+                                AppUpdater appUpdater = new AppUpdater(getActivity());
+                                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                                        .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
+                                        .setDialogButtonUpdate(getString(R.string.update_button))
+                                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                                appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
+                                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                                appUpdater.start();
+                            }
+
+                            @Override
+                            public void onFailed(AppUpdaterError error) {
+                            }
+                        });
+                appUpdaterUtils.start();
                 return true;
             }
         });
