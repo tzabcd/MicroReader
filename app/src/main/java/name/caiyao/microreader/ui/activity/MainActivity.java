@@ -16,6 +16,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +25,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.javiersantos.appupdater.AppUpdater;
+import com.github.javiersantos.appupdater.AppUpdaterUtils;
+import com.github.javiersantos.appupdater.enums.AppUpdaterError;
 import com.github.javiersantos.appupdater.enums.UpdateFrom;
+import com.github.javiersantos.appupdater.objects.Update;
 
 import java.io.File;
 
@@ -103,16 +107,29 @@ public class MainActivity extends BaseActivity
         }
 
         switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-        AppUpdater appUpdater = new AppUpdater(this);
-        appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                .setDialogDescriptionWhenUpdateAvailable(getString(R.string.update_description))
-                .setDialogButtonUpdate(getString(R.string.update_button))
-                .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-        appUpdater.setUpdateFrom(UpdateFrom.XML)
-                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
-        appUpdater.start();
+        AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(this)
+                .setUpdateFrom(UpdateFrom.XML)
+                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml")
+                .withListener(new AppUpdaterUtils.UpdateListener() {
+                    @Override
+                    public void onSuccess(Update update, Boolean isUpdateAvailable) {
+                        AppUpdater appUpdater = new AppUpdater(MainActivity.this);
+                        appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                                .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description),update.getLatestVersion()))
+                                .setDialogButtonUpdate(getString(R.string.update_button))
+                                .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                                .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                                .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                        appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
+                                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                        appUpdater.start();
+                    }
+
+                    @Override
+                    public void onFailed(AppUpdaterError error) {
+                    }
+                });
+        appUpdaterUtils.start();
     }
 
     @Override
@@ -149,8 +166,8 @@ public class MainActivity extends BaseActivity
             switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
         } else if (id == R.id.nav_zhihu) {
             switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
-        }else if(id == R.id.nav_it){
-            switchFragment(itHomeFragment,getString(R.string.fragment_it_title));
+        } else if (id == R.id.nav_it) {
+            switchFragment(itHomeFragment, getString(R.string.fragment_it_title));
         } else if (id == R.id.nav_guokr) {
             switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
         } else if (id == R.id.nav_video) {
