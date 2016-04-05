@@ -146,6 +146,8 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     public void onRefresh() {
         currentOffset = 0;
         guokrHotItems.clear();
+        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
+        guokrAdapter.notifyDataSetChanged();
         getGuokrHot(currentOffset);
     }
 

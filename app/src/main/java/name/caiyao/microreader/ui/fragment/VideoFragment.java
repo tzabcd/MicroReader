@@ -155,6 +155,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     public void onRefresh() {
         currentPage = 1;
         gankVideoItems.clear();
+        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
+        videoAdapter.notifyDataSetChanged();
         getVideo(currentPage);
     }
 

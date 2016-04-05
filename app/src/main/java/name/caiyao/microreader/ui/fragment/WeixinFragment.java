@@ -159,6 +159,8 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     public void onRefresh() {
         currentPage = 1;
         weixinNewses.clear();
+        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
+        weixinAdapter.notifyDataSetChanged();
         getWeixinNews(currentPage);
     }
 
