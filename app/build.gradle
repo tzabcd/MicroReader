@@ -11,8 +11,8 @@ android {
         applicationId "name.caiyao.microreader"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 125
-        versionName '1.0.1'
+        versionCode 126
+        versionName '1.0.2'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
