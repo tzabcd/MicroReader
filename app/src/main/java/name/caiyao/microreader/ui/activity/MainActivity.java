@@ -109,7 +109,7 @@ public class MainActivity extends BaseActivity
         switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
         AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(this)
                 .setUpdateFrom(UpdateFrom.XML)
-                .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml")
+                .setUpdateXML("http://caiyao.name/releases/update.xml")
                 .withListener(new AppUpdaterUtils.UpdateListener() {
                     @Override
                     public void onSuccess(Update update, Boolean isUpdateAvailable) {
@@ -122,7 +122,7 @@ public class MainActivity extends BaseActivity
                                     .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
                                     .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
                             appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                    .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                                    .setUpdateXML("http://caiyao.name/releases/update.xml");
                             appUpdater.start();
                         }
                     }

@@ -74,7 +74,7 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
                 AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(getActivity())
                         .setUpdateFrom(UpdateFrom.XML)
-                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml")
+                        .setUpdateXML("http://caiyao.name/releases/update.xml")
                         .withListener(new AppUpdaterUtils.UpdateListener() {
                             @Override
                             public void onSuccess(Update update, Boolean isUpdateAvailable) {
@@ -86,7 +86,7 @@ public class SettingsFragment extends PreferenceFragment {
                                         .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
                                         .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
                                 appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                        .setUpdateXML("https://raw.githubusercontent.com/YiuChoi/MicroReader/master/app/update.xml");
+                                        .setUpdateXML("http://caiyao.name/releases/update.xml");
                                 appUpdater.start();
                             }
 
