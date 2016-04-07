@@ -6,10 +6,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.jaeger.library.StatusBarUtil;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.event.StatusBarEvent;
 import name.caiyao.microreader.ui.fragment.SettingsFragment;
+import name.caiyao.microreader.utils.RxBus;
+import rx.Subscription;
+import rx.functions.Action1;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -17,6 +24,8 @@ public class SettingsActivity extends BaseActivity {
     Toolbar toolbar;
     @Bind(R.id.fl_preference)
     FrameLayout flPreference;
+
+    public Subscription rxSubscription;
 
     private SettingsFragment settingsFragment = new SettingsFragment();
 
@@ -37,7 +46,21 @@ public class SettingsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar,true,true,false);
+        rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
+                .subscribe(new Action1<StatusBarEvent>() {
+                    @Override
+                    public void call(StatusBarEvent statusBarEvent) {
+                        setToolBar(toolbar, true, false,null);                    }
+                });
+        setToolBar(toolbar,true,true,null);
         getFragmentManager().beginTransaction().replace(R.id.fl_preference, settingsFragment).commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(!rxSubscription.isUnsubscribed()) {
+            rxSubscription.unsubscribe();
+        }
     }
 }

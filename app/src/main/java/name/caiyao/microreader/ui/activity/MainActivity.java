@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.apkfuns.logutils.LogUtils;
+import com.jaeger.library.StatusBarUtil;
 
 import java.io.File;
 
@@ -37,14 +38,18 @@ import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.event.StatusBarEvent;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
 import name.caiyao.microreader.ui.fragment.ItHomeFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
+import name.caiyao.microreader.utils.RxBus;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity
@@ -63,6 +68,8 @@ public class MainActivity extends BaseActivity
 
     private Fragment currentFragment;
 
+    public Subscription rxSubscription;
+
     private WeixinFragment weixinFragment = new WeixinFragment();
     private ItHomeFragment itHomeFragment = new ItHomeFragment();
     private ZhihuFragment zhihuFragment = new ZhihuFragment();
@@ -74,13 +81,18 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        boolean isKitkat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        setToolBar(toolbar, isKitkat, true, true);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
+        rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
+                .subscribe(new Action1<StatusBarEvent>() {
+                    @Override
+                    public void call(StatusBarEvent statusBarEvent) {
+                        setToolBar(toolbar, true, false,drawer);                    }
+                });
+        setToolBar(toolbar, true, false,drawer);
         //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
-        ctlMain.setStatusBarBackgroundColor(Config.vibrantColor);
+        // ctlMain.setStatusBarBackgroundColor(Config.vibrantColor);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -133,7 +145,7 @@ public class MainActivity extends BaseActivity
                         if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
                             new AlertDialog.Builder(MainActivity.this)
                                     .setTitle(getString(R.string.update_title))
-                                    .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(),updateItem.getReleaseNote()))
+                                    .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
                                     .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -201,5 +213,13 @@ public class MainActivity extends BaseActivity
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(!rxSubscription.isUnsubscribed()) {
+            rxSubscription.unsubscribe();
+        }
     }
 }

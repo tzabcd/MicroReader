@@ -3,6 +3,7 @@ package name.caiyao.microreader.ui.activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,11 +18,14 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.jaeger.library.StatusBarUtil;
+
 import java.lang.reflect.InvocationTargetException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.config.Config;
 
 public class WeixinNewsActivity extends BaseActivity {
 
@@ -51,7 +55,7 @@ public class WeixinNewsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar, true, true, false);
+        setToolBar(toolbar,true,true,null);
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);

@@ -14,7 +14,9 @@ import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
+import name.caiyao.microreader.event.StatusBarEvent;
 import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.RxBus;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -66,6 +68,13 @@ public class SettingsFragment extends PreferenceFragment {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                return true;
+            }
+        });
+        findPreference(getString(R.string.pre_status_bar)).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                RxBus.getDefault().send(new StatusBarEvent());
                 return true;
             }
         });

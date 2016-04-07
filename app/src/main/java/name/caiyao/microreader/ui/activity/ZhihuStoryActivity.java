@@ -18,6 +18,7 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.jaeger.library.StatusBarUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -26,6 +27,7 @@ import name.caiyao.microreader.api.guokr.GuokrRequest;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.guokr.GuokrArticle;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import name.caiyao.microreader.utils.WebUtil;
 import rx.Observer;
@@ -60,8 +62,10 @@ public class ZhihuStoryActivity extends BaseActivity {
         title = getIntent().getStringExtra("title");
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
-        boolean isKitkat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        setToolBar(toolbar, isKitkat, false, false);
+        boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
+        setToolBar(toolbar, false, isKitKat,null);
+        if (!isKitKat)
+            StatusBarUtil.setTranslucent(this);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +89,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         //settings.setUseWideViewPort(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
-        settings.setAppCachePath(getCacheDir().getAbsolutePath()+"/webViewCache");
+        settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
         settings.setAppCacheEnabled(true);
         wvZhihu.setWebChromeClient(new WebChromeClient());
         ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
@@ -104,7 +108,7 @@ public class ZhihuStoryActivity extends BaseActivity {
             case R.id.action_share:
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_TEXT, title + " " + url+getString(R.string.share_tail));
+                shareIntent.putExtra(Intent.EXTRA_TEXT, title + " " + url + getString(R.string.share_tail));
                 shareIntent.setType("text/plain");
                 //设置分享列表的标题，并且每次都显示分享列表
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));

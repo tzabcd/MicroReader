@@ -18,6 +18,16 @@
             android:title="每日自动更换主题" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="显示效果">
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/pre_status_bar"
+            android:layout="@layout/preference_item"
+            android:summaryOff="半透明状态栏"
+            android:summaryOn="沉浸式状态栏"
+            android:title="状态栏显示效果" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="缓存管理">
         <Preference
             android:key="@string/pre_cache_size"

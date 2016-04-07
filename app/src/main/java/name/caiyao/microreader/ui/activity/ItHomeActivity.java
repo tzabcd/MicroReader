@@ -54,7 +54,7 @@ public class ItHomeActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar, true, true, false);
+        setToolBar(toolbar, true ,true,null);
         getIthomeArticle();
     }
 
