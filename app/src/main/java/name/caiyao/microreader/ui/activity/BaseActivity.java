@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v4.content.ContextCompat;
@@ -8,7 +9,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
+import android.view.Window;
+import android.view.WindowManager;
 
+import com.apkfuns.logutils.LogUtils;
 import com.bugtags.library.Bugtags;
 import com.jaeger.library.StatusBarUtil;
 import com.umeng.analytics.MobclickAgent;
@@ -44,9 +48,9 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public int setToolBar(Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
-        int vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary));
-        if (vibrantColor == 0) {
-            vibrantColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        int vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(vibrantColor);
         }
         if (isChangeToolbar)
             toolbar.setBackgroundColor(vibrantColor);
@@ -57,10 +61,11 @@ public class BaseActivity extends AppCompatActivity {
                 StatusBarUtil.setColor(this,vibrantColor);
         }
         if (drawerLayout != null){
+            //目前只能显示默认颜色，待解决
             if (Config.isImmersiveMode(this))
-                StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, vibrantColor);
+                StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, ContextCompat.getColor(this,R.color.colorPinkPrimary));
             else
-                StatusBarUtil.setColorForDrawerLayout(this, drawerLayout, vibrantColor);
+                StatusBarUtil.setColorForDrawerLayout(this, drawerLayout,  ContextCompat.getColor(this,R.color.colorPinkPrimary));
         }
         return vibrantColor;
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

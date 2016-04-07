@@ -23,6 +23,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
@@ -123,24 +124,24 @@ public class WelcomeActivity extends BaseActivity {
                                     Bitmap bitmap = BitmapFactory.decodeStream(new URL("http://wpstatic.zuimeia.com/" + imageReponse.getData().getImages().get(0).getImage_url() + "?imageMogr/v2/auto-orient/thumbnail/480x320/quality/100").openConnection().getInputStream());
                                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File(getFilesDir().getPath() + "/bg.jpg")));
                                     Palette palette = Palette.from(bitmap).generate();
-                                    Palette.Swatch swatch = palette.getVibrantSwatch();
                                     int color = 0x000000;
                                     int vibrant = palette.getVibrantColor(color);
-                                    int vibrantLight = palette.getLightVibrantColor(color);
                                     int vibrantDark = palette.getDarkVibrantColor(color);
+                                    if (vibrant == 0)
+                                        vibrant = vibrantDark;
+                                    if (vibrant == 0)
+                                        vibrant = getRandomPrimaryColor();
                                     int muted = palette.getMutedColor(color);
-                                    int mutedLight = palette.getLightMutedColor(color);
                                     int mutedDark = palette.getDarkMutedColor(color);
+                                    if (muted == 0)
+                                        muted = mutedDark;
+                                    if (muted == 0)
+                                        muted = ContextCompat.getColor(WelcomeActivity.this,R.color.colorAccent);
                                     sharedPreferences.edit()
                                             .putString(SharePreferenceUtil.IMAGE_DESCRIPTION, imageReponse.getData().getImages().get(0).getDescription())
                                             .putInt(SharePreferenceUtil.VIBRANT, vibrant)
-                                            .putInt(SharePreferenceUtil.VIBRANT_LIGHT, vibrantLight)
-                                            .putInt(SharePreferenceUtil.VIBRANT_DARK, vibrant)
                                             .putInt(SharePreferenceUtil.MUTED, muted)
-                                            .putInt(SharePreferenceUtil.MUTED_LIGHT, mutedLight)
-                                            .putInt(SharePreferenceUtil.MUTED_DARK, mutedDark)
                                             .putString(SharePreferenceUtil.IMAGE_GET_TIME, date)
-                                            .putInt(SharePreferenceUtil.TITLE_TEXT_COLOR, swatch != null ? swatch.getTitleTextColor() : 0)
                                             .apply();
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -162,5 +163,24 @@ public class WelcomeActivity extends BaseActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    private int getRandomPrimaryColor() {
+        int[] primaryInt = new int[]{
+                R.color.colorBlueGreyPrimary,
+                R.color.colorBluePrimary,
+                R.color.colorBrownPrimary,
+                R.color.colorCyanPrimary,
+                R.color.colorDeepOrangePrimary,
+                R.color.colorDeepPurplePrimary,
+                R.color.colorGreenPrimary,
+                R.color.colorIndigoPrimary,
+                R.color.colorLightGreenPrimary,
+                R.color.colorLimePrimary,
+                R.color.colorRedPrimary,
+                R.color.colorPinkPrimary,
+                R.color.colorPrimary
+        };
+        return ContextCompat.getColor(this,primaryInt[new Random().nextInt(14)]);
     }
 }

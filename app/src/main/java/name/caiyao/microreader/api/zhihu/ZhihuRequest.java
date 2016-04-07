@@ -1,15 +1,5 @@
 package name.caiyao.microreader.api.zhihu;
 
-import java.io.File;
-import java.io.IOException;
-
-import name.caiyao.microreader.MicroApplication;
-import name.caiyao.microreader.utils.NetWorkUtil;
-import okhttp3.Cache;
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -20,17 +10,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ZhihuRequest {
     private static ZhihuApi zhihuApi = null;
 
-    private static HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
-
-    static OkHttpClient client = new OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
-            .build();
-
     public static ZhihuApi getZhihuApi() {
         if (zhihuApi == null) {
             zhihuApi = new Retrofit.Builder()
                     .baseUrl("http://news-at.zhihu.com")
-                    .client(client)
                     .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build().create(ZhihuApi.class);

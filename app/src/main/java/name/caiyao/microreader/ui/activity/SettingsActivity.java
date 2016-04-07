@@ -6,12 +6,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.jaeger.library.StatusBarUtil;
+import com.apkfuns.logutils.LogUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.event.StatusBarEvent;
 import name.caiyao.microreader.ui.fragment.SettingsFragment;
 import name.caiyao.microreader.utils.RxBus;
@@ -50,16 +49,17 @@ public class SettingsActivity extends BaseActivity {
                 .subscribe(new Action1<StatusBarEvent>() {
                     @Override
                     public void call(StatusBarEvent statusBarEvent) {
-                        setToolBar(toolbar, true, false,null);                    }
+                        recreate();
+                    }
                 });
-        setToolBar(toolbar,true,true,null);
+        setToolBar(toolbar, true, true, null);
         getFragmentManager().beginTransaction().replace(R.id.fl_preference, settingsFragment).commit();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(!rxSubscription.isUnsubscribed()) {
+        if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }
     }
