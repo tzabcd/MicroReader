@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
@@ -107,31 +108,36 @@ public class MainActivity extends BaseActivity
         }
 
         switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-        AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(this)
-                .setUpdateFrom(UpdateFrom.XML)
-                .setUpdateXML("http://caiyao.name/releases/update.xml")
-                .withListener(new AppUpdaterUtils.UpdateListener() {
-                    @Override
-                    public void onSuccess(Update update, Boolean isUpdateAvailable) {
-                        if (isUpdateAvailable){
-                            AppUpdater appUpdater = new AppUpdater(MainActivity.this);
-                            appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                                    .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description),update.getLatestVersion()))
-                                    .setDialogButtonUpdate(getString(R.string.update_button))
-                                    .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                                    .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                                    .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                            appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                    .setUpdateXML("http://caiyao.name/releases/update.xml");
-                            appUpdater.start();
+        try {
+            //java.lang.RuntimeException: java.net.UnknownHostException: Unable to resolve host "caiyao.name": No address associated with hostname
+            AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(this)
+                    .setUpdateFrom(UpdateFrom.XML)
+                    .setUpdateXML("http://caiyao.name/releases/update.xml")
+                    .withListener(new AppUpdaterUtils.UpdateListener() {
+                        @Override
+                        public void onSuccess(Update update, Boolean isUpdateAvailable) {
+                            if (isUpdateAvailable) {
+                                AppUpdater appUpdater = new AppUpdater(MainActivity.this);
+                                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                                        .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
+                                        .setDialogButtonUpdate(getString(R.string.update_button))
+                                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                                appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
+                                        .setUpdateXML("http://caiyao.name/releases/update.xml");
+                                appUpdater.start();
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailed(AppUpdaterError error) {
-                    }
-                });
-        appUpdaterUtils.start();
+                        @Override
+                        public void onFailed(AppUpdaterError error) {
+                        }
+                    });
+            appUpdaterUtils.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -148,7 +154,8 @@ public class MainActivity extends BaseActivity
     private void switchFragment(Fragment fragment, String title) {
         Slide slideTransition;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            slideTransition = new Slide(Gravity.START);
+            //Gravity.START部分机型崩溃java.lang.IllegalArgumentException: Invalid slide direction
+            slideTransition = new Slide(GravityCompat.START);
             slideTransition.setDuration(700);
             fragment.setEnterTransition(slideTransition);
             fragment.setExitTransition(slideTransition);
@@ -156,7 +163,9 @@ public class MainActivity extends BaseActivity
         if (currentFragment == null || !currentFragment.getClass().getName().equals(fragment.getClass().getName())) {
             getSupportFragmentManager().beginTransaction().replace(R.id.replace, fragment).commit();
             currentFragment = fragment;
-            getSupportActionBar().setTitle(title);
+            ActionBar actionBar = getSupportActionBar();
+            assert actionBar != null;
+            actionBar.setTitle(title);
         }
     }
 

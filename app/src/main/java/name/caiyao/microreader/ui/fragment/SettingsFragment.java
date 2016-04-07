@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import com.github.javiersantos.appupdater.AppUpdater;
 import com.github.javiersantos.appupdater.AppUpdaterUtils;
@@ -72,29 +73,35 @@ public class SettingsFragment extends PreferenceFragment {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(getActivity())
-                        .setUpdateFrom(UpdateFrom.XML)
-                        .setUpdateXML("http://caiyao.name/releases/update.xml")
-                        .withListener(new AppUpdaterUtils.UpdateListener() {
-                            @Override
-                            public void onSuccess(Update update, Boolean isUpdateAvailable) {
-                                AppUpdater appUpdater = new AppUpdater(getActivity());
-                                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                                        .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
-                                        .setDialogButtonUpdate(getString(R.string.update_button))
-                                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                                appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                        .setUpdateXML("http://caiyao.name/releases/update.xml");
-                                appUpdater.start();
-                            }
+                //java.lang.RuntimeException: java.net.UnknownHostException: Unable to resolve host "caiyao.name": No address associated with hostname
+                try {
+                    AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(getActivity())
+                            .setUpdateFrom(UpdateFrom.XML)
+                            .setUpdateXML("http://caiyao.name/releases/update.xml")
+                            .withListener(new AppUpdaterUtils.UpdateListener() {
+                                @Override
+                                public void onSuccess(Update update, Boolean isUpdateAvailable) {
+                                    AppUpdater appUpdater = new AppUpdater(getActivity());
+                                    appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
+                                            .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
+                                            .setDialogButtonUpdate(getString(R.string.update_button))
+                                            .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
+                                            .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
+                                            .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
+                                    appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
+                                            .setUpdateXML("http://caiyao.name/releases/update.xml");
+                                    appUpdater.start();
+                                }
 
-                            @Override
-                            public void onFailed(AppUpdaterError error) {
-                            }
-                        });
-                appUpdaterUtils.start();
+                                @Override
+                                public void onFailed(AppUpdaterError error) {
+                                }
+                            });
+                    appUpdaterUtils.start();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(getActivity(),"网络连接异常，无法检查更新！",Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
