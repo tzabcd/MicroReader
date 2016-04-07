@@ -20,7 +20,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ZhihuRequest {
     private static ZhihuApi zhihuApi = null;
 
+    private static HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
+
     static OkHttpClient client = new OkHttpClient.Builder()
+            .addInterceptor(httpLoggingInterceptor)
             .build();
 
     public static ZhihuApi getZhihuApi() {

@@ -1,22 +1,23 @@
 package name.caiyao.microreader.ui.fragment;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
-
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.AppUpdaterUtils;
-import com.github.javiersantos.appupdater.enums.AppUpdaterError;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
-import com.github.javiersantos.appupdater.objects.Update;
 
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.api.zhihu.ZhihuRequest;
+import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.utils.CacheUtil;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class SettingsFragment extends PreferenceFragment {
@@ -61,7 +62,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(" http://caiyao.name")));
+                    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(" http://caiyao.name/releases")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -73,35 +74,43 @@ public class SettingsFragment extends PreferenceFragment {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                //java.lang.RuntimeException: java.net.UnknownHostException: Unable to resolve host "caiyao.name": No address associated with hostname
-                try {
-                    AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(getActivity())
-                            .setUpdateFrom(UpdateFrom.XML)
-                            .setUpdateXML("http://caiyao.name/releases/update.xml")
-                            .withListener(new AppUpdaterUtils.UpdateListener() {
-                                @Override
-                                public void onSuccess(Update update, Boolean isUpdateAvailable) {
-                                    AppUpdater appUpdater = new AppUpdater(getActivity());
-                                    appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                                            .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
-                                            .setDialogButtonUpdate(getString(R.string.update_button))
-                                            .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                                            .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                                            .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                                    appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                            .setUpdateXML("http://caiyao.name/releases/update.xml");
-                                    appUpdater.start();
-                                }
+                ZhihuRequest.getZhihuApi().getUpdateInfo()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Observer<UpdateItem>() {
+                            @Override
+                            public void onCompleted() {
 
-                                @Override
-                                public void onFailed(AppUpdaterError error) {
-                                }
-                            });
-                    appUpdaterUtils.start();
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(),"网络连接异常，无法检查更新！",Toast.LENGTH_SHORT).show();
-                }
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                e.printStackTrace();
+                            }
+
+                            @Override
+                            public void onNext(final UpdateItem updateItem) {
+                                if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
+                                    new AlertDialog.Builder(getActivity())
+                                            .setTitle(getString(R.string.update_title))
+                                            .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(),updateItem.getReleaseNote()))
+                                            .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
+                                                }
+                                            })
+                                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                }
+                                            })
+                                            .show();
+                                else
+                                    Toast.makeText(getActivity(), "没有可用更新！", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 return true;
             }
         });

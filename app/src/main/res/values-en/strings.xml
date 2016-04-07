@@ -27,7 +27,7 @@
     <string name="about">about</string>
     <string name="fragment_it_title">IT Home</string>
     <string name="update_title">Update available</string>
-    <string name="update_description">The latest version %s is available of my app!</string>
+    <string name="update_description">The latest version %1$s is available of my app!\nReleaseNote:\n%2$s</string>
     <string name="update_button">Update now</string>
     <string name="update_not_show">Huh, not interested</string>
     <string name="update_no_update">Update not available</string>

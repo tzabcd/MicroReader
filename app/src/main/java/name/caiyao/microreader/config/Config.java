@@ -2,6 +2,7 @@ package name.caiyao.microreader.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 
 import name.caiyao.microreader.R;
@@ -11,6 +12,7 @@ import name.caiyao.microreader.R;
  */
 public class Config {
     public static final String TX_APP_KEY = "1ae28fc9dd5afadc696ad94cd59426d8";
+    public static int vibrantColor = Color.parseColor("#FF9800");
 
     public static boolean isRefreshOnlyWifi(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);

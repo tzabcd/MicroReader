@@ -13,6 +13,7 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
 import com.umeng.analytics.MobclickAgent;
 
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 
 public class BaseActivity extends AppCompatActivity {
@@ -38,8 +39,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void setToolBar(Toolbar toolbar, boolean isChangeStatusBar, boolean isChangeToolbar,boolean marginTop) {
+        Config.vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary));
+        if (Config.vibrantColor == 0){
+            Config.vibrantColor = ContextCompat.getColor(this, R.color.colorPrimary);
+        }
         if (isChangeToolbar)
-            toolbar.setBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
+            toolbar.setBackgroundColor(Config.vibrantColor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -52,7 +57,7 @@ public class BaseActivity extends AppCompatActivity {
                 getWindow().getDecorView().getRootView().setPadding(0, toolbar.getHeight(), config.getPixelInsetRight(), 0);
             }
             tintManager.setNavigationBarTintEnabled(true);
-            tintManager.setTintColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
+            tintManager.setTintColor(Config.vibrantColor);
         }
     }
 }

@@ -1,5 +1,6 @@
 package name.caiyao.microreader.api.zhihu;
 
+import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.bean.image.ImageResponse;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
@@ -23,4 +24,7 @@ public interface ZhihuApi {
 
     @GET("http://lab.zuimeia.com/wallpaper/category/1/?page_size=1")
     Observable<ImageResponse> getImage();
+
+    @GET("http://caiyao.name/releases/MrUpdate.json")
+    Observable<UpdateItem> getUpdateInfo();
 }

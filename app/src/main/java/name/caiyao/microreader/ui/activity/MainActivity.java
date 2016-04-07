@@ -1,10 +1,12 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -15,33 +17,35 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.AppUpdaterUtils;
-import com.github.javiersantos.appupdater.enums.AppUpdaterError;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
-import com.github.javiersantos.appupdater.objects.Update;
+import com.apkfuns.logutils.LogUtils;
 
 import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.api.zhihu.ZhihuRequest;
+import name.caiyao.microreader.bean.UpdateItem;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.fragment.GuokrFragment;
 import name.caiyao.microreader.ui.fragment.ItHomeFragment;
 import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -76,7 +80,7 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
         //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
-        ctlMain.setStatusBarBackgroundColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT_DARK, ContextCompat.getColor(this, R.color.colorPrimaryDark)));
+        ctlMain.setStatusBarBackgroundColor(Config.vibrantColor);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -109,36 +113,42 @@ public class MainActivity extends BaseActivity
         }
 
         switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-        try {
-            //java.lang.RuntimeException: java.net.UnknownHostException: Unable to resolve host "caiyao.name": No address associated with hostname
-            AppUpdaterUtils appUpdaterUtils = new AppUpdaterUtils(this)
-                    .setUpdateFrom(UpdateFrom.XML)
-                    .setUpdateXML("http://caiyao.name/releases/update.xml")
-                    .withListener(new AppUpdaterUtils.UpdateListener() {
-                        @Override
-                        public void onSuccess(Update update, Boolean isUpdateAvailable) {
-                            if (isUpdateAvailable) {
-                                AppUpdater appUpdater = new AppUpdater(MainActivity.this);
-                                appUpdater.setDialogTitleWhenUpdateAvailable(getString(R.string.update_title))
-                                        .setDialogDescriptionWhenUpdateAvailable(String.format(getString(R.string.update_description), update.getLatestVersion()))
-                                        .setDialogButtonUpdate(getString(R.string.update_button))
-                                        .setDialogButtonDoNotShowAgain(getString(R.string.update_not_show))
-                                        .setDialogTitleWhenUpdateNotAvailable(getString(R.string.update_no_update))
-                                        .setDialogDescriptionWhenUpdateNotAvailable(getString(R.string.update_no_update_description));
-                                appUpdater.setUpdateFrom(UpdateFrom.XML).showAppUpdated(true)
-                                        .setUpdateXML("http://caiyao.name/releases/update.xml");
-                                appUpdater.start();
-                            }
-                        }
+        ZhihuRequest.getZhihuApi().getUpdateInfo()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<UpdateItem>() {
+                    @Override
+                    public void onCompleted() {
 
-                        @Override
-                        public void onFailed(AppUpdaterError error) {
-                        }
-                    });
-            appUpdaterUtils.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(final UpdateItem updateItem) {
+                        LogUtils.i(updateItem.getDownloadUrl());
+                        if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle(getString(R.string.update_title))
+                                    .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(),updateItem.getReleaseNote()))
+                                    .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
+                                        }
+                                    })
+                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                        }
+                                    })
+                                    .show();
+                    }
+                });
     }
 
     @Override

@@ -12,7 +12,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 126
-        versionName '1.0.2'
+        versionName '1.0.3'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -77,7 +77,6 @@ dependencies {
     compile 'com.bugtags.library:bugtags-lib:latest.integration'
     compile 'com.umeng.analytics:analytics:latest.integration'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile 'com.github.javiersantos:AppUpdater:2.0.2'
 }
 
 bugtags {

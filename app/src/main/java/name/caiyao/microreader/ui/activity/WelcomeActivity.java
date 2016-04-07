@@ -16,9 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.graphics.Palette;
 import android.widget.Toast;
 
-import com.github.javiersantos.appupdater.AppUpdater;
-import com.github.javiersantos.appupdater.enums.UpdateFrom;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
