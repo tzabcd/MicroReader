@@ -70,7 +70,8 @@ public class MainActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setToolBar(toolbar, false, true, true);
+        boolean isKitkat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
+        setToolBar(toolbar, isKitkat, true, true);
         setSupportActionBar(toolbar);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;

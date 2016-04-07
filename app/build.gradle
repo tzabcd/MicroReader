@@ -11,8 +11,8 @@ android {
         applicationId "name.caiyao.microreader"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 125
-        versionName '1.0.1'
+        versionCode 126
+        versionName '1.0.2'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -25,7 +25,7 @@ android {
                 variant.outputs.each { output ->
                     def outputFile = output.outputFile
                     if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                        // 输出apk名称为XXXX_v1.0_2016-01-15_wandoujia.apk
+                        // 输出apk名称为XXXX_v1.0_wandoujia.apk
                         def fileName = "MicroReader_v${defaultConfig.versionName}_${variant.productFlavors[0].name}.apk"
                         output.outputFile = new File(outputFile.parent, fileName)
                     }
