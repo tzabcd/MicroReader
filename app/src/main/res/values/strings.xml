@@ -42,6 +42,6 @@
     <string name="update_no_update">没有更新可用</string>
     <string name="update_no_update_description">没有更新可用，请稍后检查！</string>
     <string name="update_not_show">不再提示此更新</string>
-    <string name="pre_status_bar">pre_status_bar</string>
+    <string name="pre_status_bar" translatable="false">pre_status_bar</string>
 
 </resources>
