@@ -85,7 +85,11 @@ public class MainActivity extends BaseActivity
                         recreate();
                     }
                 });
-        setToolBar(toolbar, true, true, null);
+        boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
+        if (isKitKat)
+            setToolBar(toolbar, true, true, drawerLayout);
+        else
+            setToolBar(toolbar, true, true, null);
         //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
         //ctlMain.setStatusBarBackgroundColor(setToolBar(toolbar,true,false,null));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
