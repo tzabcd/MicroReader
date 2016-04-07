@@ -62,7 +62,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse(" http://caiyao.name/releases")));
+                    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("http://caiyao.name/releases")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
