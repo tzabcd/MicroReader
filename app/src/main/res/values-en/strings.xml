@@ -32,4 +32,5 @@
     <string name="update_not_show">Huh, not interested</string>
     <string name="update_no_update">Update not available</string>
     <string name="update_no_update_description">No update available. Check for updates again later!</string>
+    <string name="common_cancel">Cancel</string>
 </resources>

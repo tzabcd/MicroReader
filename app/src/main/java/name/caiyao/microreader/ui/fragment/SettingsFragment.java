@@ -109,7 +109,7 @@ public class SettingsFragment extends PreferenceFragment {
                                                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
                                                 }
                                             })
-                                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                            .setNegativeButton(getString(R.string.common_cancel), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
 
@@ -117,7 +117,7 @@ public class SettingsFragment extends PreferenceFragment {
                                             })
                                             .show();
                                 else
-                                    Toast.makeText(getActivity(), "没有可用更新！", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
                             }
                         });
                 return true;
