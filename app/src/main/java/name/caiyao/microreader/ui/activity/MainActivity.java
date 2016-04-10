@@ -20,11 +20,14 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.transition.Slide;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.apkfuns.logutils.LogUtils;
 
 import java.io.File;
 
@@ -197,7 +200,7 @@ public class MainActivity extends BaseActivity
         Slide slideTransition;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             //Gravity.START部分机型崩溃java.lang.IllegalArgumentException: Invalid slide direction
-            slideTransition = new Slide(GravityCompat.START);
+            slideTransition = new Slide(Gravity.LEFT);
             slideTransition.setDuration(700);
             fragment.setEnterTransition(slideTransition);
             fragment.setExitTransition(slideTransition);

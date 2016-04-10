@@ -4,9 +4,11 @@ package name.caiyao.microreader.ui.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
@@ -64,7 +66,7 @@ public class SettingsFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW,Uri.parse("http://caiyao.name/releases")));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://caiyao.name/releases")));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -72,6 +74,13 @@ public class SettingsFragment extends PreferenceFragment {
             }
         });
         findPreference(getString(R.string.pre_status_bar)).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                RxBus.getDefault().send(new StatusBarEvent());
+                return true;
+            }
+        });
+        findPreference(getString(R.string.pre_nav_color)).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 RxBus.getDefault().send(new StatusBarEvent());
@@ -94,6 +103,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                             @Override
                             public void onError(Throwable e) {
+                                Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                             }
 
@@ -102,7 +112,7 @@ public class SettingsFragment extends PreferenceFragment {
                                 if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
                                     new AlertDialog.Builder(getActivity())
                                             .setTitle(getString(R.string.update_title))
-                                            .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(),updateItem.getReleaseNote()))
+                                            .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
                                             .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {

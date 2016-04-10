@@ -2,7 +2,6 @@ package name.caiyao.microreader.config;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 
 import name.caiyao.microreader.R;
@@ -18,13 +17,18 @@ public class Config {
         return sharedPreferences.getBoolean(context.getResources().getString(R.string.pre_refresh_data), false);
     }
 
-    public static boolean isChangeThemeAuto(Context context){
+    public static boolean isChangeThemeAuto(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(context.getResources().getString(R.string.pre_get_image), true);
     }
 
-    public static boolean isImmersiveMode(Context context){
+    public static boolean isImmersiveMode(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(context.getString(R.string.pre_status_bar),false);
+        return sharedPreferences.getBoolean(context.getString(R.string.pre_status_bar), false);
+    }
+
+    public static boolean isChangeNavColor(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(context.getString(R.string.pre_nav_color), true);
     }
 }

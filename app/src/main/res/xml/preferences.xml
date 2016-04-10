@@ -26,6 +26,13 @@
             android:summaryOff="半透明状态栏"
             android:summaryOn="沉浸式状态栏"
             android:title="状态栏显示效果" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pre_nav_color"
+            android:layout="@layout/preference_item"
+            android:summaryOff="关闭导航栏变色"
+            android:summaryOn="开启导航栏变色"
+            android:title="导航栏变色" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="缓存管理">

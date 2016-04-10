@@ -49,7 +49,7 @@ public class SettingsActivity extends BaseActivity {
                 .subscribe(new Action1<StatusBarEvent>() {
                     @Override
                     public void call(StatusBarEvent statusBarEvent) {
-                        recreate();
+                       recreate();
                     }
                 });
         setToolBar(toolbar, true, true, null);
