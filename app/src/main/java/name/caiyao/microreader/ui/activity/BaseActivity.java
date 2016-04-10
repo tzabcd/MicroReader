@@ -63,9 +63,9 @@ public class BaseActivity extends AppCompatActivity {
         if (drawerLayout != null){
             //目前只能显示默认颜色，待解决
             if (Config.isImmersiveMode(this))
-                StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, ContextCompat.getColor(this,R.color.colorPinkPrimary));
+                StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, vibrantColor);
             else
-                StatusBarUtil.setColorForDrawerLayout(this, drawerLayout,  ContextCompat.getColor(this,R.color.colorPinkPrimary));
+                StatusBarUtil.setColorForDrawerLayout(this, drawerLayout,  vibrantColor);
         }
         return vibrantColor;
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
