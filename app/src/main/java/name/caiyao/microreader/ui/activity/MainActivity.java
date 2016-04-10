@@ -1,5 +1,6 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -196,6 +197,7 @@ public class MainActivity extends BaseActivity
         super.onSaveInstanceState(outState);
     }
 
+    @SuppressLint("RtlHardcoded")
     private void switchFragment(Fragment fragment, String title) {
         Slide slideTransition;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

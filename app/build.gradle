@@ -26,7 +26,7 @@ android {
                     def outputFile = output.outputFile
                     if (outputFile != null && outputFile.name.endsWith('.apk')) {
                         // 输出apk名称为XXXX_v1.0_wandoujia.apk
-                        def fileName = "MicroReader_v${defaultConfig.versionName}_${variant.productFlavors[0].name}.apk"
+                        def fileName = "microreader_${defaultConfig.versionName}_${variant.productFlavors[0].name}.apk"
                         output.outputFile = new File(outputFile.parent, fileName)
                     }
                 }
