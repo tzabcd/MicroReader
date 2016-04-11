@@ -37,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    public int setToolBar(Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
+    public void setToolBar(Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
         int vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (Config.isChangeNavColor(this))
@@ -54,26 +54,10 @@ public class BaseActivity extends AppCompatActivity {
                 StatusBarUtil.setColor(this, vibrantColor);
         }
         if (drawerLayout != null) {
-            //目前只能显示默认颜色，待解决
             if (Config.isImmersiveMode(this))
                 StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, vibrantColor);
             else
                 StatusBarUtil.setColorForDrawerLayout(this, drawerLayout, vibrantColor);
         }
-        return vibrantColor;
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-//            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-//            if (isChangeStatusBar){
-//                tintManager.setStatusBarTintEnabled(true);
-//            }
-//            if (marginTop && Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT){
-//                SystemBarTintManager.SystemBarConfig config = tintManager.getConfig();
-//                getWindow().getDecorView().getRootView().setPadding(0, toolbar.getHeight(), config.getPixelInsetRight(), 0);
-//            }
-//            tintManager.setNavigationBarTintEnabled(true);
-//            tintManager.setTintColor(Config.vibrantColor);
-//        }
     }
 }

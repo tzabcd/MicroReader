@@ -24,7 +24,7 @@ public class Config {
 
     public static boolean isImmersiveMode(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        return sharedPreferences.getBoolean(context.getString(R.string.pre_status_bar), false);
+        return sharedPreferences.getBoolean(context.getString(R.string.pre_status_bar), true);
     }
 
     public static boolean isChangeNavColor(Context context) {

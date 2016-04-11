@@ -110,7 +110,6 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                         }
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
-                        e.printStackTrace();
                         if (swipeTarget != null) {
                             getFromCache(offset);
                             Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {

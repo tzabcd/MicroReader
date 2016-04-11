@@ -219,7 +219,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
                         @Override
                         public void onError(Throwable e) {
-                            e.printStackTrace();
                             progressDialog.dismiss();
                             Snackbar.make(swipeTarget, getString(R.string.fragment_video_get_url_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override

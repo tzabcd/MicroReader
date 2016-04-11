@@ -180,7 +180,6 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setLoadingMore(false);
                         Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {

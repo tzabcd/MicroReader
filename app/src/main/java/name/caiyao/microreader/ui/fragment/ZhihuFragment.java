@@ -8,6 +8,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -115,7 +117,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setRefreshing(false);
-                        e.printStackTrace();
                         if (swipeTarget != null) {
                             getFromCache();
                             Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
@@ -156,7 +157,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
                         @Override
                         public void onError(Throwable e) {
-                            e.printStackTrace();
+                            LogUtils.i(e.toString());
                         }
 
                         @Override

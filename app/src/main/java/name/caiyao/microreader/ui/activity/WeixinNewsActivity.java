@@ -1,7 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -9,7 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -22,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
+import name.caiyao.microreader.utils.NetWorkUtil;
 
 public class WeixinNewsActivity extends BaseActivity {
 
@@ -57,12 +57,23 @@ public class WeixinNewsActivity extends BaseActivity {
         setToolBar(toolbar, true, true, null);
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
+        if (!NetWorkUtil.isNetWorkAvailable(this))
+            webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        else
+            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webSettings.setBuiltInZoomControls(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setDomStorageEnabled(true);
+        webSettings.setDefaultTextEncodingName("UTF-8");
+        webSettings.setBlockNetworkImage(false);
         webSettings.setDatabaseEnabled(true);
+        webSettings.setBuiltInZoomControls(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
         webSettings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
+        webSettings.setAllowFileAccess(true);
         webSettings.setAppCacheEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         wvWeixin.setWebViewClient(new WebViewClient() {
@@ -101,7 +112,6 @@ public class WeixinNewsActivity extends BaseActivity {
                 ViewGroup parent = (ViewGroup) wvWeixin.getParent();
                 parent.removeView(wvWeixin);
                 parent.addView(view);
-                //setFullScreen();
                 myView = view;
                 myCallback = callback;
             }
