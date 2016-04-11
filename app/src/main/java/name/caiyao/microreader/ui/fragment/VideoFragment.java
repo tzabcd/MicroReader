@@ -118,13 +118,15 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         e.printStackTrace();
-                        getFromCache(page);
-                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getVideo(page);
-                            }
-                        }).show();
+                        if (swipeTarget != null) {
+                            getFromCache(page);
+                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getVideo(page);
+                                }
+                            }).show();
+                        }
                     }
 
                     @Override

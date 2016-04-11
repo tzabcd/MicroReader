@@ -98,7 +98,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     private void getIthomeNews() {
-        progressBar.setVisibility(View.VISIBLE);
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
         ItHomeRequest.getItHomeApi().getItHomeNews()
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<ItHomeResponse, ArrayList<ItHomeItem>>() {
@@ -130,13 +131,15 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                         }
-                        getFromCache();
-                        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getIthomeNews();
-                            }
-                        }).show();
+                        if (swipeTarget != null) {
+                            getFromCache();
+                            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getIthomeNews();
+                                }
+                            }).show();
+                        }
                     }
 
                     @Override

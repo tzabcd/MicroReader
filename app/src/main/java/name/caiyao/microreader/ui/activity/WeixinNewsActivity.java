@@ -185,6 +185,7 @@ public class WeixinNewsActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         wvWeixin.destroy();
+        ButterKnife.unbind(this);
     }
 
     @Override

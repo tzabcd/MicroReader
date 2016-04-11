@@ -20,7 +20,7 @@
 
     <PreferenceCategory android:title="显示效果">
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/pre_status_bar"
             android:layout="@layout/preference_item"
             android:summaryOff="半透明状态栏"

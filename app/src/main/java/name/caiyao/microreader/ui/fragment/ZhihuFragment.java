@@ -115,14 +115,16 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setRefreshing(false);
-                        getFromCache();
                         e.printStackTrace();
-                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getZhihuDaily();
-                            }
-                        }).show();
+                        if (swipeTarget != null) {
+                            getFromCache();
+                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getZhihuDaily();
+                                }
+                            }).show();
+                        }
                     }
 
                     @Override

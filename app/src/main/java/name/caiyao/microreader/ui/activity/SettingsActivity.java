@@ -59,6 +59,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }

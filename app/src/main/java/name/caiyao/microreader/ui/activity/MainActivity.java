@@ -251,6 +251,7 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ButterKnife.unbind(this);
         if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }

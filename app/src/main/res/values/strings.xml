@@ -44,6 +44,6 @@
     <string name="update_not_show">不再提示此更新</string>
     <string name="pre_status_bar" translatable="false">pre_status_bar</string>
     <string name="common_cancel">取消</string>
-    <string name="pre_nav_color">pre_nav_color</string>
+    <string name="pre_nav_color" translatable="false">pre_nav_color</string>
 
 </resources>

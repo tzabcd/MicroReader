@@ -1,16 +1,13 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -85,41 +81,41 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         if (Config.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
-            }else {
+            } else {
                 Toast.makeText(getActivity(), getString(R.string.toast_wifi_refresh_data), Toast.LENGTH_SHORT).show();
             }
         } else {
             onRefresh();
         }
 
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                //Remove swiped item from list and notify the RecyclerView
-                LogUtils.i("滑动了："+viewHolder.getAdapterPosition());
-                weixinNewses.remove(viewHolder.getAdapterPosition());
-                weixinAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-            }
-
-            @Override
-            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                // 默认是操作ViewHolder的itemView，这里调用ItemTouchUIUtil的clearView方法传入指定的view
-                getDefaultUIUtil().onDraw(c, recyclerView, ((WeixinAdapter.WeixinViewHolder) viewHolder).cvMain, dX, dY, actionState, isCurrentlyActive);
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-            }
-        };
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-        itemTouchHelper.attachToRecyclerView(swipeTarget);
+//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+//            @Override
+//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+//                //Remove swiped item from list and notify the RecyclerView
+//                LogUtils.i("滑动了：" + viewHolder.getAdapterPosition());
+//                weixinNewses.remove(viewHolder.getAdapterPosition());
+//                weixinAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+//            }
+//
+//            @Override
+//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+//                // 默认是操作ViewHolder的itemView，这里调用ItemTouchUIUtil的clearView方法传入指定的view
+//                getDefaultUIUtil().onDraw(c, recyclerView, ((WeixinAdapter.WeixinViewHolder) viewHolder).cvMain, dX, dY, actionState, isCurrentlyActive);
+//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+//            }
+//        };
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+//        itemTouchHelper.attachToRecyclerView(swipeTarget);
     }
 
     private void getFromCache(int page) {
         if (cacheUtil.getAsJSONObject(CacheUtil.WEIXIN + page) != null) {
-            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.WEIXIN+ page).toString(), TxWeixinResponse.class);
+            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.WEIXIN + page).toString(), TxWeixinResponse.class);
             cacheUtil.put(CacheUtil.WEIXIN + page, new Gson().toJson(txWeixinResponse));
             weixinNewses.addAll(txWeixinResponse.getNewslist());
             weixinAdapter.notifyDataSetChanged();
@@ -143,13 +139,15 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                         }
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
-                        getFromCache(page);
-                        Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getWeixinNews(page);
-                            }
-                        }).show();
+                        if (swipeTarget != null) {
+                            getFromCache(page);
+                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getWeixinNews(page);
+                                }
+                            }).show();
+                        }
                     }
 
                     @Override
