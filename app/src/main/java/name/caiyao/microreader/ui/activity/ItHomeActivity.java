@@ -1,19 +1,19 @@
 package name.caiyao.microreader.ui.activity;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.transition.Transition;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import com.apkfuns.logutils.LogUtils;
 
@@ -38,6 +38,8 @@ public class ItHomeActivity extends BaseActivity {
     Toolbar toolbar;
     @Bind(R.id.wv_weixin)
     WebView wvWeixin;
+    @Bind(R.id.pb_web)
+    ProgressBar pbWeb;
 
     private ItHomeItem itHomeItem;
 
@@ -46,6 +48,7 @@ public class ItHomeActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ithome);
         ButterKnife.bind(this);
+
         itHomeItem = getIntent().getParcelableExtra("item");
         toolbar.setTitle(itHomeItem.getTitle());
         setSupportActionBar(toolbar);
@@ -60,7 +63,36 @@ public class ItHomeActivity extends BaseActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         setToolBar(toolbar, true, true, null);
+        setWebView();
         getIthomeArticle();
+    }
+
+    private void setWebView() {
+        WebSettings settings = wvWeixin.getSettings();
+        settings.setDomStorageEnabled(true);
+        settings.setAppCacheEnabled(true);
+        settings.setJavaScriptEnabled(true);
+        settings.setPluginState(WebSettings.PluginState.ON);
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setDomStorageEnabled(true);
+        settings.setDatabaseEnabled(true);
+        settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
+        settings.setAppCacheEnabled(true);
+        settings.setLoadWithOverviewMode(true);
+        wvWeixin.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    pbWeb.setVisibility(View.GONE);
+                } else {
+                    if (pbWeb.getVisibility() == View.GONE) {
+                        pbWeb.setVisibility(View.VISIBLE);
+                    }
+                    pbWeb.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
+            }
+        });
     }
 
     private void getIthomeArticle() {
@@ -81,20 +113,6 @@ public class ItHomeActivity extends BaseActivity {
                     @Override
                     public void onNext(ItHomeArticle itHomeArticle) {
                         if (TextUtils.isEmpty(itHomeArticle.getDetail())) {
-                            WebSettings settings = wvWeixin.getSettings();
-                            settings.setBuiltInZoomControls(true);
-                            settings.setDomStorageEnabled(true);
-                            settings.setAppCacheEnabled(true);
-                            settings.setJavaScriptEnabled(true);
-                            settings.setPluginState(WebSettings.PluginState.ON);
-                            settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-                            settings.setUseWideViewPort(true);
-                            settings.setDomStorageEnabled(true);
-                            settings.setDatabaseEnabled(true);
-                            settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
-                            settings.setAppCacheEnabled(true);
-                            settings.setLoadWithOverviewMode(true);
-                            wvWeixin.setWebChromeClient(new WebChromeClient());
                             wvWeixin.loadUrl(itHomeItem.getUrl());
                         } else {
                             String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(), new String[]{"news.css"}, false);

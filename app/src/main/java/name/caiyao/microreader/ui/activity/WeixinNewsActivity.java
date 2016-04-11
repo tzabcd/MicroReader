@@ -3,7 +3,6 @@ package name.caiyao.microreader.ui.activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -11,21 +10,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.jaeger.library.StatusBarUtil;
+import android.widget.ProgressBar;
 
 import java.lang.reflect.InvocationTargetException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.config.Config;
 
 public class WeixinNewsActivity extends BaseActivity {
 
@@ -33,6 +29,9 @@ public class WeixinNewsActivity extends BaseActivity {
     WebView wvWeixin;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+    @Bind(R.id.pb_web)
+    ProgressBar pbWeb;
+
     String url;
     String title;
 
@@ -55,7 +54,7 @@ public class WeixinNewsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar,true,true,null);
+        setToolBar(toolbar, true, true, null);
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
         WebSettings webSettings = wvWeixin.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -63,7 +62,7 @@ public class WeixinNewsActivity extends BaseActivity {
         webSettings.setUseWideViewPort(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setDatabaseEnabled(true);
-        webSettings.setAppCachePath(getCacheDir().getAbsolutePath()+"/webViewCache");
+        webSettings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
         webSettings.setAppCacheEnabled(true);
         webSettings.setLoadWithOverviewMode(true);
         wvWeixin.setWebViewClient(new WebViewClient() {
@@ -74,6 +73,20 @@ public class WeixinNewsActivity extends BaseActivity {
             }
         });
         wvWeixin.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    pbWeb.setVisibility(View.GONE);
+                } else {
+                    if (pbWeb.getVisibility() == View.GONE) {
+                        pbWeb.setVisibility(View.VISIBLE);
+                    }
+                    pbWeb.setProgress(newProgress);
+                }
+                super.onProgressChanged(view, newProgress);
+            }
+
             //显示全屏按钮
             private View myView = null;
             private CustomViewCallback myCallback = null;
@@ -116,22 +129,7 @@ public class WeixinNewsActivity extends BaseActivity {
         });
         wvWeixin.loadUrl(url);
     }
-    /**
-     * 设置为全屏显示
-     */
-    private void setFullScreen() {
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        getSupportActionBar().hide();
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
 
-    /**
-     * 退出全屏显示
-     */
-    private void cancelFullScreen() {
-        getSupportActionBar().show();
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share, menu);
