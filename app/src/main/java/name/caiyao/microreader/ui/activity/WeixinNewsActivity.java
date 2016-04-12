@@ -5,16 +5,20 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -62,11 +66,8 @@ public class WeixinNewsActivity extends BaseActivity {
         else
             webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setBuiltInZoomControls(true);
         webSettings.setUseWideViewPort(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setDefaultTextEncodingName("UTF-8");
-        webSettings.setBlockNetworkImage(false);
         webSettings.setDatabaseEnabled(true);
         webSettings.setBuiltInZoomControls(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -80,20 +81,24 @@ public class WeixinNewsActivity extends BaseActivity {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String urlTo) {
                 //处理自动跳转到浏览器的问题
-                return urlTo.equals(url) || super.shouldOverrideUrlLoading(view, url);
+                view.loadUrl(urlTo);
+                return true;
             }
         });
         wvWeixin.setWebChromeClient(new WebChromeClient() {
 
+
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress == 100) {
-                    pbWeb.setVisibility(View.GONE);
-                } else {
-                    if (pbWeb.getVisibility() == View.GONE) {
-                        pbWeb.setVisibility(View.VISIBLE);
+                if (pbWeb != null){
+                    if (newProgress == 100) {
+                        pbWeb.setVisibility(View.GONE);
+                    } else {
+                        if (pbWeb.getVisibility() == View.GONE) {
+                            pbWeb.setVisibility(View.VISIBLE);
+                        }
+                        pbWeb.setProgress(newProgress);
                     }
-                    pbWeb.setProgress(newProgress);
                 }
                 super.onProgressChanged(view, newProgress);
             }
@@ -126,7 +131,6 @@ public class WeixinNewsActivity extends BaseActivity {
                     ViewGroup parent = (ViewGroup) myView.getParent();
                     parent.removeView(myView);
                     parent.addView(wvWeixin);
-                    //cancelFullScreen();
                     myView = null;
                 }
             }
@@ -144,6 +148,15 @@ public class WeixinNewsActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && wvWeixin.canGoBack()) {
+            wvWeixin.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
@@ -192,7 +205,6 @@ public class WeixinNewsActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        wvWeixin.destroy();
         ButterKnife.unbind(this);
     }
 

@@ -117,7 +117,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                                 public void onClick(View v) {
                                     getGuokrHot(offset);
                                 }
-                            });
+                            }).show();
                         }
                     }
 

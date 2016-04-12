@@ -25,7 +25,7 @@
         android:layout_marginBottom="100dp"
         android:text="@string/description"
         android:textColor="@android:color/white"
-        android:textSize="30sp"
+        android:textSize="20sp"
         android:textStyle="italic" />
 
     <ProgressBar

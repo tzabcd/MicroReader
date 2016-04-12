@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     SwipeToLoadLayout swipeToLoadLayout;
 
     private ArrayList<GankVideoItem> gankVideoItems = new ArrayList<>();
-    private int currentPage=1;
+    private int currentPage = 1;
     CacheUtil cacheUtil;
     Gson gson = new Gson();
     private VideoAdapter videoAdapter;
@@ -117,7 +118,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         }
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
-                        e.printStackTrace();
                         if (swipeTarget != null) {
                             getFromCache(page);
                             Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
@@ -232,18 +232,35 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         public void onNext(ResponseBody responseBody) {
                             progressDialog.dismiss();
                             try {
+                                String url, title, shareUrl;
                                 Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
+                                title = gankVideoItems.get(holder.getAdapterPosition()).getDesc();
+                                shareUrl = gankVideoItems.get(holder.getAdapterPosition()).getUrl();
+                                url = shareUrl;
                                 if (matcher.find()) {
+                                    url = matcher.group(1);
+                                    if (TextUtils.isEmpty(url)) {
+                                        Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
                                     startActivity(new Intent(getActivity(), VideoActivity.class)
-                                            .putExtra("url", matcher.group(1))
-                                            .putExtra("shareUrl", gankVideoItems.get(holder.getAdapterPosition()).getUrl())
-                                            .putExtra("title",gankVideoItems.get(holder.getAdapterPosition()).getDesc()));
+                                            .putExtra("url", url)
+                                            .putExtra("shareUrl", shareUrl)
+                                            .putExtra("title", title));
                                 } else {
+                                    if (TextUtils.isEmpty(url)) {
+                                        Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    url = gankVideoItems.get(holder.getAdapterPosition()).getUrl();
                                     startActivity(new Intent(getActivity(), WeixinNewsActivity.class)
-                                            .putExtra("title", gankVideoItems.get(holder.getAdapterPosition()).getDesc())
-                                            .putExtra("url", gankVideoItems.get(holder.getAdapterPosition()).getUrl()));
+                                            .putExtra("url", url)
+                                            .putExtra("shareUrl", shareUrl)
+                                            .putExtra("title", title));
                                 }
+
+
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
