@@ -7,13 +7,13 @@ import com.google.gson.annotations.SerializedName;
  */
 public class WeiboVideoResponse {
     @SerializedName("cards")
-    private WeiboVideoCards cards;
+    private WeiboVideoCardsItem[] cardsItems;
 
-    public WeiboVideoCards getCards() {
-        return cards;
+    public WeiboVideoCardsItem[] getCardsItems() {
+        return cardsItems;
     }
 
-    public void setCards(WeiboVideoCards cards) {
-        this.cards = cards;
+    public void setCardsItems(WeiboVideoCardsItem[] cardsItems) {
+        this.cardsItems = cardsItems;
     }
 }

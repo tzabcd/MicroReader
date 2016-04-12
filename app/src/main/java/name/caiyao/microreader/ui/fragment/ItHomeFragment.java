@@ -125,7 +125,6 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null) {//不加可能会崩溃

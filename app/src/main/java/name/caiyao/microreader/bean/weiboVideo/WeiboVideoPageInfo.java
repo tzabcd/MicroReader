@@ -20,6 +20,8 @@ public class WeiboVideoPageInfo {
     }
 
     public String getVideoUrl() {
+        if (videoUrl.contains("http://miaopai.com"))
+            videoUrl = videoUrl.replace("http://miaopai.com", "http://www.miaopai.com");
         return videoUrl;
     }
 

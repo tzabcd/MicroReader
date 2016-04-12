@@ -15,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.MediaController;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import java.lang.reflect.Field;
@@ -49,12 +50,8 @@ public class VideoActivity extends AppCompatActivity {
         vvGank.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Snackbar.make(vvGank, R.string.common_loading_error, Snackbar.LENGTH_SHORT).setAction(R.string.comon_retry, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        vvGank.start();
-                    }
-                });
+                progressDialog.dismiss();
+                Toast.makeText(VideoActivity.this,"视频不存在或已被删除！",Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

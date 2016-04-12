@@ -2,6 +2,7 @@ package name.caiyao.microreader.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -16,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -36,13 +38,14 @@ import name.caiyao.microreader.bean.weiboVideo.WeiboVideoBlog;
 import name.caiyao.microreader.bean.weiboVideo.WeiboVideoResponse;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.VideoActivity;
-import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
+import name.caiyao.microreader.ui.activity.VideoWebViewActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import okhttp3.ResponseBody;
 import rx.Observer;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class VideoFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
@@ -106,7 +109,24 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         VideoRequest.getVideoRequstApi().getWeiboVideo(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<WeiboVideoResponse>() {
+                .map(new Func1<WeiboVideoResponse, ArrayList<WeiboVideoBlog>>() {
+                    @Override
+                    public ArrayList<WeiboVideoBlog> call(WeiboVideoResponse weiboVideoResponse) {
+                        ArrayList<WeiboVideoBlog> arrayList = new ArrayList<>();
+                        if (!weiboVideoResponse.getCardsItems()[0].getModType().equals("mod/empty")) {
+                            ArrayList<WeiboVideoBlog> a = weiboVideoResponse.getCardsItems()[0].getBlogs();
+                            for (WeiboVideoBlog w : a) {
+                                if (w.getBlog().getmBlog() != null)
+                                    w.setBlog(w.getBlog().getmBlog());
+                                arrayList.add(w);
+                            }
+                        } else {
+                            LogUtils.i("没有数据了！");
+                        }
+                        return arrayList;
+                    }
+                })
+                .subscribe(new Subscriber<ArrayList<WeiboVideoBlog>>() {
                     @Override
                     public void onCompleted() {
 
@@ -114,7 +134,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
@@ -133,19 +152,16 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                     }
 
                     @Override
-                    public void onNext(WeiboVideoResponse weiboVideoResponse) {
+                    public void onNext(ArrayList<WeiboVideoBlog> weiboVideoResponse) {
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        if (!weiboVideoResponse.getCards().getModType().equals("mod/empty")){
-                            gankVideoItems.add(weiboVideoResponse.getCards().getCardGroup().getBlogs()[0]);
-                            videoAdapter.notifyDataSetChanged();
-                        }else{
-                            Toast.makeText(getActivity(),"没有数据了！",Toast.LENGTH_SHORT).show();
-                        }
+                        gankVideoItems.addAll(weiboVideoResponse);
+                        videoAdapter.notifyDataSetChanged();
+                        currentPage++;
                     }
                 });
     }
@@ -190,7 +206,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
-            holder.tvTitle.setText(gankVideoItems.get(position).getBlog().getText());
+            String title = gankVideoItems.get(position).getBlog().getText();
+            holder.tvTitle.setText(title.replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
+                    "<[^>]*>", ""));
             holder.tvTime.setText(gankVideoItems.get(position).getBlog().getCreateTime());
             holder.cvVideo.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -223,47 +241,33 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         @Override
                         public void onError(Throwable e) {
                             progressDialog.dismiss();
-                            Snackbar.make(swipeTarget, getString(R.string.fragment_video_get_url_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getPlayUrl(holder);
-                                }
-                            }).show();
+                            Toast.makeText(getActivity(),"视频解析失败！",Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl())));
                         }
 
                         @Override
                         public void onNext(ResponseBody responseBody) {
                             progressDialog.dismiss();
                             try {
-                                String url, title, shareUrl;
-                                Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
+                                String title, shareUrl;
+                                Pattern pattern = Pattern.compile("href\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\"'>\\s]+)).*target=\"blank\">http");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
-                                title = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getText();
+                                title = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
                                 shareUrl = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
-                                url = shareUrl;
-                                if (matcher.find()) {
-                                    url = matcher.group(1);
-                                    if (TextUtils.isEmpty(url)) {
-                                        Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
+                                if (TextUtils.isEmpty(shareUrl)) {
+                                    Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                LogUtils.i(shareUrl);
+                                if (matcher.find() && matcher.group(1).endsWith(".mp4")) {
                                     startActivity(new Intent(getActivity(), VideoActivity.class)
-                                            .putExtra("url", url)
+                                            .putExtra("url", matcher.group(1))
                                             .putExtra("shareUrl", shareUrl)
                                             .putExtra("title", title));
                                 } else {
-                                    if (TextUtils.isEmpty(url)) {
-                                        Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
-                                        return;
-                                    }
-                                    url = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
-                                    startActivity(new Intent(getActivity(), WeixinNewsActivity.class)
-                                            .putExtra("url", url)
-                                            .putExtra("shareUrl", shareUrl)
-                                            .putExtra("title", title));
+                                    startActivity(new Intent(getActivity(), VideoWebViewActivity.class)
+                                            .putExtra("url", matcher.group(1)));
                                 }
-
-
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

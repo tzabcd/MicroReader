@@ -197,6 +197,14 @@ public class MainActivity extends BaseActivity
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Bundle bundle = new Bundle();
+        bundle.putInt("selectId", selectId);
+        onSaveInstanceState(bundle);
+    }
+
     @SuppressLint("RtlHardcoded")
     private void switchFragment(Fragment fragment, String title) {
         Slide slideTransition;

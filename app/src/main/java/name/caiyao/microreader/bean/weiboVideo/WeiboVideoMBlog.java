@@ -12,6 +12,8 @@ public class WeiboVideoMBlog {
     private String text;
     @SerializedName("page_info")
     private WeiboVideoPageInfo mPageInfo;
+    @SerializedName("retweeted_status")
+    private WeiboVideoMBlog mBlog;
 
     public String getCreateTime() {
         return createTime;
@@ -35,5 +37,13 @@ public class WeiboVideoMBlog {
 
     public void setPageInfo(WeiboVideoPageInfo pageInfo) {
         mPageInfo = pageInfo;
+    }
+
+    public WeiboVideoMBlog getmBlog() {
+        return mBlog;
+    }
+
+    public void setmBlog(WeiboVideoMBlog mBlog) {
+        this.mBlog = mBlog;
     }
 }

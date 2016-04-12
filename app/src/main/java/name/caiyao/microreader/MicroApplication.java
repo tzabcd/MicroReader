@@ -27,7 +27,7 @@ public class MicroApplication extends Application {
 
         BugtagsOptions options = new BugtagsOptions.Builder().
                 trackingLocation(true).//是否获取位置
-                trackingCrashLog(true).//是否收集crash
+                trackingCrashLog(!BuildConfig.DEBUG).//是否收集crash
                 trackingConsoleLog(true).//是否收集console log
                 trackingUserSteps(true).//是否收集用户操作步骤
                 build();

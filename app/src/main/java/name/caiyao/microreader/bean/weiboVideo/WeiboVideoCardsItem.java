@@ -2,15 +2,17 @@ package name.caiyao.microreader.bean.weiboVideo;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+
 /**
- * Created by YiuChoi on 2016/4/12 0012.
+ * Created by 蔡小木 on 2016/4/12 0012.
  */
-public class WeiboVideoCards {
+public class WeiboVideoCardsItem {
     //=mod/empty表示没有数据
     @SerializedName("mod_type")
     private String modType;
     @SerializedName("card_group")
-    private WeiboViewCardGroup cardGroup;
+    private ArrayList<WeiboVideoBlog> mBlogs;
 
     public String getModType() {
         return modType;
@@ -20,11 +22,12 @@ public class WeiboVideoCards {
         this.modType = modType;
     }
 
-    public WeiboViewCardGroup getCardGroup() {
-        return cardGroup;
+
+    public ArrayList<WeiboVideoBlog> getBlogs() {
+        return mBlogs;
     }
 
-    public void setCardGroup(WeiboViewCardGroup cardGroup) {
-        this.cardGroup = cardGroup;
+    public void setBlogs(ArrayList<WeiboVideoBlog> blogs) {
+        mBlogs = blogs;
     }
 }
