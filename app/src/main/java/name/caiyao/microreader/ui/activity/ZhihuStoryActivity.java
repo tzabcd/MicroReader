@@ -18,7 +18,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.jaeger.library.StatusBarUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -27,7 +26,6 @@ import name.caiyao.microreader.api.guokr.GuokrRequest;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.guokr.GuokrArticle;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
-import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import name.caiyao.microreader.utils.WebUtil;
 import rx.Observer;
@@ -133,9 +131,9 @@ public class ZhihuStoryActivity extends BaseActivity {
                     @Override
                     public void onNext(ZhihuStory zhihuStory) {
                         Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
-                        url = zhihuStory.getShare_url();
+                        url = zhihuStory.getShareUrl();
                         if (TextUtils.isEmpty(zhihuStory.getBody())) {
-                            wvZhihu.loadUrl(zhihuStory.getShare_url());
+                            wvZhihu.loadUrl(zhihuStory.getShareUrl());
                         } else {
                             String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
@@ -161,7 +159,7 @@ public class ZhihuStoryActivity extends BaseActivity {
 
                     @Override
                     public void onNext(GuokrArticle guokrArticle) {
-                        Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmall_image()).into(ivZhihuStory);
+                        Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmallImage()).into(ivZhihuStory);
                         url = guokrArticle.getResult().getUrl();
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());

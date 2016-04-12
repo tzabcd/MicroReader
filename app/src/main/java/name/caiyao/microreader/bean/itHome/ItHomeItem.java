@@ -5,38 +5,37 @@ import android.os.Parcelable;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
-import org.simpleframework.xml.convert.Convert;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
  */
 @Root(name = "item")
 public class ItHomeItem implements Parcelable {
-    @Element
+    @Element(name = "newsid")
     private String newsid;
-    @Element
+    @Element(name = "title")
     private String title;
     @Element(name = "c", required = false)
     private String c;
-    @Element(required = false)
+    @Element(required = false,name = "v")
     private String v;
-    @Element
+    @Element(name = "url")
     private String url;
-    @Element
+    @Element(name = "postdate")
     private String postdate;
-    @Element
+    @Element(name = "image")
     private String image;
-    @Element(required = false)//处理可能为空的情况
+    @Element(required = false,name = "description")//处理可能为空的情况
     private String description;
-    @Element(required = false)
+    @Element(required = false,name = "hitcount")
     private int hitcount;
-    @Element(required = false)
+    @Element(required = false,name = "commentcount")
     private int commentcount;
-    @Element(required = false)
+    @Element(required = false,name = "forbidcomment")
     private String forbidcomment;
-    @Element(required = false)
+    @Element(required = false,name = "tags")
     private String tags;
-    @Element(required = false)
+    @Element(required = false,name = "z")
     private String z;
 
     public ItHomeItem() {

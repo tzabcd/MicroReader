@@ -1,11 +1,16 @@
 package name.caiyao.microreader.bean.gankio;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 蔡小木 on 2016/3/21 0021.
  */
-public class GankVideoItem{
+public class GankVideoItem {
+    @SerializedName("publishedAt")
     private String publishedAt;
+    @SerializedName("desc")
     private String desc;
+    @SerializedName("url")
     private String url;
 
     public String getPublishedAt() {

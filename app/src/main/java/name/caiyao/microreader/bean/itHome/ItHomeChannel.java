@@ -1,7 +1,5 @@
 package name.caiyao.microreader.bean.itHome;
 
-import org.simpleframework.xml.Default;
-import org.simpleframework.xml.DefaultType;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
@@ -12,7 +10,7 @@ import java.util.ArrayList;
  */
 @Root(name = "channel")
 public class ItHomeChannel {
-    @ElementList(inline = true)
+    @ElementList(inline = true,name = "items")
     ArrayList<ItHomeItem> items;
 
     public ArrayList<ItHomeItem> getItems() {

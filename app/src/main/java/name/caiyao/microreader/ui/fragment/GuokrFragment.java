@@ -174,7 +174,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
             holder.tvTitle.setText(guokrHotItems.get(position).getTitle());
             holder.tvSummary.setText(guokrHotItems.get(position).getSummary());
-            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmall_image()).into(holder.ivGuokr);
+            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmallImage()).into(holder.ivGuokr);
             holder.cvGuokr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

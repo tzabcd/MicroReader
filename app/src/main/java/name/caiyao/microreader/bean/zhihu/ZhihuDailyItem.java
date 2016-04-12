@@ -1,12 +1,18 @@
 package name.caiyao.microreader.bean.zhihu;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 蔡小木 on 2016/3/6 0006.
  */
 public class ZhihuDailyItem{
+    @SerializedName("images")
     private String[] images;
+    @SerializedName("type")
     private int type;
+    @SerializedName("id")
     private String id;
+    @SerializedName("title")
     private String title;
 
     public String[] getImages() {

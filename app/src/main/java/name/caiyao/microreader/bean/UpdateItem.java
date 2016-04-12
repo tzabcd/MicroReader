@@ -1,12 +1,18 @@
 package name.caiyao.microreader.bean;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by YiuChoi on 2016/4/7 0007.
  */
 public class UpdateItem {
+    @SerializedName("versionCode")
     private int versionCode;
+    @SerializedName("versionName")
     private String versionName;
+    @SerializedName("downloadUrl")
     private String downloadUrl;
+    @SerializedName("releaseNote")
     private String releaseNote;
 
     public int getVersionCode() {

@@ -121,7 +121,7 @@ public class WelcomeActivity extends BaseActivity {
                         public void onNext(ImageResponse imageReponse) {
                             if (imageReponse.getData() != null && imageReponse.getData().getImages() != null) {
                                 try {
-                                    Bitmap bitmap = BitmapFactory.decodeStream(new URL("http://wpstatic.zuimeia.com/" + imageReponse.getData().getImages().get(0).getImage_url() + "?imageMogr/v2/auto-orient/thumbnail/480x320/quality/100").openConnection().getInputStream());
+                                    Bitmap bitmap = BitmapFactory.decodeStream(new URL("http://wpstatic.zuimeia.com/" + imageReponse.getData().getImages().get(0).getImageUrl() + "?imageMogr/v2/auto-orient/thumbnail/480x320/quality/100").openConnection().getInputStream());
                                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(new File(getFilesDir().getPath() + "/bg.jpg")));
                                     Palette palette = Palette.from(bitmap).generate();
                                     int color = 0x000000;

@@ -1,21 +1,27 @@
 package name.caiyao.microreader.bean.guokr;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 蔡小木 on 2016/3/21 0021.
  *
  */
 public class GuokrArticleResult {
-    private String small_image;
+    @SerializedName("small_image")
+    private String mSmallImage;
+    @SerializedName("title")
     private String title;
+    @SerializedName("url")
     private String url;
+    @SerializedName("content")
     private String content;
 
-    public String getSmall_image() {
-        return small_image;
+    public String getSmallImage() {
+        return mSmallImage;
     }
 
-    public void setSmall_image(String small_image) {
-        this.small_image = small_image;
+    public void setSmallImage(String smallImage) {
+        this.mSmallImage = smallImage;
     }
 
     public String getTitle() {

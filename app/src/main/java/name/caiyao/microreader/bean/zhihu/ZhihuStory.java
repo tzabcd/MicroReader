@@ -1,13 +1,20 @@
 package name.caiyao.microreader.bean.zhihu;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 蔡小木 on 2016/3/7 0007.
  */
 public class ZhihuStory  {
+    @SerializedName("body")
     private String body;
+    @SerializedName("title")
     private String title;
+    @SerializedName("image")
     private String image;
-    private String share_url;
+    @SerializedName("share_url")
+    private String mShareUrl;
+    @SerializedName("css")
     private String[] css;
 
     public String getBody() {
@@ -34,12 +41,12 @@ public class ZhihuStory  {
         this.image = image;
     }
 
-    public String getShare_url() {
-        return share_url;
+    public String getShareUrl() {
+        return mShareUrl;
     }
 
-    public void setShare_url(String share_url) {
-        this.share_url = share_url;
+    public void setShareUrl(String shareUrl) {
+        this.mShareUrl = shareUrl;
     }
 
     public String[] getCss() {

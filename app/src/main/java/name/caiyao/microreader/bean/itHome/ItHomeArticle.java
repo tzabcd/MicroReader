@@ -13,16 +13,16 @@ public class ItHomeArticle {
     @Element(name = "newssource")
     private String newssource;
     @Path("channel/item")
-    @Element
+    @Element(name = "newsauthor")
     private String newsauthor;
     @Path("channel/item")
-    @Element
+    @Element(name = "detail")
     private String detail;
     @Path("channel/item")
-    @Element(required = false)
+    @Element(required = false,name = "z")
     private String z;
     @Path("channel/item")
-    @Element(required = false)
+    @Element(required = false,name = "tags")
     private String tags;
 
     public String getNewssource() {

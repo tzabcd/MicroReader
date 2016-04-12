@@ -1,5 +1,7 @@
 package name.caiyao.microreader.bean.gankio;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +9,9 @@ import java.util.ArrayList;
  *
  */
 public class GankVideo{
+    @SerializedName("error")
     private boolean error;
+    @SerializedName("results")
     private ArrayList<GankVideoItem> results;
 
 

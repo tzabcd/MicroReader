@@ -1,13 +1,20 @@
 package name.caiyao.microreader.bean.weixin;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by 蔡小木 on 2016/3/4 0004.
  */
 public class WeixinNews {
+    @SerializedName("hottime")
     private String hottime;
+    @SerializedName("title")
     private String title;
+    @SerializedName("description")
     private String description;
+    @SerializedName("picUrl")
     private String picUrl;
+    @SerializedName("url")
     private String url;
 
     public String getHottime() {

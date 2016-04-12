@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,8 +14,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-
-import com.apkfuns.logutils.LogUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -90,13 +87,15 @@ public class ItHomeActivity extends BaseActivity {
         wvWeixin.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress == 100) {
-                    pbWeb.setVisibility(View.GONE);
-                } else {
-                    if (pbWeb.getVisibility() == View.GONE) {
-                        pbWeb.setVisibility(View.VISIBLE);
+                if (pbWeb != null){//修复未加载完成，用户返回会崩溃
+                    if (newProgress == 100) {
+                        pbWeb.setVisibility(View.GONE);
+                    } else {
+                        if (pbWeb.getVisibility() == View.GONE) {
+                            pbWeb.setVisibility(View.VISIBLE);
+                        }
+                        pbWeb.setProgress(newProgress);
                     }
-                    pbWeb.setProgress(newProgress);
                 }
                 super.onProgressChanged(view, newProgress);
             }

@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,10 +29,11 @@ import java.util.regex.Pattern;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.gankio.GankRequest;
 import name.caiyao.microreader.api.util.UtilRequest;
+import name.caiyao.microreader.api.weiboVideo.VideoRequest;
 import name.caiyao.microreader.bean.gankio.GankVideo;
-import name.caiyao.microreader.bean.gankio.GankVideoItem;
+import name.caiyao.microreader.bean.weiboVideo.WeiboVideoBlog;
+import name.caiyao.microreader.bean.weiboVideo.WeiboVideoResponse;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.VideoActivity;
 import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
@@ -41,6 +41,7 @@ import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import okhttp3.ResponseBody;
 import rx.Observer;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -53,7 +54,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
 
-    private ArrayList<GankVideoItem> gankVideoItems = new ArrayList<>();
+    private ArrayList<WeiboVideoBlog> gankVideoItems = new ArrayList<>();
     private int currentPage = 1;
     CacheUtil cacheUtil;
     Gson gson = new Gson();
@@ -80,7 +81,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         videoAdapter = new VideoAdapter(gankVideoItems);
         swipeTarget.setAdapter(videoAdapter);
         cacheUtil = CacheUtil.get(getActivity());
-        getFromCache(1);
+        //getFromCache(1);
         if (Config.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -96,22 +97,24 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         if (cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page) != null) {
             GankVideo gankVideo = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page).toString(), GankVideo.class);
             currentPage++;
-            gankVideoItems.addAll(gankVideo.getResults());
+            //gankVideoItems.addAll(gankVideo.getResults());
             videoAdapter.notifyDataSetChanged();
         }
     }
 
     private void getVideo(final int page) {
-        GankRequest.getGankApi().getVideoList(page)
+        VideoRequest.getVideoRequstApi().getWeiboVideo(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<GankVideo>() {
+                .subscribe(new Subscriber<WeiboVideoResponse>() {
                     @Override
                     public void onCompleted() {
+
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
@@ -119,7 +122,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeTarget != null) {
-                            getFromCache(page);
+                            //getFromCache(page);
                             Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -130,18 +133,18 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                     }
 
                     @Override
-                    public void onNext(GankVideo gankVideo) {
+                    public void onNext(WeiboVideoResponse weiboVideoResponse) {
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        if (!gankVideo.isError()) {
-                            cacheUtil.put(CacheUtil.VIDEO + page, gson.toJson(gankVideo));
-                            currentPage++;
-                            gankVideoItems.addAll(gankVideo.getResults());
+                        if (!weiboVideoResponse.getCards().getModType().equals("mod/empty")){
+                            gankVideoItems.add(weiboVideoResponse.getCards().getCardGroup().getBlogs()[0]);
                             videoAdapter.notifyDataSetChanged();
+                        }else{
+                            Toast.makeText(getActivity(),"没有数据了！",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -174,9 +177,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
     class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
-        private ArrayList<GankVideoItem> gankVideoItems;
+        private ArrayList<WeiboVideoBlog> gankVideoItems;
 
-        public VideoAdapter(ArrayList<GankVideoItem> gankVideoItems) {
+        public VideoAdapter(ArrayList<WeiboVideoBlog> gankVideoItems) {
             this.gankVideoItems = gankVideoItems;
         }
 
@@ -187,8 +190,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
-            holder.tvTitle.setText(gankVideoItems.get(position).getDesc());
-            holder.tvTime.setText(gankVideoItems.get(position).getPublishedAt());
+            holder.tvTitle.setText(gankVideoItems.get(position).getBlog().getText());
+            holder.tvTime.setText(gankVideoItems.get(position).getBlog().getCreateTime());
             holder.cvVideo.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -208,7 +211,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage(getActivity().getString(R.string.fragment_video_get_url));
             progressDialog.show();
-            UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getUrl())
+            UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<ResponseBody>() {
@@ -235,8 +238,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                 String url, title, shareUrl;
                                 Pattern pattern = Pattern.compile("target=\"blank\">(.*?mp4)</a>");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
-                                title = gankVideoItems.get(holder.getAdapterPosition()).getDesc();
-                                shareUrl = gankVideoItems.get(holder.getAdapterPosition()).getUrl();
+                                title = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getText();
+                                shareUrl = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
                                 url = shareUrl;
                                 if (matcher.find()) {
                                     url = matcher.group(1);
@@ -253,7 +256,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                         Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
-                                    url = gankVideoItems.get(holder.getAdapterPosition()).getUrl();
+                                    url = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
                                     startActivity(new Intent(getActivity(), WeixinNewsActivity.class)
                                             .putExtra("url", url)
                                             .putExtra("shareUrl", shareUrl)
