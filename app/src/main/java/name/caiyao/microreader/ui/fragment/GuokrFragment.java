@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,9 @@ import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 
@@ -33,6 +37,7 @@ import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -73,7 +78,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         swipeTarget.setAdapter(guokrAdapter);
         cacheUtil = CacheUtil.get(getActivity());
         getFromCache(1);
-        if (Config.isRefreshOnlyWifi(getActivity())) {
+        if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
@@ -172,17 +177,41 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
-            holder.mTvTitle.setText(guokrHotItems.get(position).getTitle());
-            holder.mTvDescription.setText(guokrHotItems.get(position).getSummary());
-            holder.mTvTime.setText(guokrHotItems.get(position).getTime());
-            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmallImage()).into(holder.mIvIthome);
+            final GuokrHotItem item = guokrHotItems.get(holder.getAdapterPosition());
+            DB db = null;
+            try {
+                 db= DBFactory.open(getActivity(), Config.DB_GUOKR_HAS_READ);
+                if (db.getInt(item.getId()) == 1)
+                    holder.mTvTitle.setTextColor(Color.GRAY);
+            } catch (SnappydbException ignored) {
+            }finally {
+                try {
+                    if (db != null&&db.isOpen()) {
+                        db.close();
+                    }
+                } catch (SnappydbException e) {
+                    e.printStackTrace();
+                }
+            }
+            holder.mTvTitle.setText(item.getTitle());
+            holder.mTvDescription.setText(item.getSummary());
+            holder.mTvTime.setText(item.getTime());
+            Glide.with(getActivity()).load(item.getSmallImage()).into(holder.mIvIthome);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    try {
+                        DB db = DBFactory.open(getActivity(), Config.DB_GUOKR_HAS_READ);
+                        db.putInt(item.getId(), 1);
+                        holder.mTvTitle.setTextColor(Color.GRAY);
+                        db.close();
+                    } catch (SnappydbException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
                     intent.putExtra("type", ZhihuStoryActivity.TYPE_GUOKR);
-                    intent.putExtra("id", guokrHotItems.get(holder.getAdapterPosition()).getId());
-                    intent.putExtra("title", guokrHotItems.get(holder.getAdapterPosition()).getTitle());
+                    intent.putExtra("id", item.getId());
+                    intent.putExtra("title", item.getTitle());
                     startActivity(intent);
                 }
             });

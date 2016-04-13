@@ -40,7 +40,7 @@ public class BaseActivity extends AppCompatActivity {
     public void setToolBar(Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
         int vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (Config.isChangeNavColor(this))
+            if (SharePreferenceUtil.isChangeNavColor(this))
                 getWindow().setNavigationBarColor(vibrantColor);
             else
                 getWindow().setNavigationBarColor(Color.BLACK);
@@ -48,13 +48,13 @@ public class BaseActivity extends AppCompatActivity {
         if (isChangeToolbar)
             toolbar.setBackgroundColor(vibrantColor);
         if (isChangeStatusBar) {
-            if (Config.isImmersiveMode(this))
+            if (SharePreferenceUtil.isImmersiveMode(this))
                 StatusBarUtil.setColorNoTranslucent(this, vibrantColor);
             else
                 StatusBarUtil.setColor(this, vibrantColor);
         }
         if (drawerLayout != null) {
-            if (Config.isImmersiveMode(this))
+            if (SharePreferenceUtil.isImmersiveMode(this))
                 StatusBarUtil.setColorNoTranslucentForDrawerLayout(this, drawerLayout, vibrantColor);
             else
                 StatusBarUtil.setColorForDrawerLayout(this, drawerLayout, vibrantColor);

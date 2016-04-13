@@ -300,7 +300,6 @@ public class CacheUtil {
             JSONObject obj = new JSONObject(JSONString);
             return obj;
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }

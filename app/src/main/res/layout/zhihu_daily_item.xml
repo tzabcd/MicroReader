@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:textColor="@android:color/black"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
+                    android:textSize="@dimen/cardview_title" />
 
 
                 <TextView
@@ -50,7 +50,11 @@
                     android:layout_alignParentRight="true"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
             </RelativeLayout>
-
+            <Button
+                android:id="@+id/btn_zhihu"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/ic_more_vert_black_24px"/>
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </RelativeLayout>

@@ -2,17 +2,21 @@ package name.caiyao.microreader.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -25,6 +29,9 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,6 +50,7 @@ import name.caiyao.microreader.ui.activity.VideoActivity;
 import name.caiyao.microreader.ui.activity.VideoWebViewActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import okhttp3.ResponseBody;
 import rx.Observer;
 import rx.Subscriber;
@@ -86,8 +94,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         videoAdapter = new VideoAdapter(mWeiboVideoBlogs);
         swipeTarget.setAdapter(videoAdapter);
         cacheUtil = CacheUtil.get(getActivity());
-        //getFromCache(1);
-        if (Config.isRefreshOnlyWifi(getActivity())) {
+        getFromCache(1);
+        if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
@@ -100,7 +108,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
     private void getFromCache(int page) {
         if (cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page) != null) {
-            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>(){}.getType());
+            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>() {
+            }.getType());
             currentPage++;
             mWeiboVideoBlogs.addAll(video);
             videoAdapter.notifyDataSetChanged();
@@ -120,7 +129,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             for (WeiboVideoBlog w : a) {
                                 if (w.getBlog().getmBlog() != null)//处理转发的微博
                                     w.setBlog(w.getBlog().getmBlog());
-                                if (w.getBlog().getPageInfo() != null&&!TextUtils.isEmpty(w.getBlog().getPageInfo().getVideoPic()))//处理无视频微博
+                                if (w.getBlog().getPageInfo() != null && !TextUtils.isEmpty(w.getBlog().getPageInfo().getVideoPic()))//处理无视频微博
                                     arrayList.add(w);
                             }
                         } else {
@@ -163,7 +172,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        cacheUtil.put(CacheUtil.VIDEO+page,gson.toJson(weiboVideoResponse));
+                        cacheUtil.put(CacheUtil.VIDEO + page, gson.toJson(weiboVideoResponse));
                         mWeiboVideoBlogs.addAll(weiboVideoResponse);
                         videoAdapter.notifyDataSetChanged();
                         currentPage++;
@@ -211,31 +220,63 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
-            String title = gankVideoItems.get(position).getBlog().getText();
-            Glide.with(getActivity()).load(gankVideoItems.get(position).getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
+            final WeiboVideoBlog weiboVideoBlog = gankVideoItems.get(position);
+            DB db = null;
+            try {
+                db = DBFactory.open(getActivity(), Config.DB_VIDEO_HAS_READ);
+                if (db.getInt(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())==1)
+                    holder.tvTitle.setTextColor(Color.GRAY);
+                db.close();
+            } catch (SnappydbException ignored) {
+            }finally {
+                try {
+                    if (db != null&&db.isOpen()) {
+                        db.close();
+                    }
+                } catch (SnappydbException e) {
+                    e.printStackTrace();
+                }
+            }
+            String title = weiboVideoBlog.getBlog().getText();
+            Glide.with(getActivity()).load(weiboVideoBlog.getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
             holder.tvTitle.setText(title.replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
                     "<[^>]*>", ""));
-            holder.tvTime.setText(gankVideoItems.get(position).getBlog().getCreateTime());
-            holder.cvVideo.setOnLongClickListener(new View.OnLongClickListener() {
+            holder.tvTime.setText(weiboVideoBlog.getBlog().getCreateTime());
+            holder.btnVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
-
-                    return true;
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnVideo);
+                    popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
                 }
             });
             holder.cvVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    VideoAdapter.this.getPlayUrl(holder);
+                        try {
+                            DB db = DBFactory.open(getActivity(), Config.DB_VIDEO_HAS_READ);
+                            db.putInt(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(),1);
+                            holder.tvTitle.setTextColor(Color.GRAY);
+                            db.close();
+                        }catch (SnappydbException e){
+                            e.printStackTrace();
+                        }
+                    VideoAdapter.this.getPlayUrl(weiboVideoBlog);
                 }
             });
         }
 
-        private void getPlayUrl(final VideoViewHolder holder) {
+        private void getPlayUrl(final WeiboVideoBlog weiboVideoBlog) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage(getActivity().getString(R.string.fragment_video_get_url));
             progressDialog.show();
-            UtilRequest.getUtilApi().getVideoUrl(gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl())
+            UtilRequest.getUtilApi().getVideoUrl(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Observer<ResponseBody>() {
@@ -248,7 +289,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         public void onError(Throwable e) {
                             progressDialog.dismiss();
                             Toast.makeText(getActivity(), "视频解析失败！", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl())));
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())));
                         }
 
                         @Override
@@ -258,13 +299,12 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                 String title, shareUrl;
                                 Pattern pattern = Pattern.compile("href\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\"'>\\s]+)).*target=\"blank\">http");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
-                                title = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
-                                shareUrl = gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl();
+                                title = weiboVideoBlog.getBlog().getText();
+                                shareUrl = weiboVideoBlog.getBlog().getPageInfo().getVideoUrl();
                                 if (TextUtils.isEmpty(shareUrl)) {
                                     Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
-                                LogUtils.i(shareUrl);
                                 if (matcher.find() && matcher.group(1).endsWith(".mp4")) {
                                     startActivity(new Intent(getActivity(), VideoActivity.class)
                                             .putExtra("url", matcher.group(1))
@@ -296,6 +336,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             CardView cvVideo;
             @Bind(R.id.iv_video)
             ImageView mIvVideo;
+            @Bind(R.id.btn_video)
+            Button btnVideo;
 
             public VideoViewHolder(View itemView) {
                 super(itemView);

@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,6 +22,9 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,6 +40,7 @@ import name.caiyao.microreader.ui.activity.ItHomeActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.ItHomeUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -77,7 +83,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         itAdapter = new ItAdapter(itHomeItems);
         swipeTarget.setAdapter(itAdapter);
         getFromCache();
-        if (Config.isRefreshOnlyWifi(getActivity())) {
+        if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
@@ -233,15 +239,40 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
         @Override
         public void onBindViewHolder(final ItViewHolder holder, int position) {
-            holder.tvTitle.setText(itHomeItems.get(position).getTitle());
-            holder.tvTime.setText(itHomeItems.get(position).getPostdate());
-            holder.tvDescription.setText(itHomeItems.get(position).getDescription());
-            Glide.with(getActivity()).load(itHomeItems.get(position).getImage()).placeholder(R.drawable.bg).into(holder.ivIthome);
+            final ItHomeItem itHomeItem = itHomeItems.get(holder.getAdapterPosition());
+            DB db = null;
+            try {
+                db = DBFactory.open(getActivity(), Config.DB_IT_HAS_READ);
+                if (db.getInt(itHomeItem.getNewsid()) == 1)
+                    holder.tvTitle.setTextColor(Color.GRAY);
+                db.close();
+            } catch (SnappydbException ignored) {
+            }finally {
+                try {
+                    if (db != null&&db.isOpen()) {
+                        db.close();
+                    }
+                } catch (SnappydbException e) {
+                    e.printStackTrace();
+                }
+            }
+            holder.tvTitle.setText(itHomeItem.getTitle());
+            holder.tvTime.setText(itHomeItem.getPostdate());
+            holder.tvDescription.setText(itHomeItem.getDescription());
+            Glide.with(getActivity()).load(itHomeItem.getImage()).placeholder(R.drawable.bg).into(holder.ivIthome);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    try {
+                        DB db = DBFactory.open(getActivity(), Config.DB_IT_HAS_READ);
+                        db.putInt(itHomeItem.getNewsid(), 1);
+                        holder.tvTitle.setTextColor(Color.GRAY);
+                        db.close();
+                    } catch (SnappydbException e) {
+                        e.printStackTrace();
+                    }
                     startActivity(new Intent(getActivity(), ItHomeActivity.class)
-                            .putExtra("item", itHomeItems.get(holder.getAdapterPosition())));
+                            .putExtra("item", itHomeItem));
                 }
             });
         }
@@ -261,6 +292,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             TextView tvDescription;
             @Bind(R.id.tv_time)
             TextView tvTime;
+            @Bind(R.id.btn_it)
+            Button btnIt;
 
             public ItViewHolder(View itemView) {
                 super(itemView);

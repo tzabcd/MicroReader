@@ -1,17 +1,21 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,6 +26,9 @@ import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.snappydb.DB;
+import com.snappydb.DBFactory;
+import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 
@@ -36,6 +43,7 @@ import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -78,7 +86,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         swipeTarget.setAdapter(weixinAdapter);
         cacheUtil = CacheUtil.get(getActivity());
         getFromCache(1);
-        if (Config.isRefreshOnlyWifi(getActivity())) {
+        if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
             } else {
@@ -211,6 +219,22 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
 
         @Override
         public void onBindViewHolder(final WeixinViewHolder holder, int position) {
+            DB db = null;
+            try {
+                db = DBFactory.open(getActivity(), Config.DB_WEIXIN_HAS_READ);
+                if (db.getInt(weixinNewses.get(holder.getAdapterPosition()).getUrl()) == 1)
+                    holder.tvTitle.setTextColor(Color.GRAY);
+                db.close();
+            } catch (SnappydbException ignored) {
+            }finally {
+                try {
+                    if (db != null&&db.isOpen()) {
+                        db.close();
+                    }
+                } catch (SnappydbException e) {
+                    e.printStackTrace();
+                }
+            }
             holder.tvDescription.setText(weixinNewses.get(position).getDescription());
             holder.tvTitle.setText(weixinNewses.get(position).getTitle());
             holder.tvTime.setText(weixinNewses.get(position).getHottime());
@@ -219,10 +243,32 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             } else {
                 holder.ivWeixin.setImageResource(R.drawable.bg);
             }
+            holder.btnWeixin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnWeixin);
+                    popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
+                }
+            });
             runEnterAnimation(holder.itemView, position);
             holder.cvMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    try {
+                        DB db = DBFactory.open(getActivity(), Config.DB_WEIXIN_HAS_READ);
+                        db.putInt(weixinNewses.get(holder.getAdapterPosition()).getUrl(), 1);
+                        holder.tvTitle.setTextColor(Color.GRAY);
+                        db.close();
+                    } catch (SnappydbException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
                     intent.putExtra("url", weixinNewses.get(holder.getAdapterPosition()).getUrl());
                     intent.putExtra("title", weixinNewses.get(holder.getAdapterPosition()).getTitle());
@@ -257,6 +303,8 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             TextView tvDescription;
             @Bind(R.id.cv_main)
             CardView cvMain;
+            @Bind(R.id.btn_weixin)
+            Button btnWeixin;
 
             public WeixinViewHolder(View itemView) {
                 super(itemView);

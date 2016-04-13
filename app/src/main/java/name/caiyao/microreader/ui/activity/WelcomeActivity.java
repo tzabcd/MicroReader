@@ -96,7 +96,7 @@ public class WelcomeActivity extends BaseActivity {
     }
 
     private void getBackground() {
-        if (Config.isChangeThemeAuto(this)) {
+        if (SharePreferenceUtil.isChangeThemeAuto(this)) {
             ZhihuRequest.getZhihuApi().getImage().subscribeOn(Schedulers.io())
                     .subscribe(new Observer<ImageResponse>() {
                         @Override

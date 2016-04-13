@@ -17,7 +17,8 @@ body{
 }
 
 img{
-    /*max-width: 300px;*/
+    display: inline;
+    height: auto;
     width:100%;
 }
 video {
@@ -176,7 +177,7 @@ body.night img
 
 .hl{display:none;width:0px;height:0px;margin:0px;padding:0px;}
 
-/* ÍÆ¹ãÎ» */
+/* ï¿½Æ¹ï¿½Î» */
 .recomment{position:relative;clear:both;height:68px;margin:15px 0px 20px 0px;border:1px solid #dfdfdf;overflow:hidden; background-color:#ffffff;max-width:100%;}
 .night .recomment{border:1px solid #595959;background-color:#191919;}
 .recomment span{position:absolute;top:0;display:block;text-decoration:none;height:68px;color:#000;max-width:100%;}
@@ -190,7 +191,7 @@ body.night img
 .recomment .flag{position:absolute;top:-1px;right:9px;width:14px;height:29px;background:url(ad_tuiguang_flag.png) no-repeat;background-size:100% 100%;}
 
 
-/* ÂÖ²¥¹ã¸æ */
+/* ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ */
 .banner {
     position: relative;
     width: 100%;
@@ -235,7 +236,7 @@ figure {
 }
 */
 
-/* Ïà¹ØÎÄÕÂ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 .related_post{margin:12px -10px 0px -10px;}
 .related_post h2{margin:10px 0px 8px 0px;font-weight:700;display:inline-block;
 	padding:1px 10px 1px 10px;
@@ -263,7 +264,7 @@ figure {
 .related_post ul li a{display:block;clear:both;padding:12px 0 10px;color:#333;text-decoration:none;overflow:hidden;}/*height:32px;*/
 .night .related_post ul li a{color:#aeaeae;}			
 
- /* µ÷ÊÔÓÃ
+ /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  .related_post{margin:0 -10px;}
     .related_post h2{height:34px;margin:0;padding:0 10px;line-height:34px;font-size:16px;color:#000000;background:#e4e4e4;}
     .related_post ul{margin:0px 0px 6px 0px;padding:0;}
@@ -279,12 +280,12 @@ figure {
  */
 
 
-/*×îÈÈÆÀÂÛÇøÓò*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 #newshotcomment
 {
     margin-top:5px;
 }
-/*ÆÀÂÛ×Ü±êÌâ ÈÈÃÅÆÀÂÛ */
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 #newshotcomment h3.icon2{
     font-weight:750;
     display:inline-block;
@@ -319,7 +320,7 @@ figure {
     padding:0px;
 }
 
-/*ÁÐ±íÖÐµÄÒ»ÌõÆÀÂÛ*/
+/*ï¿½Ð±ï¿½ï¿½Ðµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 #newshotcomment ul.list li.entry{
     border-top:none;
     border-bottom:1px #e7e7e7 solid;
@@ -340,7 +341,7 @@ figure {
 /****************************************************************************************************/
 /****************************************************************************************************/
 
-/*Ò»ÌõÆÀÂÛµÄÃû³Æ¡¢µØÀíÎ»ÖÃÍ·ÏñÊ±¼äµÈËùÓÐÐÅÏ¢*/
+/*Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ï¿½Æ¡ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½Í·ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢*/
 #newshotcomment ul.list li.entry .info{
     display:block;
     padding:0px 0 5px 0;
@@ -351,7 +352,7 @@ figure {
 .night #newshotcomment ul.list li.entry .info{
     color:#999;
 }
-/*Í·Ïñ*/
+/*Í·ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .headerimage{
     display:inline-block;
     width:25px;
@@ -366,20 +367,20 @@ figure {
     opacity:0.7;
 }
 
-/*³ýÍ·Ïñ*/
+/*ï¿½ï¿½Í·ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .allnoimage{
 	margin:4px 0 0;
     display:inline-block;
     float:left;
     overflow:hidden;
 }
-/*ÓÃ»§ÃûÓëÉè±¸*/
+/*ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è±¸*/
 #newshotcomment ul.list li.entry .nameanddev{
     display:inline-block;
     float:left;
     padding-left:5px;
 }
-/*¶¥*/
+/*ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .dingcount{
 	margin:4px 0 0;
     display:inline-block;
@@ -392,7 +393,7 @@ figure {
 .night #newshotcomment ul.list li.entry .dingcount{
     color:#9f9f9f;
 }
-/*Î»ÖÃÓëÊ±¼ä*/
+/*Î»ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .posandtime{
     clear:left;
     float:left;
@@ -404,11 +405,11 @@ figure {
 .night #newshotcomment ul.list li.entry .posandtime{
     color:#9f9f9f;
 }
-/*µ¥¸öÆÀÂÛÇ¿µ÷×ÖÌå °üÀ¨Â¥²ãºÅ£¬ÓÃ»§ÃûµÈ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Â¥ï¿½ï¿½Å£ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .info strong{
     padding-right:6px;
 }
-/*ÓÃ»§Ãû*/
+/*ï¿½Ã»ï¿½ï¿½ï¿½*/
 #newshotcomment ul.list li.entry .rmp strong.nick a{
     font-size:13px;
     color:#4780dd;
@@ -432,7 +433,7 @@ figure {
 
 /****************************************************************************************************/
 
-/*ÆÀÂÛÄÚÈÝ*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 #newshotcomment ul.list li.entry p{
 	width:100%;
     float:left;
@@ -446,7 +447,7 @@ figure {
     color:#aeaeae;
 }
 
-/*¸ü¶àÆÀÂÛÇøÓò*/
+/*ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
 #newshotcomment .more_comm{
     width:100%;
     margin:3px auto;

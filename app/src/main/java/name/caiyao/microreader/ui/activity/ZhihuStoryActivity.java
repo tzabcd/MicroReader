@@ -17,7 +17,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
+import com.apkfuns.logutils.LogUtils;
 import com.bumptech.glide.Glide;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,7 +65,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        setToolBar(toolbar, false, isKitKat,null);
+        setToolBar(toolbar, false, isKitKat, null);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,11 +86,12 @@ public class ZhihuStoryActivity extends BaseActivity {
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
-        settings.setUseWideViewPort(true);
+        //settings.setUseWideViewPort(true);造成文字太小
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
         settings.setAppCacheEnabled(true);
+        settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
         wvZhihu.setWebChromeClient(new WebChromeClient());
         ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
         ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
@@ -164,7 +169,8 @@ public class ZhihuStoryActivity extends BaseActivity {
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent(), new String[]{"news.css"}, false);
+                            //解决图片显示问题
+                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>",""), new String[]{"news.css"}, false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
                         }
                     }
