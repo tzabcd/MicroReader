@@ -12,7 +12,7 @@ import rx.Observable;
  */
 public interface GuokrApi {
 
-    @GET("/apis/minisite/article.json?retrieve_type=by_channel&channel_key=hot")
+    @GET("http://apis.guokr.com/minisite/article.json?retrieve_type=by_minisite")
     Observable<GuokrHot> getGuokrHot(@Query("offset") int offset);
 
     @GET("http://apis.guokr.com/minisite/article/{id}.json")

@@ -82,7 +82,7 @@ public class ZhihuStoryActivity extends BaseActivity {
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setLoadWithOverviewMode(true);
         settings.setBuiltInZoomControls(true);
-        //settings.setUseWideViewPort(true);
+        settings.setUseWideViewPort(true);
         settings.setDomStorageEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");

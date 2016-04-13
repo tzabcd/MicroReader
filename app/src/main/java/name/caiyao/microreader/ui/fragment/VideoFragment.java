@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +22,9 @@ import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +36,6 @@ import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.util.UtilRequest;
 import name.caiyao.microreader.api.weiboVideo.VideoRequest;
-import name.caiyao.microreader.bean.gankio.GankVideo;
 import name.caiyao.microreader.bean.weiboVideo.WeiboVideoBlog;
 import name.caiyao.microreader.bean.weiboVideo.WeiboVideoResponse;
 import name.caiyao.microreader.config.Config;
@@ -57,7 +59,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Bind(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
 
-    private ArrayList<WeiboVideoBlog> gankVideoItems = new ArrayList<>();
+    private ArrayList<WeiboVideoBlog> mWeiboVideoBlogs = new ArrayList<>();
     private int currentPage = 1;
     CacheUtil cacheUtil;
     Gson gson = new Gson();
@@ -81,7 +83,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
-        videoAdapter = new VideoAdapter(gankVideoItems);
+        videoAdapter = new VideoAdapter(mWeiboVideoBlogs);
         swipeTarget.setAdapter(videoAdapter);
         cacheUtil = CacheUtil.get(getActivity());
         //getFromCache(1);
@@ -97,10 +99,10 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     private void getFromCache(int page) {
-        if (cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page) != null) {
-            GankVideo gankVideo = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.VIDEO + page).toString(), GankVideo.class);
+        if (cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page) != null) {
+            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>(){}.getType());
             currentPage++;
-            //gankVideoItems.addAll(gankVideo.getResults());
+            mWeiboVideoBlogs.addAll(video);
             videoAdapter.notifyDataSetChanged();
         }
     }
@@ -116,9 +118,10 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         if (!weiboVideoResponse.getCardsItems()[0].getModType().equals("mod/empty")) {
                             ArrayList<WeiboVideoBlog> a = weiboVideoResponse.getCardsItems()[0].getBlogs();
                             for (WeiboVideoBlog w : a) {
-                                if (w.getBlog().getmBlog() != null)
+                                if (w.getBlog().getmBlog() != null)//处理转发的微博
                                     w.setBlog(w.getBlog().getmBlog());
-                                arrayList.add(w);
+                                if (w.getBlog().getPageInfo() != null&&!TextUtils.isEmpty(w.getBlog().getPageInfo().getVideoPic()))//处理无视频微博
+                                    arrayList.add(w);
                             }
                         } else {
                             LogUtils.i("没有数据了！");
@@ -134,6 +137,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
@@ -141,7 +145,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
                         if (swipeTarget != null) {
-                            //getFromCache(page);
+                            getFromCache(page);
                             Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -159,7 +163,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        gankVideoItems.addAll(weiboVideoResponse);
+                        cacheUtil.put(CacheUtil.VIDEO+page,gson.toJson(weiboVideoResponse));
+                        mWeiboVideoBlogs.addAll(weiboVideoResponse);
                         videoAdapter.notifyDataSetChanged();
                         currentPage++;
                     }
@@ -175,7 +180,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onRefresh() {
         currentPage = 1;
-        gankVideoItems.clear();
+        mWeiboVideoBlogs.clear();
         //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
         videoAdapter.notifyDataSetChanged();
         getVideo(currentPage);
@@ -207,6 +212,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
             String title = gankVideoItems.get(position).getBlog().getText();
+            Glide.with(getActivity()).load(gankVideoItems.get(position).getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
             holder.tvTitle.setText(title.replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
                     "<[^>]*>", ""));
             holder.tvTime.setText(gankVideoItems.get(position).getBlog().getCreateTime());
@@ -241,7 +247,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         @Override
                         public void onError(Throwable e) {
                             progressDialog.dismiss();
-                            Toast.makeText(getActivity(),"视频解析失败！",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "视频解析失败！", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(gankVideoItems.get(holder.getAdapterPosition()).getBlog().getPageInfo().getVideoUrl())));
                         }
 
@@ -288,6 +294,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             TextView tvTime;
             @Bind(R.id.cv_video)
             CardView cvVideo;
+            @Bind(R.id.iv_video)
+            ImageView mIvVideo;
 
             public VideoViewHolder(View itemView) {
                 super(itemView);

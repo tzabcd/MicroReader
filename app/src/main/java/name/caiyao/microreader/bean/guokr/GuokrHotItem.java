@@ -15,6 +15,8 @@ public class GuokrHotItem   {
     private String mSmallImage;
     @SerializedName("summary")
     private String summary;
+    @SerializedName("date_published")
+    private String mTime;
 
     public String getId() {
         return id;
@@ -46,5 +48,13 @@ public class GuokrHotItem   {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getTime() {
+        return mTime.replace("+08:00","").replace("T"," ");
+    }
+
+    public void setTime(String time) {
+        mTime = time;
     }
 }

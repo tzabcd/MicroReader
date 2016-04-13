@@ -6,8 +6,8 @@ import com.google.gson.annotations.SerializedName;
  * Created by 蔡小木 on 2016/3/4 0004.
  */
 public class WeixinNews {
-    @SerializedName("hottime")
-    private String hottime;
+    @SerializedName("ctime")
+    private String ctime;
     @SerializedName("title")
     private String title;
     @SerializedName("description")
@@ -18,11 +18,11 @@ public class WeixinNews {
     private String url;
 
     public String getHottime() {
-        return hottime;
+        return ctime;
     }
 
     public void setHottime(String hottime) {
-        this.hottime = hottime;
+        this.ctime = hottime;
     }
 
     public String getTitle() {

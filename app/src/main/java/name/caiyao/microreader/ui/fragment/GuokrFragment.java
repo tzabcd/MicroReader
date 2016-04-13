@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -167,15 +167,16 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public GuokrViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new GuokrViewHolder(getActivity().getLayoutInflater().inflate(R.layout.guokr_item, parent, false));
+            return new GuokrViewHolder(getActivity().getLayoutInflater().inflate(R.layout.ithome_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
-            holder.tvTitle.setText(guokrHotItems.get(position).getTitle());
-            holder.tvSummary.setText(guokrHotItems.get(position).getSummary());
-            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmallImage()).into(holder.ivGuokr);
-            holder.cvGuokr.setOnClickListener(new View.OnClickListener() {
+            holder.mTvTitle.setText(guokrHotItems.get(position).getTitle());
+            holder.mTvDescription.setText(guokrHotItems.get(position).getSummary());
+            holder.mTvTime.setText(guokrHotItems.get(position).getTime());
+            Glide.with(getActivity()).load(guokrHotItems.get(position).getSmallImage()).into(holder.mIvIthome);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
@@ -194,14 +195,16 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
         public class GuokrViewHolder extends RecyclerView.ViewHolder {
 
-            @Bind(R.id.iv_guokr)
-            ImageView ivGuokr;
             @Bind(R.id.tv_title)
-            TextView tvTitle;
-            @Bind(R.id.tv_summary)
-            TextView tvSummary;
-            @Bind(R.id.cv_guokr)
-            CardView cvGuokr;
+            TextView mTvTitle;
+            @Bind(R.id.iv_ithome)
+            ImageView mIvIthome;
+            @Bind(R.id.tv_description)
+            TextView mTvDescription;
+            @Bind(R.id.tv_time)
+            TextView mTvTime;
+            @Bind(R.id.btn_it)
+            Button mBtnIt;
 
             public GuokrViewHolder(View itemView) {
                 super(itemView);

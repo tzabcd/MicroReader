@@ -342,7 +342,7 @@ public class CacheUtil {
             JSONArray obj = new JSONArray(JSONString);
             return obj;
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return null;
         }
     }
