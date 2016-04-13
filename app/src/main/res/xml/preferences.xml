@@ -4,7 +4,6 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="@string/pre_refresh_data"
-            android:layout="@layout/preference_item"
             android:summaryOff="在WIFI和移动网络下"
             android:summaryOn="仅在WIFI下"
             android:title="进入自动刷新数据" />
@@ -12,7 +11,6 @@
             android:checked="true"
             android:defaultValue="true"
             android:key="@string/pre_get_image"
-            android:layout="@layout/preference_item"
             android:summaryOff="关闭"
             android:summaryOn="打开"
             android:title="每日自动更换主题" />
@@ -22,14 +20,12 @@
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pre_status_bar"
-            android:layout="@layout/preference_item"
             android:summaryOff="半透明状态栏"
             android:summaryOn="沉浸式状态栏"
             android:title="状态栏显示效果" />
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="@string/pre_nav_color"
-            android:layout="@layout/preference_item"
             android:summaryOff="关闭导航栏变色"
             android:summaryOn="开启导航栏变色"
             android:title="导航栏变色" />
@@ -38,7 +34,6 @@
     <PreferenceCategory android:title="缓存管理">
         <Preference
             android:key="@string/pre_cache_size"
-            android:layout="@layout/preference_item"
             android:summary="缓存大小:0B"
             android:title="清除缓存" />
     </PreferenceCategory>
@@ -46,17 +41,14 @@
     <PreferenceCategory android:title="更多">
         <Preference
             android:key="@string/pre_author"
-            android:layout="@layout/preference_item"
             android:summary="一个无聊的程序员"
             android:title="作者:蔡小木" />
         <Preference
             android:key="@string/pre_feedback"
-            android:layout="@layout/preference_item"
             android:summary="me@caiyao.name"
             android:title="反馈和建议" />
         <Preference
             android:key="@string/pre_version"
-            android:layout="@layout/preference_item"
             android:summary="101"
             android:title="版本号" />
     </PreferenceCategory>
