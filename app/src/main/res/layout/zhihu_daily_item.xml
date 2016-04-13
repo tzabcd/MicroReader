@@ -9,15 +9,15 @@
         android:id="@+id/cv_zhihu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_margin="@dimen/cardview_margin"
         android:clickable="true"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="5dp">
+        app:cardCornerRadius="@dimen/cardview_margin"
+        app:cardElevation="@dimen/cardview_margin">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="@dimen/cardview_margin"
             android:orientation="horizontal">
 
             <ImageView
