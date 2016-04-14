@@ -38,11 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class CacheUtil {
-    public static final String WEIXIN = "weixin";
-    public static final String GUOKR = "guokr";
-    public static final String ZHIHU = "zhihu";
-    public static final String VIDEO = "video";
-    public static final String IT = "it";
     public static final int TIME_HOUR = 60 * 60;
     public static final int TIME_DAY = TIME_HOUR * 24;
     private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb

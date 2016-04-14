@@ -1,7 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,9 +21,6 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -95,8 +91,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     private void getFromCache() {
-        if (cacheUtil.getAsJSONArray(CacheUtil.IT) != null && cacheUtil.getAsJSONArray(CacheUtil.IT).length() != 0) {
-            ArrayList<ItHomeItem> it = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.IT).toString(), new TypeToken<ArrayList<ItHomeItem>>() {
+        if (cacheUtil.getAsJSONArray(Config.IT) != null && cacheUtil.getAsJSONArray(Config.IT).length() != 0) {
+            ArrayList<ItHomeItem> it = gson.fromJson(cacheUtil.getAsJSONArray(Config.IT).toString(), new TypeToken<ArrayList<ItHomeItem>>() {
             }.getType());
             itHomeItems.addAll(it);
             itAdapter.notifyDataSetChanged();
@@ -154,7 +150,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                         }
                         if (progressBar != null)
                             progressBar.setVisibility(View.INVISIBLE);
-                        cacheUtil.put(CacheUtil.IT, gson.toJson(it));
+                        cacheUtil.put(Config.IT, gson.toJson(it));
                         itHomeItems.addAll(it);
                         itAdapter.notifyDataSetChanged();
                     }
@@ -240,22 +236,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         @Override
         public void onBindViewHolder(final ItViewHolder holder, int position) {
             final ItHomeItem itHomeItem = itHomeItems.get(holder.getAdapterPosition());
-            DB db = null;
-            try {
-                db = DBFactory.open(getActivity(), Config.DB_IT_HAS_READ);
-                if (db.getInt(itHomeItem.getNewsid()) == 1)
-                    holder.tvTitle.setTextColor(Color.GRAY);
-                db.close();
-            } catch (SnappydbException ignored) {
-            }finally {
-                try {
-                    if (db != null&&db.isOpen()) {
-                        db.close();
-                    }
-                } catch (SnappydbException e) {
-                    e.printStackTrace();
-                }
-            }
+
             holder.tvTitle.setText(itHomeItem.getTitle());
             holder.tvTime.setText(itHomeItem.getPostdate());
             holder.tvDescription.setText(itHomeItem.getDescription());
@@ -263,14 +244,6 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        DB db = DBFactory.open(getActivity(), Config.DB_IT_HAS_READ);
-                        db.putInt(itHomeItem.getNewsid(), 1);
-                        holder.tvTitle.setTextColor(Color.GRAY);
-                        db.close();
-                    } catch (SnappydbException e) {
-                        e.printStackTrace();
-                    }
                     startActivity(new Intent(getActivity(), ItHomeActivity.class)
                             .putExtra("item", itHomeItem));
                 }

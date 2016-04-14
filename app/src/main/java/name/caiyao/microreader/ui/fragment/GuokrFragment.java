@@ -21,9 +21,6 @@ import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 
@@ -36,6 +33,7 @@ import name.caiyao.microreader.bean.guokr.GuokrHotItem;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
@@ -90,8 +88,8 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     private void getFromCache(int offset) {
-        if (cacheUtil.getAsJSONObject(CacheUtil.GUOKR + offset) != null) {
-            GuokrHot guokrHot = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.GUOKR + offset).toString(), GuokrHot.class);
+        if (cacheUtil.getAsJSONObject(Config.GUOKR + offset) != null) {
+            GuokrHot guokrHot = new Gson().fromJson(cacheUtil.getAsJSONObject(Config.GUOKR + offset).toString(), GuokrHot.class);
             currentOffset++;
             guokrHotItems.addAll(guokrHot.getResult());
             guokrAdapter.notifyDataSetChanged();
@@ -134,7 +132,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        cacheUtil.put(CacheUtil.GUOKR + offset, new Gson().toJson(guokrHot));
+                        cacheUtil.put(Config.GUOKR + offset, new Gson().toJson(guokrHot));
                         currentOffset++;
                         guokrHotItems.addAll(guokrHot.getResult());
                         guokrAdapter.notifyDataSetChanged();
@@ -178,21 +176,8 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
             final GuokrHotItem item = guokrHotItems.get(holder.getAdapterPosition());
-            DB db = null;
-            try {
-                 db= DBFactory.open(getActivity(), Config.DB_GUOKR_HAS_READ);
-                if (db.getInt(item.getId()) == 1)
-                    holder.mTvTitle.setTextColor(Color.GRAY);
-            } catch (SnappydbException ignored) {
-            }finally {
-                try {
-                    if (db != null&&db.isOpen()) {
-                        db.close();
-                    }
-                } catch (SnappydbException e) {
-                    e.printStackTrace();
-                }
-            }
+            if (DBUtils.getDB(getActivity()).isRead(Config.GUOKR, item.getId(), 1))
+                holder.mTvTitle.setTextColor(Color.GRAY);
             holder.mTvTitle.setText(item.getTitle());
             holder.mTvDescription.setText(item.getSummary());
             holder.mTvTime.setText(item.getTime());
@@ -200,14 +185,8 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        DB db = DBFactory.open(getActivity(), Config.DB_GUOKR_HAS_READ);
-                        db.putInt(item.getId(), 1);
-                        holder.mTvTitle.setTextColor(Color.GRAY);
-                        db.close();
-                    } catch (SnappydbException e) {
-                        e.printStackTrace();
-                    }
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, item.getId(), 1);
+                    holder.mTvTitle.setTextColor(Color.GRAY);
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
                     intent.putExtra("type", ZhihuStoryActivity.TYPE_GUOKR);
                     intent.putExtra("id", item.getId());

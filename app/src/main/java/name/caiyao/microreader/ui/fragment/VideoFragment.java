@@ -2,7 +2,6 @@ package name.caiyao.microreader.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,9 +28,6 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -107,8 +103,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     private void getFromCache(int page) {
-        if (cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page) != null) {
-            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(CacheUtil.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>() {
+        if (cacheUtil.getAsJSONArray(Config.VIDEO + page) != null) {
+            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(Config.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>() {
             }.getType());
             currentPage++;
             mWeiboVideoBlogs.addAll(video);
@@ -172,7 +168,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                             swipeToLoadLayout.setRefreshing(false);
                             swipeToLoadLayout.setLoadingMore(false);
                         }
-                        cacheUtil.put(CacheUtil.VIDEO + page, gson.toJson(weiboVideoResponse));
+                        cacheUtil.put(Config.VIDEO + page, gson.toJson(weiboVideoResponse));
                         mWeiboVideoBlogs.addAll(weiboVideoResponse);
                         videoAdapter.notifyDataSetChanged();
                         currentPage++;
@@ -221,22 +217,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
             final WeiboVideoBlog weiboVideoBlog = gankVideoItems.get(position);
-            DB db = null;
-            try {
-                db = DBFactory.open(getActivity(), Config.DB_VIDEO_HAS_READ);
-                if (db.getInt(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())==1)
-                    holder.tvTitle.setTextColor(Color.GRAY);
-                db.close();
-            } catch (SnappydbException ignored) {
-            }finally {
-                try {
-                    if (db != null&&db.isOpen()) {
-                        db.close();
-                    }
-                } catch (SnappydbException e) {
-                    e.printStackTrace();
-                }
-            }
             String title = weiboVideoBlog.getBlog().getText();
             Glide.with(getActivity()).load(weiboVideoBlog.getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
             holder.tvTitle.setText(title.replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
@@ -259,14 +239,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             holder.cvVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        try {
-                            DB db = DBFactory.open(getActivity(), Config.DB_VIDEO_HAS_READ);
-                            db.putInt(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(),1);
-                            holder.tvTitle.setTextColor(Color.GRAY);
-                            db.close();
-                        }catch (SnappydbException e){
-                            e.printStackTrace();
-                        }
                     VideoAdapter.this.getPlayUrl(weiboVideoBlog);
                 }
             });

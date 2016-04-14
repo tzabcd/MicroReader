@@ -1,7 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -26,9 +25,6 @@ import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 
@@ -122,9 +118,9 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     private void getFromCache(int page) {
-        if (cacheUtil.getAsJSONObject(CacheUtil.WEIXIN + page) != null) {
-            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject(CacheUtil.WEIXIN + page).toString(), TxWeixinResponse.class);
-            cacheUtil.put(CacheUtil.WEIXIN + page, new Gson().toJson(txWeixinResponse));
+        if (cacheUtil.getAsJSONObject(Config.WEIXIN + page) != null) {
+            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject(Config.WEIXIN + page).toString(), TxWeixinResponse.class);
+            cacheUtil.put(Config.WEIXIN + page, new Gson().toJson(txWeixinResponse));
             weixinNewses.addAll(txWeixinResponse.getNewslist());
             weixinAdapter.notifyDataSetChanged();
             currentPage++;
@@ -167,7 +163,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                             swipeToLoadLayout.setLoadingMore(false);
                         }
                         if (txWeixinResponse.getCode() == 200) {
-                            cacheUtil.put(CacheUtil.WEIXIN + page, new Gson().toJson(txWeixinResponse));
+                            cacheUtil.put(Config.WEIXIN + page, new Gson().toJson(txWeixinResponse));
                             weixinNewses.addAll(txWeixinResponse.getNewslist());
                             weixinAdapter.notifyDataSetChanged();
                             currentPage++;
@@ -219,22 +215,6 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
 
         @Override
         public void onBindViewHolder(final WeixinViewHolder holder, int position) {
-            DB db = null;
-            try {
-                db = DBFactory.open(getActivity(), Config.DB_WEIXIN_HAS_READ);
-                if (db.getInt(weixinNewses.get(holder.getAdapterPosition()).getUrl()) == 1)
-                    holder.tvTitle.setTextColor(Color.GRAY);
-                db.close();
-            } catch (SnappydbException ignored) {
-            }finally {
-                try {
-                    if (db != null&&db.isOpen()) {
-                        db.close();
-                    }
-                } catch (SnappydbException e) {
-                    e.printStackTrace();
-                }
-            }
             holder.tvDescription.setText(weixinNewses.get(position).getDescription());
             holder.tvTitle.setText(weixinNewses.get(position).getTitle());
             holder.tvTime.setText(weixinNewses.get(position).getHottime());
@@ -261,14 +241,6 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             holder.cvMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        DB db = DBFactory.open(getActivity(), Config.DB_WEIXIN_HAS_READ);
-                        db.putInt(weixinNewses.get(holder.getAdapterPosition()).getUrl(), 1);
-                        holder.tvTitle.setTextColor(Color.GRAY);
-                        db.close();
-                    } catch (SnappydbException e) {
-                        e.printStackTrace();
-                    }
                     Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
                     intent.putExtra("url", weixinNewses.get(holder.getAdapterPosition()).getUrl());
                     intent.putExtra("title", weixinNewses.get(holder.getAdapterPosition()).getTitle());

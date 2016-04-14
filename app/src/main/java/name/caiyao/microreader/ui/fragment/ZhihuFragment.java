@@ -1,7 +1,6 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,9 +23,6 @@ import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
-import com.snappydb.DB;
-import com.snappydb.DBFactory;
-import com.snappydb.SnappydbException;
 
 import java.util.ArrayList;
 
@@ -95,9 +91,9 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     private void getFromCache() {
-        if (cacheUtil.getAsJSONObject(CacheUtil.ZHIHU) != null) {
+        if (cacheUtil.getAsJSONObject(Config.ZHIHU) != null) {
             zhihuStories.clear();
-            ZhihuDaily zhihuDaily = gson.fromJson(cacheUtil.getAsJSONObject(CacheUtil.ZHIHU).toString(), ZhihuDaily.class);
+            ZhihuDaily zhihuDaily = gson.fromJson(cacheUtil.getAsJSONObject(Config.ZHIHU).toString(), ZhihuDaily.class);
             currentLoadedDate = zhihuDaily.getDate();
             zhihuStories.addAll(zhihuDaily.getStories());
             zhihuAdapter.notifyDataSetChanged();
@@ -140,7 +136,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                         if (swipeToLoadLayout != null) {//不加可能会崩溃
                             swipeToLoadLayout.setRefreshing(false);
                         }
-                        cacheUtil.put(CacheUtil.ZHIHU, gson.toJson(zhihuDaily));
+                        cacheUtil.put(Config.ZHIHU, gson.toJson(zhihuDaily));
                         currentLoadedDate = zhihuDaily.getDate();
                         zhihuStories.addAll(zhihuDaily.getStories());
                         zhihuAdapter.notifyDataSetChanged();
@@ -211,34 +207,10 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final ZhihuViewHolder holder, int position) {
             final ZhihuDailyItem zhihuDailyItem = zhihuStories.get(holder.getAdapterPosition());
-            DB db=null;
-            try {
-                db = DBFactory.open(getActivity(), Config.DB_ZHIHU_HAS_READ);
-                if (db.getInt(zhihuDailyItem.getId()) == 1)
-                    holder.tvZhihuDaily.setTextColor(Color.GRAY);
-                db.close();
-            } catch (SnappydbException ignored) {
-            }finally {
-                try {
-                    if (db != null&&db.isOpen()) {
-                        db.close();
-                    }
-                } catch (SnappydbException e) {
-                    e.printStackTrace();
-                }
-            }
             holder.tvZhihuDaily.setText(zhihuDailyItem.getTitle());
             holder.cvZhihu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    try {
-                        DB db = DBFactory.open(getActivity(), Config.DB_ZHIHU_HAS_READ);
-                        db.putInt(zhihuDailyItem.getId(), 1);
-                        holder.tvZhihuDaily.setTextColor(Color.GRAY);
-                        db.close();
-                    } catch (SnappydbException e) {
-                        e.printStackTrace();
-                    }
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
                     intent.putExtra("type", ZhihuStoryActivity.TYPE_ZHIHU);
                     intent.putExtra("id", zhihuDailyItem.getId());
