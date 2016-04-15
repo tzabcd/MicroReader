@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,7 +18,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+
+import com.hannesdorfmann.swipeback.Position;
+import com.hannesdorfmann.swipeback.SwipeBack;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -46,7 +51,9 @@ public class WeixinNewsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weixin_news);
+        SwipeBack.attach(this, Position.LEFT)
+                .setContentView(R.layout.activity_weixin_news)
+                .setSwipeBackView(R.layout.swipe_back);
         ButterKnife.bind(this);
 
         url = getIntent().getStringExtra("url");
@@ -73,7 +80,11 @@ public class WeixinNewsActivity extends BaseActivity {
             }
         });
 
-        setToolBar(fabButton,toolbar, true, true, null);
+        int vibrantColor =setToolBar(fabButton,toolbar, true, true, null);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
+        if (linearLayout != null) {
+            linearLayout.setBackgroundColor(vibrantColor);
+        }
 
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
 
@@ -160,6 +171,7 @@ public class WeixinNewsActivity extends BaseActivity {
         });
         wvWeixin.loadUrl(url);
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -18,8 +18,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.hannesdorfmann.swipeback.Position;
+import com.hannesdorfmann.swipeback.SwipeBack;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -60,7 +63,9 @@ public class ZhihuStoryActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_zhihu_story);
+        SwipeBack.attach(this, Position.LEFT)
+                .setContentView(R.layout.activity_zhihu_story)
+                .setSwipeBackView(R.layout.swipe_back);
         ButterKnife.bind(this);
 
         type = getIntent().getIntExtra("type", 0);
@@ -70,7 +75,11 @@ public class ZhihuStoryActivity extends BaseActivity {
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        setToolBar(fabButton,toolbar, false, isKitKat, null);
+        int vibrantColor = setToolBar(fabButton,toolbar, false, isKitKat, null);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
+        if (linearLayout != null) {
+            linearLayout.setBackgroundColor(vibrantColor);
+        }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

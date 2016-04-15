@@ -15,7 +15,11 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+
+import com.hannesdorfmann.swipeback.Position;
+import com.hannesdorfmann.swipeback.SwipeBack;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -50,7 +54,9 @@ public class ItHomeActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ithome);
+        SwipeBack.attach(this, Position.LEFT)
+                .setContentView(R.layout.activity_ithome)
+                .setSwipeBackView(R.layout.swipe_back);
         ButterKnife.bind(this);
 
         itHomeItem = getIntent().getParcelableExtra("item");
@@ -67,7 +73,12 @@ public class ItHomeActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(fabButton,toolbar, true, true, null);
+        int vibrantColor = setToolBar(fabButton,toolbar, true, true, null);
+        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
+        if (linearLayout != null) {
+            linearLayout.setBackgroundColor(vibrantColor);
+        }
+
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
