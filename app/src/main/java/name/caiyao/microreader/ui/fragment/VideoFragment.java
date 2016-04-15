@@ -2,6 +2,7 @@ package name.caiyao.microreader.ui.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,6 +46,7 @@ import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.VideoActivity;
 import name.caiyao.microreader.ui.activity.VideoWebViewActivity;
 import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import okhttp3.ResponseBody;
@@ -217,20 +219,47 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final VideoViewHolder holder, int position) {
             final WeiboVideoBlog weiboVideoBlog = gankVideoItems.get(position);
-            String title = weiboVideoBlog.getBlog().getText();
+            final String title = weiboVideoBlog.getBlog().getText().replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
+                    "<[^>]*>", "");
+            if (DBUtils.getDB(getActivity()).isRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1))
+                holder.tvTitle.setTextColor(Color.GRAY);
             Glide.with(getActivity()).load(weiboVideoBlog.getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
-            holder.tvTitle.setText(title.replaceAll("&[a-zA-Z]{1,10};", "").replaceAll(
-                    "<[^>]*>", ""));
+            holder.tvTitle.setText(title);
             holder.tvTime.setText(weiboVideoBlog.getBlog().getCreateTime());
             holder.btnVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnVideo);
                     popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.pop_fav);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1);
+                    if (!isRead)
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
+                    else
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            return false;
+                            switch (item.getItemId()) {
+                                case R.id.pop_unread:
+                                    if (isRead) {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 0);
+                                        holder.tvTitle.setTextColor(Color.BLACK);
+                                    } else {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1);
+                                        holder.tvTitle.setTextColor(Color.GRAY);
+                                    }
+                                    break;
+                                case R.id.pop_share:
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, title + " " + weiboVideoBlog.getBlog().getPageInfo().getVideoUrl() + getString(R.string.share_tail));
+                                    shareIntent.setType("text/plain");
+                                    //设置分享列表的标题，并且每次都显示分享列表
+                                    startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                                    break;
+                            }
+                            return true;
                         }
                     });
                     popupMenu.show();
@@ -239,12 +268,14 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
             holder.cvVideo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    VideoAdapter.this.getPlayUrl(weiboVideoBlog);
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1);
+                    holder.tvTitle.setTextColor(Color.GRAY);
+                    VideoAdapter.this.getPlayUrl(weiboVideoBlog, title);
                 }
             });
         }
 
-        private void getPlayUrl(final WeiboVideoBlog weiboVideoBlog) {
+        private void getPlayUrl(final WeiboVideoBlog weiboVideoBlog, final String title) {
             final ProgressDialog progressDialog = new ProgressDialog(getActivity());
             progressDialog.setMessage(getActivity().getString(R.string.fragment_video_get_url));
             progressDialog.show();
@@ -268,10 +299,9 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                         public void onNext(ResponseBody responseBody) {
                             progressDialog.dismiss();
                             try {
-                                String title, shareUrl;
+                                String shareUrl;
                                 Pattern pattern = Pattern.compile("href\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\"'>\\s]+)).*target=\"blank\">http");
                                 final Matcher matcher = pattern.matcher(responseBody.string());
-                                title = weiboVideoBlog.getBlog().getText();
                                 shareUrl = weiboVideoBlog.getBlog().getPageInfo().getVideoUrl();
                                 if (TextUtils.isEmpty(shareUrl)) {
                                     Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();

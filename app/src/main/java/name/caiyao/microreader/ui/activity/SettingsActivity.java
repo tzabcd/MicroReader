@@ -52,7 +52,7 @@ public class SettingsActivity extends BaseActivity {
                        recreate();
                     }
                 });
-        setToolBar(toolbar, true, true, null);
+        setToolBar(null,toolbar, true, true, null);
         getFragmentManager().beginTransaction().replace(R.id.fl_preference, settingsFragment).commit();
     }
 

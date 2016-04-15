@@ -3,6 +3,8 @@ package name.caiyao.microreader.ui.activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -12,13 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -35,17 +34,25 @@ public class WeixinNewsActivity extends BaseActivity {
     Toolbar toolbar;
     @Bind(R.id.pb_web)
     ProgressBar pbWeb;
+    @Bind(R.id.fabButton)
+    FloatingActionButton fabButton;
+    @Bind(R.id.nest)
+    NestedScrollView nest;
 
     String url;
     String title;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weixin_news);
         ButterKnife.bind(this);
+
         url = getIntent().getStringExtra("url");
         title = getIntent().getStringExtra("title");
+
+
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -58,8 +65,18 @@ public class WeixinNewsActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar, true, true, null);
+
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nest.smoothScrollTo(0,0);
+            }
+        });
+
+        setToolBar(fabButton,toolbar, true, true, null);
+
         overridePendingTransition(R.anim.zoomin, R.anim.zoomout);
+
         WebSettings webSettings = wvWeixin.getSettings();
         if (!NetWorkUtil.isNetWorkAvailable(this))
             webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
@@ -90,7 +107,7 @@ public class WeixinNewsActivity extends BaseActivity {
 
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                if (pbWeb != null){
+                if (pbWeb != null) {
                     if (newProgress == 100) {
                         pbWeb.setVisibility(View.GONE);
                     } else {

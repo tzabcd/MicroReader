@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -37,6 +38,7 @@ import name.caiyao.microreader.bean.weixin.WeixinNews;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
 import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
@@ -215,11 +217,14 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
 
         @Override
         public void onBindViewHolder(final WeixinViewHolder holder, int position) {
-            holder.tvDescription.setText(weixinNewses.get(position).getDescription());
-            holder.tvTitle.setText(weixinNewses.get(position).getTitle());
-            holder.tvTime.setText(weixinNewses.get(position).getHottime());
-            if (!TextUtils.isEmpty(weixinNewses.get(position).getPicUrl())) {
-                Glide.with(getActivity()).load(weixinNewses.get(position).getPicUrl()).placeholder(R.drawable.bg).into(holder.ivWeixin);
+            final WeixinNews weixinNews = weixinNewses.get(position);
+            if ( DBUtils.getDB(getActivity()).isRead(Config.WEIXIN,weixinNews.getUrl(),1))
+                holder.tvTitle.setTextColor(Color.GRAY);
+            holder.tvDescription.setText(weixinNews.getDescription());
+            holder.tvTitle.setText(weixinNews.getTitle());
+            holder.tvTime.setText(weixinNews.getHottime());
+            if (!TextUtils.isEmpty(weixinNews.getPicUrl())) {
+                Glide.with(getActivity()).load(weixinNews.getPicUrl()).placeholder(R.drawable.bg).into(holder.ivWeixin);
             } else {
                 holder.ivWeixin.setImageResource(R.drawable.bg);
             }
@@ -228,10 +233,35 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                 public void onClick(View v) {
                     PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnWeixin);
                     popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.pop_fav);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                    if (!isRead)
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
+                    else
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            return false;
+                            switch (item.getItemId()){
+                                case R.id.pop_unread:
+                                    if (isRead){
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),0);
+                                        holder.tvTitle.setTextColor(Color.BLACK);
+                                    }else{
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                                        holder.tvTitle.setTextColor(Color.GRAY);
+                                    }
+                                    break;
+                                case R.id.pop_share:
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, weixinNews.getTitle() + " " + weixinNews.getUrl() + getString(R.string.share_tail));
+                                    shareIntent.setType("text/plain");
+                                    //设置分享列表的标题，并且每次都显示分享列表
+                                    startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                                    break;
+                            }
+                            return true;
                         }
                     });
                     popupMenu.show();
@@ -241,9 +271,11 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             holder.cvMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                    holder.tvTitle.setTextColor(Color.GRAY);
                     Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
-                    intent.putExtra("url", weixinNewses.get(holder.getAdapterPosition()).getUrl());
-                    intent.putExtra("title", weixinNewses.get(holder.getAdapterPosition()).getTitle());
+                    intent.putExtra("url", weixinNews.getUrl());
+                    intent.putExtra("title", weixinNews.getTitle());
                     startActivity(intent);
                 }
             });

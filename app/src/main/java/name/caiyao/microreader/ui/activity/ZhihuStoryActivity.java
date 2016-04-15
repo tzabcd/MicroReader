@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -17,11 +19,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
-import com.apkfuns.logutils.LogUtils;
 import com.bumptech.glide.Glide;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,21 +49,28 @@ public class ZhihuStoryActivity extends BaseActivity {
     String id;
     String title;
     String url;
+
     @Bind(R.id.ctl)
     CollapsingToolbarLayout ctl;
+    @Bind(R.id.nest)
+    NestedScrollView nest;
+    @Bind(R.id.fabButton)
+    FloatingActionButton fabButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_zhihu_story);
         ButterKnife.bind(this);
+
         type = getIntent().getIntExtra("type", 0);
         id = getIntent().getStringExtra("id");
         title = getIntent().getStringExtra("title");
+
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        setToolBar(toolbar, false, isKitKat, null);
+        setToolBar(fabButton,toolbar, false, isKitKat, null);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,6 +86,14 @@ public class ZhihuStoryActivity extends BaseActivity {
         } else if (type == TYPE_GUOKR) {
             getGuokr();
         }
+
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nest.smoothScrollTo(0,0);
+            }
+        });
+
         WebSettings settings = wvZhihu.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
@@ -170,7 +183,7 @@ public class ZhihuStoryActivity extends BaseActivity {
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
                             //解决图片显示问题
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>",""), new String[]{"news.css"}, false);
+                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", ""), new String[]{"news.css"}, false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
                         }
                     }

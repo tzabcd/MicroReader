@@ -1,12 +1,15 @@
 package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,6 +37,7 @@ import name.caiyao.microreader.bean.itHome.ItHomeResponse;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.ui.activity.ItHomeActivity;
 import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.ItHomeUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
@@ -236,7 +240,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         @Override
         public void onBindViewHolder(final ItViewHolder holder, int position) {
             final ItHomeItem itHomeItem = itHomeItems.get(holder.getAdapterPosition());
-
+           if ( DBUtils.getDB(getActivity()).isRead(Config.IT,itHomeItem.getNewsid(),1))
+               holder.tvTitle.setTextColor(Color.GRAY);
             holder.tvTitle.setText(itHomeItem.getTitle());
             holder.tvTime.setText(itHomeItem.getPostdate());
             holder.tvDescription.setText(itHomeItem.getDescription());
@@ -244,8 +249,49 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),1);
+                    holder.tvTitle.setTextColor(Color.GRAY);
                     startActivity(new Intent(getActivity(), ItHomeActivity.class)
                             .putExtra("item", itHomeItem));
+                }
+            });
+            holder.btnIt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnIt);
+                    popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.pop_fav);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.IT,itHomeItem.getNewsid(),1);
+                    if (!isRead)
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
+                    else
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()){
+                                case R.id.pop_unread:
+                                    if (isRead){
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),0);
+                                        holder.tvTitle.setTextColor(Color.BLACK);
+                                    }else{
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),1);
+                                        holder.tvTitle.setTextColor(Color.GRAY);
+                                    }
+                                    break;
+                                case R.id.pop_share:
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, itHomeItem.getTitle() + " http://ithome.com" + itHomeItem.getUrl() + getString(R.string.share_tail));
+                                    shareIntent.setType("text/plain");
+                                    //设置分享列表的标题，并且每次都显示分享列表
+                                    startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                                    break;
+                            }
+                            return true;
+                        }
+                    });
+                    popupMenu.show();
                 }
             });
         }

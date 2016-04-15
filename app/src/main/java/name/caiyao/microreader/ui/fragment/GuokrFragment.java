@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -175,23 +177,58 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
         @Override
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
-            final GuokrHotItem item = guokrHotItems.get(holder.getAdapterPosition());
-            if (DBUtils.getDB(getActivity()).isRead(Config.GUOKR, item.getId(), 1))
+            final GuokrHotItem guokrHotItem = guokrHotItems.get(holder.getAdapterPosition());
+            if ( DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1))
                 holder.mTvTitle.setTextColor(Color.GRAY);
-            holder.mTvTitle.setText(item.getTitle());
-            holder.mTvDescription.setText(item.getSummary());
-            holder.mTvTime.setText(item.getTime());
-            Glide.with(getActivity()).load(item.getSmallImage()).into(holder.mIvIthome);
+            holder.mTvTitle.setText(guokrHotItem.getTitle());
+            holder.mTvDescription.setText(guokrHotItem.getSummary());
+            holder.mTvTime.setText(guokrHotItem.getTime());
+            Glide.with(getActivity()).load(guokrHotItem.getSmallImage()).into(holder.mIvIthome);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, item.getId(), 1);
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 1);
                     holder.mTvTitle.setTextColor(Color.GRAY);
                     Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
                     intent.putExtra("type", ZhihuStoryActivity.TYPE_GUOKR);
-                    intent.putExtra("id", item.getId());
-                    intent.putExtra("title", item.getTitle());
+                    intent.putExtra("id", guokrHotItem.getId());
+                    intent.putExtra("title", guokrHotItem.getTitle());
                     startActivity(intent);
+                }
+            });
+            holder.mBtnIt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu popupMenu = new PopupMenu(getActivity(), holder.mBtnIt);
+                    popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                    popupMenu.getMenu().removeItem(R.id.pop_share);
+                    popupMenu.getMenu().removeItem(R.id.pop_fav);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1);
+                    if (!isRead)
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
+                    else
+                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.pop_fav:
+
+                                    break;
+                                case R.id.pop_unread:
+                                    if (isRead) {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 0);
+                                        holder.mTvTitle.setTextColor(Color.BLACK);
+                                    } else {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 1);
+                                        holder.mTvTitle.setTextColor(Color.GRAY);
+                                    }
+                                    break;
+                            }
+                            return true;
+                        }
+                    });
+                    popupMenu.show();
                 }
             });
         }

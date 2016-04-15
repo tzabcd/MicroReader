@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
         if (isKitKat)
             ctlMain.setFitsSystemWindows(false);
-        setToolBar(toolbar, true, false, drawerLayout);
+        setToolBar(null,toolbar, true, false, drawerLayout);
         //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
         //ctlMain.setStatusBarBackgroundColor(setToolBar(toolbar,true,false,null));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

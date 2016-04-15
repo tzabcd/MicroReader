@@ -20,8 +20,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class VideoRequest {
     private static VideoRequstApi sVideoRequstApi;
 
-    private static final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT).setLevel(HttpLoggingInterceptor.Level.BODY);
-
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -40,13 +38,12 @@ public class VideoRequest {
         }
     };
 
-    static File httpCacheDirectory = new File(MicroApplication.getContext().getCacheDir(), "itCache");
+    static File httpCacheDirectory = new File(MicroApplication.getContext().getCacheDir(), "videoCache");
     static int cacheSize = 10 * 1024 * 1024; // 10 MiB
     static Cache cache = new Cache(httpCacheDirectory, cacheSize);
 
     static OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
-            .addInterceptor(interceptor)
             .cache(cache)
             .build();
 

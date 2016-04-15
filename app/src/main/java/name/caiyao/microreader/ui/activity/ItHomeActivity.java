@@ -2,6 +2,8 @@ package name.caiyao.microreader.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -38,6 +40,10 @@ public class ItHomeActivity extends BaseActivity {
     WebView wvWeixin;
     @Bind(R.id.pb_web)
     ProgressBar pbWeb;
+    @Bind(R.id.nest)
+    NestedScrollView nest;
+    @Bind(R.id.fabButton)
+    FloatingActionButton fabButton;
 
     private ItHomeItem itHomeItem;
 
@@ -48,6 +54,7 @@ public class ItHomeActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         itHomeItem = getIntent().getParcelableExtra("item");
+
         toolbar.setTitle(itHomeItem.getTitle());
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -60,7 +67,13 @@ public class ItHomeActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        setToolBar(toolbar, true, true, null);
+        setToolBar(fabButton,toolbar, true, true, null);
+        fabButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nest.smoothScrollTo(0,0);
+            }
+        });
         setWebView();
         getIthomeArticle();
     }
@@ -77,7 +90,7 @@ public class ItHomeActivity extends BaseActivity {
         settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
         settings.setAppCacheEnabled(true);
         settings.setLoadWithOverviewMode(true);
-        wvWeixin.setWebViewClient(new WebViewClient(){
+        wvWeixin.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
@@ -87,7 +100,7 @@ public class ItHomeActivity extends BaseActivity {
         wvWeixin.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                if (pbWeb != null){//修复未加载完成，用户返回会崩溃
+                if (pbWeb != null) {//修复未加载完成，用户返回会崩溃
                     if (newProgress == 100) {
                         pbWeb.setVisibility(View.GONE);
                     } else {
@@ -134,6 +147,7 @@ public class ItHomeActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.menu_share, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK) && wvWeixin.canGoBack()) {

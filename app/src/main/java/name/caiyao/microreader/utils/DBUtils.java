@@ -28,7 +28,7 @@ public class DBUtils {
 
     public void insertHasRead(String table, String key, int value) {
         Cursor cursor = mSQLiteDatabase.query(table, null, null, null, null, null, "id asc");
-        if (cursor.getCount() > 50) {
+        if (cursor.getCount() > 200) {
             if (cursor.moveToNext())
                 mSQLiteDatabase.delete(table, "id=?", new String[]{String.valueOf(cursor.getInt(cursor.getColumnIndex("id")))});
         }
@@ -36,7 +36,7 @@ public class DBUtils {
         ContentValues contentValues = new ContentValues();
         contentValues.put("key", key);
         contentValues.put("is_read", value);
-        mSQLiteDatabase.insert(table, null, contentValues);
+        mSQLiteDatabase.insertWithOnConflict(table, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public boolean isRead(String table, String key, int value) {
@@ -57,11 +57,11 @@ public class DBUtils {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("create table if not exists " + Config.GUOKR + "(id integer primary key autoincrement,key text,is_read integer);");
-            db.execSQL("create table if not exists " + Config.IT + "(id integer primary key autoincrement,key text,is_read integer)");
-            db.execSQL("create table if not exists " + Config.VIDEO + "(id integer primary key autoincrement,key text,is_read integer)");
-            db.execSQL("create table if not exists " + Config.ZHIHU + "(id integer primary key autoincrement,key text,is_read integer)");
-            db.execSQL("create table if not exists " + Config.WEIXIN + "(id integer primary key autoincrement,key text,is_read integer)");
+            db.execSQL("create table if not exists " + Config.GUOKR + "(id integer  primary key autoincrement,key text unique,is_read integer);");
+            db.execSQL("create table if not exists " + Config.IT + "(id integer primary key autoincrement,key text unique,is_read integer)");
+            db.execSQL("create table if not exists " + Config.VIDEO + "(id integer primary key autoincrement,key text unique,is_read integer)");
+            db.execSQL("create table if not exists " + Config.ZHIHU + "(id integer primary key autoincrement,key text unique,is_read integer)");
+            db.execSQL("create table if not exists " + Config.WEIXIN + "(id integer primary key autoincrement,key text unique,is_read integer)");
         }
 
         @Override

@@ -1,8 +1,10 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +14,6 @@ import com.bugtags.library.Bugtags;
 import com.jaeger.library.StatusBarUtil;
 import com.umeng.analytics.MobclickAgent;
 
-import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 
 public class BaseActivity extends AppCompatActivity {
@@ -37,14 +38,17 @@ public class BaseActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    public void setToolBar(Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
+    public void setToolBar(FloatingActionButton floatingActionButton, Toolbar toolbar, boolean isChangeToolbar, boolean isChangeStatusBar, DrawerLayout drawerLayout) {
         int vibrantColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, 0);
+        int mutedColor = getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.MUTED, 0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (SharePreferenceUtil.isChangeNavColor(this))
                 getWindow().setNavigationBarColor(vibrantColor);
             else
                 getWindow().setNavigationBarColor(Color.BLACK);
         }
+        if (floatingActionButton != null)
+            floatingActionButton.setBackgroundTintList(ColorStateList.valueOf(mutedColor));
         if (isChangeToolbar)
             toolbar.setBackgroundColor(vibrantColor);
         if (isChangeStatusBar) {

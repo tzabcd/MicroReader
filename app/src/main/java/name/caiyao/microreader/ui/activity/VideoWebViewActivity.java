@@ -8,6 +8,8 @@ import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import java.lang.reflect.InvocationTargetException;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
@@ -67,5 +69,33 @@ public class VideoWebViewActivity extends BaseActivity {
             }
         });
         wvVideo.loadUrl(url);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            wvVideo.getClass().getMethod("onResume").invoke(wvVideo, (Object[]) null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            wvVideo.getClass().getMethod("onPause").invoke(wvVideo, (Object[]) null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 }
