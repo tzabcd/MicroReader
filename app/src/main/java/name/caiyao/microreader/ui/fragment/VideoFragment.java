@@ -223,6 +223,8 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                     "<[^>]*>", "");
             if (DBUtils.getDB(getActivity()).isRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1))
                 holder.tvTitle.setTextColor(Color.GRAY);
+            else
+                holder.tvTitle.setTextColor(Color.BLACK);
             Glide.with(getActivity()).load(weiboVideoBlog.getBlog().getPageInfo().getVideoPic()).into(holder.mIvVideo);
             holder.tvTitle.setText(title);
             holder.tvTime.setText(weiboVideoBlog.getBlog().getCreateTime());

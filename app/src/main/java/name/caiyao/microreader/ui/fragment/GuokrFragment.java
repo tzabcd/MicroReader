@@ -178,8 +178,10 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         @Override
         public void onBindViewHolder(final GuokrViewHolder holder, int position) {
             final GuokrHotItem guokrHotItem = guokrHotItems.get(holder.getAdapterPosition());
-            if ( DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1))
+            if (DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1))
                 holder.mTvTitle.setTextColor(Color.GRAY);
+            else
+                holder.mTvTitle.setTextColor(Color.BLACK);
             holder.mTvTitle.setText(guokrHotItem.getTitle());
             holder.mTvDescription.setText(guokrHotItem.getSummary());
             holder.mTvTime.setText(guokrHotItem.getTime());

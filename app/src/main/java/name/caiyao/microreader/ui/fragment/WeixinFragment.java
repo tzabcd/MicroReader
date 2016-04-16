@@ -218,8 +218,10 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         @Override
         public void onBindViewHolder(final WeixinViewHolder holder, int position) {
             final WeixinNews weixinNews = weixinNewses.get(position);
-            if ( DBUtils.getDB(getActivity()).isRead(Config.WEIXIN,weixinNews.getUrl(),1))
+            if (DBUtils.getDB(getActivity()).isRead(Config.WEIXIN, weixinNews.getUrl(), 1))
                 holder.tvTitle.setTextColor(Color.GRAY);
+            else
+                holder.tvTitle.setTextColor(Color.BLACK);
             holder.tvDescription.setText(weixinNews.getDescription());
             holder.tvTitle.setText(weixinNews.getTitle());
             holder.tvTime.setText(weixinNews.getHottime());
@@ -234,7 +236,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                     PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnWeixin);
                     popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
                     popupMenu.getMenu().removeItem(R.id.pop_fav);
-                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.WEIXIN, weixinNews.getUrl(), 1);
                     if (!isRead)
                         popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
                     else
@@ -242,13 +244,13 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()){
+                            switch (item.getItemId()) {
                                 case R.id.pop_unread:
-                                    if (isRead){
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),0);
+                                    if (isRead) {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN, weixinNews.getUrl(), 0);
                                         holder.tvTitle.setTextColor(Color.BLACK);
-                                    }else{
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                                    } else {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN, weixinNews.getUrl(), 1);
                                         holder.tvTitle.setTextColor(Color.GRAY);
                                     }
                                     break;
@@ -271,7 +273,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
             holder.cvMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN,weixinNews.getUrl(),1);
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN, weixinNews.getUrl(), 1);
                     holder.tvTitle.setTextColor(Color.GRAY);
                     Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
                     intent.putExtra("url", weixinNews.getUrl());

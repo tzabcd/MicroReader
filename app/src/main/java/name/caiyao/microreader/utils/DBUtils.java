@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.apkfuns.logutils.LogUtils;
+
 import name.caiyao.microreader.config.Config;
 
 /**
@@ -16,7 +18,7 @@ public class DBUtils {
     private SQLiteDatabase mSQLiteDatabase;
 
     private DBUtils(Context context) {
-        mSQLiteDatabase = new DBHelper(context, Config.DB_NAME + ".db").getWritableDatabase();
+        mSQLiteDatabase = new DBHelper(context, Config.DB__IS_READ_NAME + ".db").getWritableDatabase();
     }
 
     public static synchronized DBUtils getDB(Context context) {
@@ -39,7 +41,7 @@ public class DBUtils {
         mSQLiteDatabase.insertWithOnConflict(table, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-    public boolean isRead(String table, String key, int value) {
+    public boolean isRead(String table, String key,int value) {
         boolean isRead = false;
         Cursor cursor = mSQLiteDatabase.query(table, null, "key=?", new String[]{key}, null, null, null);
         if (cursor.moveToNext() && (cursor.getInt(cursor.getColumnIndex("is_read")) == value)) {

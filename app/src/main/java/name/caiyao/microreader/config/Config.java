@@ -6,7 +6,7 @@ package name.caiyao.microreader.config;
 public class Config {
     public static final String TX_APP_KEY = "1ae28fc9dd5afadc696ad94cd59426d8";
 
-    public static final String DB_NAME = "DB";
+    public static final String DB__IS_READ_NAME = "IsRead";
     public static final String WEIXIN = "weixin";
     public static final String GUOKR = "guokr";
     public static final String ZHIHU = "zhihu";

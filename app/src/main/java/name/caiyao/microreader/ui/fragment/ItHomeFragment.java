@@ -242,6 +242,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             final ItHomeItem itHomeItem = itHomeItems.get(holder.getAdapterPosition());
            if ( DBUtils.getDB(getActivity()).isRead(Config.IT,itHomeItem.getNewsid(),1))
                holder.tvTitle.setTextColor(Color.GRAY);
+           else
+               holder.tvTitle.setTextColor(Color.BLACK);
             holder.tvTitle.setText(itHomeItem.getTitle());
             holder.tvTime.setText(itHomeItem.getPostdate());
             holder.tvDescription.setText(itHomeItem.getDescription());

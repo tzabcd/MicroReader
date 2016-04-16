@@ -24,6 +24,8 @@ import com.bumptech.glide.Glide;
 import com.hannesdorfmann.swipeback.Position;
 import com.hannesdorfmann.swipeback.SwipeBack;
 
+import java.lang.reflect.InvocationTargetException;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
@@ -191,12 +193,40 @@ public class ZhihuStoryActivity extends BaseActivity {
                         if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
                             wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
                         } else {
-                            //解决图片显示问题
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", ""), new String[]{"news.css"}, false);
+                            //解决图片显示问题,视频现实问题
+                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", "").replaceAll("width=\"(.*?)\"","100%").replaceAll("height=\"(.*?)\"","auto"), new String[]{"news.css"}, false);
                             wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            wvZhihu.getClass().getMethod("onResume").invoke(wvZhihu, (Object[]) null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            wvZhihu.getClass().getMethod("onPause").invoke(wvZhihu, (Object[]) null);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

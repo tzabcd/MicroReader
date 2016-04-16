@@ -31,11 +31,12 @@
         <activity
             android:name=".ui.activity.WeixinNewsActivity"
             android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.ZhihuStoryActivity"
-            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
             android:hardwareAccelerated="true"
             android:theme="@style/OrangeTheme" />
         <activity
@@ -52,11 +53,13 @@
         <activity
             android:name=".ui.activity.SettingsActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.ItHomeActivity"
             android:configChanges="orientation|keyboardHidden"
             android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
             android:theme="@style/OrangeTheme" />
         <activity
             android:name=".ui.activity.VideoWebViewActivity"

@@ -213,6 +213,8 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
             final ZhihuDailyItem zhihuDailyItem = zhihuStories.get(holder.getAdapterPosition());
             if (DBUtils.getDB(getActivity()).isRead(Config.ZHIHU, zhihuDailyItem.getId(), 1))
                 holder.tvZhihuDaily.setTextColor(Color.GRAY);
+            else
+                holder.tvZhihuDaily.setTextColor(Color.BLACK);
             holder.tvZhihuDaily.setText(zhihuDailyItem.getTitle());
             holder.cvZhihu.setOnClickListener(new View.OnClickListener() {
                 @Override
