@@ -187,12 +187,13 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                     public void onError(Throwable e) {
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setLoadingMore(false);
-                        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getMoreItHome();
-                            }
-                        }).show();
+                        if (isAdded())
+                            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    getMoreItHome();
+                                }
+                            }).show();
                     }
 
                     @Override
@@ -240,10 +241,10 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         @Override
         public void onBindViewHolder(final ItViewHolder holder, int position) {
             final ItHomeItem itHomeItem = itHomeItems.get(holder.getAdapterPosition());
-           if ( DBUtils.getDB(getActivity()).isRead(Config.IT,itHomeItem.getNewsid(),1))
-               holder.tvTitle.setTextColor(Color.GRAY);
-           else
-               holder.tvTitle.setTextColor(Color.BLACK);
+            if (DBUtils.getDB(getActivity()).isRead(Config.IT, itHomeItem.getNewsid(), 1))
+                holder.tvTitle.setTextColor(Color.GRAY);
+            else
+                holder.tvTitle.setTextColor(Color.BLACK);
             holder.tvTitle.setText(itHomeItem.getTitle());
             holder.tvTime.setText(itHomeItem.getPostdate());
             holder.tvDescription.setText(itHomeItem.getDescription());
@@ -251,7 +252,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),1);
+                    DBUtils.getDB(getActivity()).insertHasRead(Config.IT, itHomeItem.getNewsid(), 1);
                     holder.tvTitle.setTextColor(Color.GRAY);
                     startActivity(new Intent(getActivity(), ItHomeActivity.class)
                             .putExtra("item", itHomeItem));
@@ -263,7 +264,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                     PopupMenu popupMenu = new PopupMenu(getActivity(), holder.btnIt);
                     popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
                     popupMenu.getMenu().removeItem(R.id.pop_fav);
-                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.IT,itHomeItem.getNewsid(),1);
+                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.IT, itHomeItem.getNewsid(), 1);
                     if (!isRead)
                         popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
                     else
@@ -271,13 +272,13 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()){
+                            switch (item.getItemId()) {
                                 case R.id.pop_unread:
-                                    if (isRead){
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),0);
+                                    if (isRead) {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT, itHomeItem.getNewsid(), 0);
                                         holder.tvTitle.setTextColor(Color.BLACK);
-                                    }else{
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT,itHomeItem.getNewsid(),1);
+                                    } else {
+                                        DBUtils.getDB(getActivity()).insertHasRead(Config.IT, itHomeItem.getNewsid(), 1);
                                         holder.tvTitle.setTextColor(Color.GRAY);
                                     }
                                     break;

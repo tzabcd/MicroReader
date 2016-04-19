@@ -4,11 +4,9 @@ package name.caiyao.microreader.ui.fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
@@ -103,9 +101,11 @@ public class SettingsFragment extends PreferenceFragment {
 
                             @Override
                             public void onError(Throwable e) {
-                                Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
                                 //这个可能异常Error occurred when trying to propagate error to Observer.onError
-                                //e.printStackTrace();
+                                if (isAdded()) {
+                                    Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override
