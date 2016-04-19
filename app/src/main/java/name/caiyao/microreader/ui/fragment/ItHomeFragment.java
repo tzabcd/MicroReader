@@ -187,7 +187,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
                     public void onError(Throwable e) {
                         if (swipeToLoadLayout != null)
                             swipeToLoadLayout.setLoadingMore(false);
-                        if (isAdded())
+                        if (isAdded())//Fragment not attach to activity
                             Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

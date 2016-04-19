@@ -102,6 +102,7 @@ public class SettingsFragment extends PreferenceFragment {
                             @Override
                             public void onError(Throwable e) {
                                 //这个可能异常Error occurred when trying to propagate error to Observer.onError
+                                // Fragment not attach to activity
                                 if (isAdded()) {
                                     Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
                                     e.printStackTrace();
