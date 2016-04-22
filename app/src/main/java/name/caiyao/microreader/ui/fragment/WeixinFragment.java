@@ -25,28 +25,24 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.weixin.TxRequest;
-import name.caiyao.microreader.bean.weixin.TxWeixinResponse;
 import name.caiyao.microreader.bean.weixin.WeixinNews;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.presenter.IWeixinPresenter;
+import name.caiyao.microreader.presenter.impl.WeiXinPresenterImpl;
 import name.caiyao.microreader.ui.activity.WeixinNewsActivity;
-import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.ui.iView.IWeixinFragment;
 import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class WeixinFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
+public class WeixinFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IWeixinFragment {
 
 
     int currentPage = 1;
@@ -58,7 +54,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
 
-    private CacheUtil cacheUtil;
+    private IWeixinPresenter mWeixinPresenter;
 
     private ArrayList<WeixinNews> weixinNewses = new ArrayList<>();
 
@@ -76,14 +72,19 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initView() {
+        showProgressDialog();
         swipeToLoadLayout.setOnRefreshListener(this);
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
         weixinAdapter = new WeixinAdapter(weixinNewses);
         swipeTarget.setAdapter(weixinAdapter);
-        cacheUtil = CacheUtil.get(getActivity());
-        getFromCache(1);
+        mWeixinPresenter.getWeixinNews(1);
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -93,92 +94,10 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         } else {
             onRefresh();
         }
-
-//        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-//            @Override
-//            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-//                //Remove swiped item from list and notify the RecyclerView
-//                LogUtils.i("滑动了：" + viewHolder.getAdapterPosition());
-//                weixinNewses.remove(viewHolder.getAdapterPosition());
-//                weixinAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
-//            }
-//
-//            @Override
-//            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
-//                // 默认是操作ViewHolder的itemView，这里调用ItemTouchUIUtil的clearView方法传入指定的view
-//                getDefaultUIUtil().onDraw(c, recyclerView, ((WeixinAdapter.WeixinViewHolder) viewHolder).cvMain, dX, dY, actionState, isCurrentlyActive);
-//                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//            }
-//        };
-//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
-//        itemTouchHelper.attachToRecyclerView(swipeTarget);
     }
 
-    private void getFromCache(int page) {
-        if (cacheUtil.getAsJSONObject(Config.WEIXIN + page) != null) {
-            TxWeixinResponse txWeixinResponse = new Gson().fromJson(cacheUtil.getAsJSONObject(Config.WEIXIN + page).toString(), TxWeixinResponse.class);
-            cacheUtil.put(Config.WEIXIN + page, new Gson().toJson(txWeixinResponse));
-            weixinNewses.addAll(txWeixinResponse.getNewslist());
-            weixinAdapter.notifyDataSetChanged();
-            currentPage++;
-        }
-    }
-
-    private void getWeixinNews(final int page) {
-        TxRequest.getTxApi().getWeixin(page).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<TxWeixinResponse>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeTarget != null) {
-                            getFromCache(page);
-                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getWeixinNews(page);
-                                }
-                            }).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(TxWeixinResponse txWeixinResponse) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        if (txWeixinResponse.getCode() == 200) {
-                            cacheUtil.put(Config.WEIXIN + page, new Gson().toJson(txWeixinResponse));
-                            weixinNewses.addAll(txWeixinResponse.getNewslist());
-                            weixinAdapter.notifyDataSetChanged();
-                            currentPage++;
-                        } else {
-                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getWeixinNews(page);
-                                }
-                            }).show();
-                        }
-                    }
-                });
+    private void initData() {
+        mWeixinPresenter = new WeiXinPresenterImpl(this, getActivity());
     }
 
     @Override
@@ -193,12 +112,48 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         weixinNewses.clear();
         //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
         weixinAdapter.notifyDataSetChanged();
-        getWeixinNews(currentPage);
+        mWeixinPresenter.getWeixinNews(currentPage);
     }
 
     @Override
     public void onLoadMore() {
-        getWeixinNews(currentPage);
+        mWeixinPresenter.getWeixinNews(currentPage);
+    }
+
+    @Override
+    public void showProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidProgressDialog() {
+        if (swipeToLoadLayout != null) {//不加可能会崩溃
+            swipeToLoadLayout.setRefreshing(false);
+            swipeToLoadLayout.setLoadingMore(false);
+        }
+        if (progressBar != null)
+            progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError(String error) {
+        if (swipeTarget != null) {
+            mWeixinPresenter.getWeixinNewsFromCache(currentPage);
+            Snackbar.make(swipeTarget, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_INDEFINITE).setAction("重试", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mWeixinPresenter.getWeixinNews(currentPage);
+                }
+            }).show();
+        }
+    }
+
+    @Override
+    public void updateList(ArrayList<WeixinNews> weixinNewsesList) {
+        currentPage++;
+        weixinNewses.addAll(weixinNewsesList);
+        weixinAdapter.notifyDataSetChanged();
     }
 
     class WeixinAdapter extends RecyclerView.Adapter<WeixinAdapter.WeixinViewHolder> {

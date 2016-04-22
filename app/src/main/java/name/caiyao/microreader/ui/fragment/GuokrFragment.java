@@ -22,27 +22,23 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.guokr.GuokrRequest;
-import name.caiyao.microreader.bean.guokr.GuokrHot;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.presenter.IGuokrPresenter;
+import name.caiyao.microreader.presenter.impl.GuokrPresenterImpl;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
-import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.ui.iView.IGuokrFragment;
 import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class GuokrFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
+public class GuokrFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IGuokrFragment {
 
     @Bind(R.id.swipe_target)
     RecyclerView swipeTarget;
@@ -53,7 +49,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
     private ArrayList<GuokrHotItem> guokrHotItems = new ArrayList<>();
     private GuokrAdapter guokrAdapter;
-    private CacheUtil cacheUtil;
+    private IGuokrPresenter mGuokrPresenter;
     private int currentOffset;
 
     public GuokrFragment() {
@@ -70,14 +66,22 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        mGuokrPresenter = new GuokrPresenterImpl(this, getActivity());
+    }
+
+    private void initView() {
         swipeToLoadLayout.setOnRefreshListener(this);
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
         guokrAdapter = new GuokrAdapter(guokrHotItems);
         swipeTarget.setAdapter(guokrAdapter);
-        cacheUtil = CacheUtil.get(getActivity());
-        getFromCache(1);
+        mGuokrPresenter.getGuokrHotFromCache(0);
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -89,58 +93,6 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         }
     }
 
-    private void getFromCache(int offset) {
-        if (cacheUtil.getAsJSONObject(Config.GUOKR + offset) != null) {
-            GuokrHot guokrHot = new Gson().fromJson(cacheUtil.getAsJSONObject(Config.GUOKR + offset).toString(), GuokrHot.class);
-            currentOffset++;
-            guokrHotItems.addAll(guokrHot.getResult());
-            guokrAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void getGuokrHot(final int offset) {
-        GuokrRequest.getGuokrApi().getGuokrHot(offset)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<GuokrHot>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeTarget != null) {
-                            getFromCache(offset);
-                            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getGuokrHot(offset);
-                                }
-                            }).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(GuokrHot guokrHot) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        cacheUtil.put(Config.GUOKR + offset, new Gson().toJson(guokrHot));
-                        currentOffset++;
-                        guokrHotItems.addAll(guokrHot.getResult());
-                        guokrAdapter.notifyDataSetChanged();
-                    }
-                });
-    }
 
     @Override
     public void onDestroyView() {
@@ -154,12 +106,48 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         guokrHotItems.clear();
         //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
         guokrAdapter.notifyDataSetChanged();
-        getGuokrHot(currentOffset);
+        mGuokrPresenter.getGuokrHot(currentOffset);
     }
 
     @Override
     public void onLoadMore() {
-        getGuokrHot(currentOffset);
+        mGuokrPresenter.getGuokrHot(currentOffset);
+    }
+
+    @Override
+    public void showProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidProgressDialog() {
+        if (swipeToLoadLayout != null) {//不加可能会崩溃
+            swipeToLoadLayout.setRefreshing(false);
+            swipeToLoadLayout.setLoadingMore(false);
+        }
+        if (progressBar != null)
+            progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError(String error) {
+        if (swipeTarget != null) {
+            mGuokrPresenter.getGuokrHotFromCache(currentOffset);
+            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mGuokrPresenter.getGuokrHot(currentOffset);
+                }
+            }).show();
+        }
+    }
+
+    @Override
+    public void updateList(ArrayList<GuokrHotItem> guokrHotItems) {
+        currentOffset++;
+        this.guokrHotItems.addAll(guokrHotItems);
+        guokrAdapter.notifyDataSetChanged();
     }
 
     class GuokrAdapter extends RecyclerView.Adapter<GuokrAdapter.GuokrViewHolder> {
