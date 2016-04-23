@@ -22,34 +22,26 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.itHome.ItHomeRequest;
 import name.caiyao.microreader.bean.itHome.ItHomeItem;
-import name.caiyao.microreader.bean.itHome.ItHomeResponse;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.presenter.IItHomePresenter;
+import name.caiyao.microreader.presenter.impl.ItHomePresenterImpl;
 import name.caiyao.microreader.ui.activity.ItHomeActivity;
-import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.ui.iView.IItHomeFragment;
 import name.caiyao.microreader.utils.DBUtils;
-import name.caiyao.microreader.utils.ItHomeUtil;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/3/24 0024.
  */
-public class ItHomeFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
+public class ItHomeFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IItHomeFragment {
 
 
     @Bind(R.id.progressBar)
@@ -61,8 +53,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
     private ArrayList<ItHomeItem> itHomeItems = new ArrayList<>();
     private ItAdapter itAdapter;
-    private CacheUtil cacheUtil;
-    private Gson gson = new Gson();
+    private IItHomePresenter mItHomePresenter;
+    private String currentNewsId = "0";
 
     @Nullable
     @Override
@@ -75,14 +67,18 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initView() {
         swipeToLoadLayout.setOnRefreshListener(this);
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
-        cacheUtil = CacheUtil.get(getActivity());
         itAdapter = new ItAdapter(itHomeItems);
         swipeTarget.setAdapter(itAdapter);
-        getFromCache();
+        mItHomePresenter.getNewsFromCache();
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -94,116 +90,8 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         }
     }
 
-    private void getFromCache() {
-        if (cacheUtil.getAsJSONArray(Config.IT) != null && cacheUtil.getAsJSONArray(Config.IT).length() != 0) {
-            ArrayList<ItHomeItem> it = gson.fromJson(cacheUtil.getAsJSONArray(Config.IT).toString(), new TypeToken<ArrayList<ItHomeItem>>() {
-            }.getType());
-            itHomeItems.addAll(it);
-            itAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void getIthomeNews() {
-        if (progressBar != null)
-            progressBar.setVisibility(View.VISIBLE);
-        ItHomeRequest.getItHomeApi().getItHomeNews()
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<ItHomeResponse, ArrayList<ItHomeItem>>() {
-                    @Override
-                    public ArrayList<ItHomeItem> call(ItHomeResponse itHomeResponse) {
-                        //过滤广告新闻
-                        ArrayList<ItHomeItem> itHomeItems1 = itHomeResponse.getChannel().getItems();
-                        Iterator<ItHomeItem> iter = itHomeItems1.iterator();
-                        while (iter.hasNext()) {
-                            ItHomeItem item = iter.next();
-                            if (item.getUrl().contains("digi"))
-                                iter.remove();
-                        }
-                        return itHomeItems1;
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<ItHomeItem>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                        }
-                        if (swipeTarget != null) {
-                            getFromCache();
-                            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getIthomeNews();
-                                }
-                            }).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<ItHomeItem> it) {
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                        }
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        cacheUtil.put(Config.IT, gson.toJson(it));
-                        itHomeItems.addAll(it);
-                        itAdapter.notifyDataSetChanged();
-                    }
-                });
-    }
-
-    private void getMoreItHome() {
-        ItHomeRequest.getItHomeApi().getMoreItHomeNews(ItHomeUtil.getMinNewsId(itHomeItems.get(itHomeItems.size() - 1).getNewsid()))
-                .map(new Func1<ItHomeResponse, ArrayList<ItHomeItem>>() {
-                    @Override
-                    public ArrayList<ItHomeItem> call(ItHomeResponse itHomeResponse) {
-                        //过滤广告新闻
-                        ArrayList<ItHomeItem> itHomeItems1 = itHomeResponse.getChannel().getItems();
-                        Iterator<ItHomeItem> iter = itHomeItems1.iterator();
-                        while (iter.hasNext()) {
-                            ItHomeItem item = iter.next();
-                            if (item.getUrl().contains("digi"))
-                                iter.remove();
-                        }
-                        return itHomeItems1;
-                    }
-                }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ArrayList<ItHomeItem>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (swipeToLoadLayout != null)
-                            swipeToLoadLayout.setLoadingMore(false);
-                        if (isAdded())//Fragment not attach to activity
-                            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getMoreItHome();
-                                }
-                            }).show();
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<ItHomeItem> it) {
-                        if (swipeToLoadLayout != null)
-                            swipeToLoadLayout.setLoadingMore(false);
-                        itHomeItems.addAll(it);
-                        itAdapter.notifyDataSetChanged();
-                    }
-                });
+    private void initData() {
+        mItHomePresenter = new ItHomePresenterImpl(this, getActivity());
     }
 
     @Override
@@ -214,15 +102,54 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
     @Override
     public void onRefresh() {
+        currentNewsId = "0";
         itHomeItems.clear();
         //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
-        itAdapter.notifyDataSetChanged();
-        getIthomeNews();
+        //itAdapter.notifyDataSetChanged();
+        mItHomePresenter.getNewItHomeNews();
     }
 
     @Override
     public void onLoadMore() {
-        getMoreItHome();
+        mItHomePresenter.getMoreItHomeNews(currentNewsId);
+    }
+
+    @Override
+    public void showProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.INVISIBLE);
+        if (swipeToLoadLayout != null) {//不加可能会崩溃
+            swipeToLoadLayout.setRefreshing(false);
+            swipeToLoadLayout.setLoadingMore(false);
+        }
+    }
+
+    @Override
+    public void showError(String error) {
+        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentNewsId.equals("0")) {
+                    mItHomePresenter.getNewsFromCache();
+                    mItHomePresenter.getNewItHomeNews();
+                } else {
+                    mItHomePresenter.getMoreItHomeNews(currentNewsId);
+                }
+            }
+        }).show();
+    }
+
+    @Override
+    public void updateList(ArrayList<ItHomeItem> itHomeItems) {
+        currentNewsId = itHomeItems.get(itHomeItems.size() - 1).getNewsid();
+        this.itHomeItems.addAll(itHomeItems);
+        itAdapter.notifyDataSetChanged();
     }
 
     class ItAdapter extends RecyclerView.Adapter<ItAdapter.ItViewHolder> {
