@@ -86,8 +86,6 @@
 -dontwarn okio.*
 #LogUtils
 -dontwarn com.apkfuns.logutils.*
-#需要注意的是，如果没有使用@SerializedName指定Key名，当工程被混淆时，变量名会被混淆得与期望的Key名不符。因此需要将这类Model类统一放到一个工程目录，再在proguard-project文件中加入排除项
--keep class name.caiyao.microreader.bean.** { *; }
 ##---------------Begin: proguard configuration for Gson  ----------
 # Gson uses generic type information stored in a class file when working with fields. Proguard
 # removes such information by default, so configure it to keep all of it.

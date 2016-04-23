@@ -136,7 +136,6 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
             @Override
             public void onClick(View v) {
                 if (currentNewsId.equals("0")) {
-                    mItHomePresenter.getNewsFromCache();
                     mItHomePresenter.getNewItHomeNews();
                 } else {
                     mItHomePresenter.getMoreItHomeNews(currentNewsId);

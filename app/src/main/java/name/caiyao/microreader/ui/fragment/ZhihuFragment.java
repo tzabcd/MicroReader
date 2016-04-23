@@ -9,7 +9,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,14 +24,12 @@ import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
 import name.caiyao.microreader.config.Config;
@@ -40,15 +37,10 @@ import name.caiyao.microreader.presenter.IZhihuPresenter;
 import name.caiyao.microreader.presenter.impl.ZhihuPresenterImpl;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
 import name.caiyao.microreader.ui.iView.IZhihuFragment;
-import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.ScreenUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
-import name.caiyao.microreader.utils.TimeUtil;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 public class ZhihuFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IZhihuFragment {
@@ -64,8 +56,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     private ZhihuAdapter zhihuAdapter;
     private IZhihuPresenter mZhihuPresenter;
     private ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
-    CacheUtil cacheUtil;
-    Gson gson = new Gson();
 
     public ZhihuFragment() {
     }
@@ -96,7 +86,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
         swipeTarget.setHasFixedSize(true);
         zhihuAdapter = new ZhihuAdapter(zhihuStories);
         swipeTarget.setAdapter(zhihuAdapter);
-        cacheUtil = CacheUtil.get(getActivity());
         mZhihuPresenter.getLastFromCache();
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
@@ -104,90 +93,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
             }
         } else {
             onRefresh();
-        }
-    }
-
-    private void getFromCache() {
-        if (cacheUtil.getAsJSONObject(Config.ZHIHU) != null) {
-            zhihuStories.clear();
-            ZhihuDaily zhihuDaily = gson.fromJson(cacheUtil.getAsJSONObject(Config.ZHIHU).toString(), ZhihuDaily.class);
-            currentLoadedDate = zhihuDaily.getDate();
-            zhihuStories.addAll(zhihuDaily.getStories());
-            zhihuAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void getZhihuDaily() {
-        zhihuStories.clear();
-        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
-        zhihuAdapter.notifyDataSetChanged();
-        ZhihuRequest.getZhihuApi().getLastDaily()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ZhihuDaily>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null)
-                            swipeToLoadLayout.setRefreshing(false);
-                        if (swipeTarget != null) {
-                            getFromCache();
-                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getZhihuDaily();
-                                }
-                            }).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(ZhihuDaily zhihuDaily) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                        }
-                        cacheUtil.put(Config.ZHIHU, gson.toJson(zhihuDaily));
-                        currentLoadedDate = zhihuDaily.getDate();
-                        zhihuStories.addAll(zhihuDaily.getStories());
-                        zhihuAdapter.notifyDataSetChanged();
-                    }
-                });
-
-    }
-
-    private void getMoreZhihuDaily() {
-        if (!TextUtils.isEmpty(currentLoadedDate)) {
-            ZhihuRequest.getZhihuApi().getTheDaily(TimeUtil.getSpecifiedDayBefore(currentLoadedDate))
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<ZhihuDaily>() {
-                        @Override
-                        public void onCompleted() {
-
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            LogUtils.i(e.toString());
-                        }
-
-                        @Override
-                        public void onNext(ZhihuDaily zhihuDaily) {
-                            if (swipeToLoadLayout != null) {//不加可能会崩溃
-                                swipeToLoadLayout.setLoadingMore(false);
-                            }
-                            currentLoadedDate = zhihuDaily.getDate();
-                            zhihuStories.addAll(zhihuDaily.getStories());
-                            zhihuAdapter.notifyDataSetChanged();
-                        }
-                    });
         }
     }
 
@@ -199,17 +104,20 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
     @Override
     public void onRefresh() {
-        getZhihuDaily();
+        currentLoadedDate = "0";
+        zhihuStories.clear();
+        mZhihuPresenter.getLastZhihuNews();
     }
 
     @Override
     public void onLoadMore() {
-        getMoreZhihuDaily();
+        mZhihuPresenter.getTheDaily(currentLoadedDate);
     }
 
     @Override
     public void showProgressDialog() {
-
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -224,12 +132,26 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
     @Override
     public void showError(String error) {
-
+        if (swipeTarget != null) {
+            Snackbar.make(swipeTarget, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (currentLoadedDate.equals("0")) {
+                        mZhihuPresenter.getLastZhihuNews();
+                    } else {
+                        mZhihuPresenter.getTheDaily(currentLoadedDate);
+                    }
+                }
+            }).show();
+        }
     }
 
     @Override
     public void updateList(ZhihuDaily zhihuDaily) {
-
+        currentLoadedDate = zhihuDaily.getDate();
+        LogUtils.i(currentLoadedDate);
+        zhihuStories.addAll(zhihuDaily.getStories());
+        zhihuAdapter.notifyDataSetChanged();
     }
 
     class ZhihuAdapter extends RecyclerView.Adapter<ZhihuAdapter.ZhihuViewHolder> {
@@ -254,6 +176,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
             else
                 holder.tvZhihuDaily.setTextColor(Color.BLACK);
             holder.tvZhihuDaily.setText(zhihuDailyItem.getTitle());
+            holder.tvTime.setText(zhihuDailyItem.getDate());
             holder.cvZhihu.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -22,13 +22,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,24 +36,22 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.util.UtilRequest;
-import name.caiyao.microreader.api.weiboVideo.VideoRequest;
 import name.caiyao.microreader.bean.weiboVideo.WeiboVideoBlog;
-import name.caiyao.microreader.bean.weiboVideo.WeiboVideoResponse;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.presenter.IVideoPresenter;
+import name.caiyao.microreader.presenter.impl.VideoPresenterImpl;
 import name.caiyao.microreader.ui.activity.VideoActivity;
 import name.caiyao.microreader.ui.activity.VideoWebViewActivity;
-import name.caiyao.microreader.utils.CacheUtil;
+import name.caiyao.microreader.ui.iView.IVideoFragment;
 import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import okhttp3.ResponseBody;
 import rx.Observer;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class VideoFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
+public class VideoFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IVideoFragment {
 
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
@@ -67,8 +62,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
     private ArrayList<WeiboVideoBlog> mWeiboVideoBlogs = new ArrayList<>();
     private int currentPage = 1;
-    CacheUtil cacheUtil;
-    Gson gson = new Gson();
+    private IVideoPresenter mIVideoPresenter;
     private VideoAdapter videoAdapter;
 
     public VideoFragment() {
@@ -85,14 +79,22 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        mIVideoPresenter = new VideoPresenterImpl(this, getActivity());
+    }
+
+    private void initView() {
         swipeToLoadLayout.setOnRefreshListener(this);
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
         videoAdapter = new VideoAdapter(mWeiboVideoBlogs);
         swipeTarget.setAdapter(videoAdapter);
-        cacheUtil = CacheUtil.get(getActivity());
-        getFromCache(1);
+        mIVideoPresenter.getVideoFromCache(1);
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -102,80 +104,6 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
         } else {
             onRefresh();
         }
-    }
-
-    private void getFromCache(int page) {
-        if (cacheUtil.getAsJSONArray(Config.VIDEO + page) != null) {
-            ArrayList<WeiboVideoBlog> video = gson.fromJson(cacheUtil.getAsJSONArray(Config.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>() {
-            }.getType());
-            currentPage++;
-            mWeiboVideoBlogs.addAll(video);
-            videoAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void getVideo(final int page) {
-        VideoRequest.getVideoRequstApi().getWeiboVideo(page)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<WeiboVideoResponse, ArrayList<WeiboVideoBlog>>() {
-                    @Override
-                    public ArrayList<WeiboVideoBlog> call(WeiboVideoResponse weiboVideoResponse) {
-                        ArrayList<WeiboVideoBlog> arrayList = new ArrayList<>();
-                        if (!weiboVideoResponse.getCardsItems()[0].getModType().equals("mod/empty")) {
-                            ArrayList<WeiboVideoBlog> a = weiboVideoResponse.getCardsItems()[0].getBlogs();
-                            for (WeiboVideoBlog w : a) {
-                                if (w.getBlog().getmBlog() != null)//处理转发的微博
-                                    w.setBlog(w.getBlog().getmBlog());
-                                if (w.getBlog().getPageInfo() != null && !TextUtils.isEmpty(w.getBlog().getPageInfo().getVideoPic()))//处理无视频微博
-                                    arrayList.add(w);
-                            }
-                        } else {
-                            LogUtils.i("没有数据了！");
-                        }
-                        return arrayList;
-                    }
-                })
-                .subscribe(new Subscriber<ArrayList<WeiboVideoBlog>>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeTarget != null) {
-                            getFromCache(page);
-                            Snackbar.make(swipeTarget, getString(R.string.common_loading_error), Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    getVideo(page);
-                                }
-                            }).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNext(ArrayList<WeiboVideoBlog> weiboVideoResponse) {
-                        if (progressBar != null)
-                            progressBar.setVisibility(View.INVISIBLE);
-                        if (swipeToLoadLayout != null) {//不加可能会崩溃
-                            swipeToLoadLayout.setRefreshing(false);
-                            swipeToLoadLayout.setLoadingMore(false);
-                        }
-                        cacheUtil.put(Config.VIDEO + page, gson.toJson(weiboVideoResponse));
-                        mWeiboVideoBlogs.addAll(weiboVideoResponse);
-                        videoAdapter.notifyDataSetChanged();
-                        currentPage++;
-                    }
-                });
     }
 
     @Override
@@ -188,19 +116,48 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     public void onRefresh() {
         currentPage = 1;
         mWeiboVideoBlogs.clear();
-        //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
-        videoAdapter.notifyDataSetChanged();
-        getVideo(currentPage);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+        mIVideoPresenter.getVideo(currentPage);
     }
 
     @Override
     public void onLoadMore() {
-        getVideo(currentPage);
+        mIVideoPresenter.getVideo(currentPage);
+    }
+
+    @Override
+    public void showProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidProgressDialog() {
+        if (swipeToLoadLayout != null) {//不加可能会崩溃
+            swipeToLoadLayout.setRefreshing(false);
+            swipeToLoadLayout.setLoadingMore(false);
+        }
+        if (progressBar != null)
+            progressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError(String error) {
+        if (swipeTarget != null) {
+            mIVideoPresenter.getVideoFromCache(currentPage);
+            Snackbar.make(swipeTarget, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction("重试", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mIVideoPresenter.getVideo(currentPage);
+                }
+            }).show();
+        }
+    }
+
+    @Override
+    public void updateList(ArrayList<WeiboVideoBlog> weiboVideoBlogs) {
+        currentPage++;
+        mWeiboVideoBlogs.addAll(weiboVideoBlogs);
+        videoAdapter.notifyDataSetChanged();
     }
 
     class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {

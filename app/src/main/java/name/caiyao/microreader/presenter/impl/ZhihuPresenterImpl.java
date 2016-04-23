@@ -11,7 +11,6 @@ import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.presenter.IZhihuPresenter;
 import name.caiyao.microreader.ui.iView.IZhihuFragment;
 import name.caiyao.microreader.utils.CacheUtil;
-import name.caiyao.microreader.utils.TimeUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -69,7 +68,7 @@ public class ZhihuPresenterImpl implements IZhihuPresenter {
 
     @Override
     public void getTheDaily(String date) {
-        ZhihuRequest.getZhihuApi().getTheDaily(TimeUtil.getSpecifiedDayBefore(date))
+        ZhihuRequest.getZhihuApi().getTheDaily(date)
                 .map(new Func1<ZhihuDaily, ZhihuDaily>() {
                     @Override
                     public ZhihuDaily call(ZhihuDaily zhihuDaily) {
