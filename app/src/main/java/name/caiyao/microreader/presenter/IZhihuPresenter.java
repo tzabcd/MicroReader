@@ -7,4 +7,6 @@ public interface IZhihuPresenter {
     void getLastZhihuNews();
 
     void getTheDaily(String date);
+
+    void getLastFromCache();
 }

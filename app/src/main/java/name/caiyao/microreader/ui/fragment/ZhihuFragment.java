@@ -36,7 +36,10 @@ import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.presenter.IZhihuPresenter;
+import name.caiyao.microreader.presenter.impl.ZhihuPresenterImpl;
 import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
+import name.caiyao.microreader.ui.iView.IZhihuFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
@@ -48,7 +51,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 
-public class ZhihuFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener {
+public class ZhihuFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IZhihuFragment {
 
     @Bind(R.id.swipe_target)
     RecyclerView swipeTarget;
@@ -57,9 +60,10 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     @Bind(R.id.progressBar)
     ProgressBar progressBar;
 
-    String currentLoadedDate;
-    ZhihuAdapter zhihuAdapter;
-    ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
+    private String currentLoadedDate;
+    private ZhihuAdapter zhihuAdapter;
+    private IZhihuPresenter mZhihuPresenter;
+    private ArrayList<ZhihuDailyItem> zhihuStories = new ArrayList<>();
     CacheUtil cacheUtil;
     Gson gson = new Gson();
 
@@ -77,6 +81,15 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        initData();
+        initView();
+    }
+
+    private void initData() {
+        mZhihuPresenter = new ZhihuPresenterImpl(this, getActivity());
+    }
+
+    private void initView() {
         swipeToLoadLayout.setOnRefreshListener(this);
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -84,7 +97,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
         zhihuAdapter = new ZhihuAdapter(zhihuStories);
         swipeTarget.setAdapter(zhihuAdapter);
         cacheUtil = CacheUtil.get(getActivity());
-        getFromCache();
+        mZhihuPresenter.getLastFromCache();
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
             if (NetWorkUtil.isWifiConnected(getActivity())) {
                 onRefresh();
@@ -194,6 +207,31 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
         getMoreZhihuDaily();
     }
 
+    @Override
+    public void showProgressDialog() {
+
+    }
+
+    @Override
+    public void hidProgressDialog() {
+        if (progressBar != null)
+            progressBar.setVisibility(View.INVISIBLE);
+        if (swipeToLoadLayout != null) {
+            swipeToLoadLayout.setRefreshing(false);
+            swipeToLoadLayout.setLoadingMore(false);
+        }
+    }
+
+    @Override
+    public void showError(String error) {
+
+    }
+
+    @Override
+    public void updateList(ZhihuDaily zhihuDaily) {
+
+    }
+
     class ZhihuAdapter extends RecyclerView.Adapter<ZhihuAdapter.ZhihuViewHolder> {
 
 
@@ -243,12 +281,12 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()){
+                            switch (item.getItemId()) {
                                 case R.id.pop_unread:
-                                    if (isRead){
+                                    if (isRead) {
                                         DBUtils.getDB(getActivity()).insertHasRead(Config.ZHIHU, zhihuDailyItem.getId(), 0);
                                         holder.tvZhihuDaily.setTextColor(Color.BLACK);
-                                    }else{
+                                    } else {
                                         DBUtils.getDB(getActivity()).insertHasRead(Config.ZHIHU, zhihuDailyItem.getId(), 1);
                                         holder.tvZhihuDaily.setTextColor(Color.GRAY);
                                     }
