@@ -35,4 +35,9 @@ public class SharePreferenceUtil {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPreferences.getBoolean(context.getString(R.string.pre_nav_color), true);
     }
+
+    public static boolean isUseLocalBrowser(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean(context.getString(R.string.pre_use_local), false);
+    }
 }

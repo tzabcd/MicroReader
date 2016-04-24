@@ -2,6 +2,7 @@ package name.caiyao.microreader.ui.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -230,10 +231,14 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
                 public void onClick(View v) {
                     DBUtils.getDB(getActivity()).insertHasRead(Config.WEIXIN, weixinNews.getUrl(), 1);
                     holder.tvTitle.setTextColor(Color.GRAY);
-                    Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
-                    intent.putExtra("url", weixinNews.getUrl());
-                    intent.putExtra("title", weixinNews.getTitle());
-                    startActivity(intent);
+                    if (SharePreferenceUtil.isUseLocalBrowser(getActivity())) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(weixinNews.getUrl())));
+                    } else {
+                        Intent intent = new Intent(getActivity(), WeixinNewsActivity.class);
+                        intent.putExtra("url", weixinNews.getUrl());
+                        intent.putExtra("title", weixinNews.getTitle());
+                        startActivity(intent);
+                    }
                 }
             });
         }

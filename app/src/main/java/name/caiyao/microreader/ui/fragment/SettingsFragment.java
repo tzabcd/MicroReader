@@ -12,18 +12,18 @@ import android.widget.Toast;
 
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.event.StatusBarEvent;
+import name.caiyao.microreader.presenter.ISettingPresenter;
+import name.caiyao.microreader.presenter.impl.SettingPresenterImpl;
+import name.caiyao.microreader.ui.iView.ISettingFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.RxBus;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
-public class SettingsFragment extends PreferenceFragment {
-    Preference prefCache;
+public class SettingsFragment extends PreferenceFragment implements ISettingFragment {
+    private Preference prefCache;
+    private ISettingPresenter mISettingPresenter;
 
     public SettingsFragment() {
     }
@@ -31,6 +31,7 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mISettingPresenter = new SettingPresenterImpl(this);
         addPreferencesFromResource(R.xml.preferences);
     }
 
@@ -90,48 +91,7 @@ public class SettingsFragment extends PreferenceFragment {
         version.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ZhihuRequest.getZhihuApi().getUpdateInfo()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Observer<UpdateItem>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                //这个可能异常Error occurred when trying to propagate error to Observer.onError
-                                // Fragment not attach to activity
-                                if (isAdded()) {
-                                    Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onNext(final UpdateItem updateItem) {
-                                if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
-                                    new AlertDialog.Builder(getActivity())
-                                            .setTitle(getString(R.string.update_title))
-                                            .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
-                                            .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
-                                                }
-                                            })
-                                            .setNegativeButton(getString(R.string.common_cancel), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-
-                                                }
-                                            })
-                                            .show();
-                                else
-                                    Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                mISettingPresenter.checkUpdate();
                 return true;
             }
         });
@@ -145,5 +105,35 @@ public class SettingsFragment extends PreferenceFragment {
 
     private void showCacheSize(Preference preference) {
         preference.setSummary(getActivity().getString(R.string.cache_size) + CacheUtil.getCacheSize(getActivity().getCacheDir()));
+    }
+
+    @Override
+    public void showError(String error) {
+        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showUpdateDialog(final UpdateItem updateItem) {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(getString(R.string.update_title))
+                .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
+                .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
+                    }
+                })
+                .setNegativeButton(getString(R.string.common_cancel), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void showNoUpdate() {
+        Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
     }
 }

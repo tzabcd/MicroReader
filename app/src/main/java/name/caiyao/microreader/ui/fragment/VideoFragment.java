@@ -272,8 +272,11 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
                                             .putExtra("shareUrl", shareUrl)
                                             .putExtra("title", title));
                                 } else {
-                                    startActivity(new Intent(getActivity(), VideoWebViewActivity.class)
-                                            .putExtra("url", matcher.group(1)));
+                                    if (SharePreferenceUtil.isUseLocalBrowser(getActivity()))
+                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(matcher.group(1))));
+                                    else
+                                        startActivity(new Intent(getActivity(), VideoWebViewActivity.class)
+                                                .putExtra("url", matcher.group(1)));
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();

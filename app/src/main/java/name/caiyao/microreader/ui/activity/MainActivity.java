@@ -28,8 +28,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.apkfuns.logutils.LogUtils;
-
 import java.io.File;
 
 import butterknife.Bind;
@@ -176,7 +174,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
         int id = savedInstanceState.getInt("selectId");
         if (id == R.id.nav_weixin) {
             switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
@@ -189,6 +186,8 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_video) {
             switchFragment(videoFragment, getString(R.string.fragment_video_title));
         }
+        //java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     @Override

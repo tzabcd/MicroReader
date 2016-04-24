@@ -45,5 +45,6 @@
     <string name="pre_status_bar" translatable="false">pre_status_bar</string>
     <string name="common_cancel">取消</string>
     <string name="pre_nav_color" translatable="false">pre_nav_color</string>
+    <string name="pre_use_local" translatable="false">pre_use_local</string>
 
 </resources>
