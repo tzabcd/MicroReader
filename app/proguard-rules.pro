@@ -101,6 +101,8 @@
 # Application classes that will be serialized/deserialized over Gson
 -keep class com.google.gson.examples.android.model.** { *; }
 
+-keep class name.caiyao.microreader.bean.itHome.**{*;}
+
 ##---------------End: proguard configuration for Gson  ----------
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
