@@ -168,7 +168,9 @@ public class MainActivity extends BaseActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            // Can not perform this action after onSaveInstanceState
+            //super.onBackPressed();
+            finish();
         }
     }
 
