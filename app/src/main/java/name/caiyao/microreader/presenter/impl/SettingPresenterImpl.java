@@ -17,6 +17,8 @@ public class SettingPresenterImpl implements ISettingPresenter {
     private ISettingFragment mSettingFragment;
 
     public SettingPresenterImpl(ISettingFragment iSettingFragment) {
+        if (iSettingFragment==null)
+            throw new IllegalArgumentException("iSettingFragment must not be null");
         mSettingFragment = iSettingFragment;
     }
 

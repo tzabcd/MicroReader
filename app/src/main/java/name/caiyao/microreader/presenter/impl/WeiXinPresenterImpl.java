@@ -23,6 +23,8 @@ public class WeiXinPresenterImpl implements IWeixinPresenter {
     private IWeixinFragment mWeixinFragment;
 
     public WeiXinPresenterImpl(IWeixinFragment weixinFragment, Context context) {
+        if (weixinFragment==null)
+            throw new IllegalArgumentException("weixinFragment must not be null");
         this.mWeixinFragment = weixinFragment;
         mCacheUtil = CacheUtil.get(context);
     }

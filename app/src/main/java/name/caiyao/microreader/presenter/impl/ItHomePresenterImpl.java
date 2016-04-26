@@ -33,6 +33,8 @@ public class ItHomePresenterImpl implements IItHomePresenter {
     private CacheUtil mCacheUtil;
 
     public ItHomePresenterImpl(IItHomeFragment iItHomeFragment, Context context) {
+        if (iItHomeFragment == null)
+            throw new IllegalArgumentException("iItHomeFragment must not be null");
         this.mItHomeFragment = iItHomeFragment;
         mCacheUtil = CacheUtil.get(context);
     }

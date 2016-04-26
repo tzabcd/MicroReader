@@ -23,6 +23,8 @@ public class GuokrPresenterImpl implements IGuokrPresenter {
     private CacheUtil mCacheUtil;
 
     public GuokrPresenterImpl(IGuokrFragment guokrFragment, Context context) {
+        if (guokrFragment==null)
+            throw new IllegalArgumentException("guokrFragment must not be null");
         this.mGuokrFragment = guokrFragment;
         mCacheUtil = CacheUtil.get(context);
     }

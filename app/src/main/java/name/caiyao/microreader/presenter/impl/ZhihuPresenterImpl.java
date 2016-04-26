@@ -26,6 +26,8 @@ public class ZhihuPresenterImpl implements IZhihuPresenter {
     private Gson gson = new Gson();
 
     public ZhihuPresenterImpl(IZhihuFragment iZhihuFragment, Context context) {
+        if (iZhihuFragment == null)
+            throw new IllegalArgumentException("iZhihuFragment must not be null");
         mZhihuFragment = iZhihuFragment;
         mCacheUtil = CacheUtil.get(context);
     }

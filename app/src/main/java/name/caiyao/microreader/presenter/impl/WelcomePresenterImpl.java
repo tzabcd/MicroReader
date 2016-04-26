@@ -37,6 +37,8 @@ public class WelcomePresenterImpl implements IWelcomePresenter {
     private SharedPreferences sharedPreferences;
 
     public WelcomePresenterImpl(IWelcome iWelcome, Context context) {
+        if (iWelcome==null)
+            throw new IllegalArgumentException("iWelcome must not be null");
         mIWelcome = iWelcome;
         mContext = context;
         sharedPreferences = context.getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);

@@ -3,6 +3,7 @@ package name.caiyao.microreader.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -24,24 +25,22 @@ import com.hannesdorfmann.swipeback.SwipeBack;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.itHome.ItHomeRequest;
 import name.caiyao.microreader.bean.itHome.ItHomeArticle;
 import name.caiyao.microreader.bean.itHome.ItHomeItem;
-import name.caiyao.microreader.utils.ItHomeUtil;
+import name.caiyao.microreader.presenter.IItHomeArticlePresenter;
+import name.caiyao.microreader.presenter.impl.ItHomeArticlePresenterImpl;
+import name.caiyao.microreader.ui.iView.IItHomeArticle;
 import name.caiyao.microreader.utils.WebUtil;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/3/25 0025.
  */
-public class ItHomeActivity extends BaseActivity {
+public class ItHomeActivity extends BaseActivity implements IItHomeArticle {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.wv_weixin)
-    WebView wvWeixin;
+    @Bind(R.id.wv_it)
+    WebView wvIt;
     @Bind(R.id.pb_web)
     ProgressBar pbWeb;
     @Bind(R.id.nest)
@@ -50,6 +49,7 @@ public class ItHomeActivity extends BaseActivity {
     FloatingActionButton fabButton;
 
     private ItHomeItem itHomeItem;
+    private IItHomeArticlePresenter mIItHomeArticlePresenter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,9 +58,17 @@ public class ItHomeActivity extends BaseActivity {
                 .setContentView(R.layout.activity_ithome)
                 .setSwipeBackView(R.layout.swipe_back);
         ButterKnife.bind(this);
+        initData();
+        initView();
+        getData();
+    }
 
+    private void initData() {
         itHomeItem = getIntent().getParcelableExtra("item");
+        mIItHomeArticlePresenter = new ItHomeArticlePresenterImpl(this);
+    }
 
+    private void initView() {
         toolbar.setTitle(itHomeItem.getTitle());
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -73,7 +81,7 @@ public class ItHomeActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        int vibrantColor = setToolBar(fabButton,toolbar, true, true, null);
+        int vibrantColor = setToolBar(fabButton, toolbar, true, true, null);
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
         if (linearLayout != null) {
             linearLayout.setBackgroundColor(vibrantColor);
@@ -82,15 +90,18 @@ public class ItHomeActivity extends BaseActivity {
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nest.smoothScrollTo(0,0);
+                nest.smoothScrollTo(0, 0);
             }
         });
         setWebView();
-        getIthomeArticle();
+    }
+
+    private void getData() {
+        mIItHomeArticlePresenter.getItHomeArticle(itHomeItem.getNewsid());
     }
 
     private void setWebView() {
-        WebSettings settings = wvWeixin.getSettings();
+        WebSettings settings = wvIt.getSettings();
         settings.setDomStorageEnabled(true);
         settings.setAppCacheEnabled(true);
         settings.setJavaScriptEnabled(true);
@@ -101,14 +112,14 @@ public class ItHomeActivity extends BaseActivity {
         settings.setAppCachePath(getCacheDir().getAbsolutePath() + "/webViewCache");
         settings.setAppCacheEnabled(true);
         settings.setLoadWithOverviewMode(true);
-        wvWeixin.setWebViewClient(new WebViewClient() {
+        wvIt.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 view.loadUrl(url);
                 return true;
             }
         });
-        wvWeixin.setWebChromeClient(new WebChromeClient() {
+        wvIt.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 if (pbWeb != null) {//修复未加载完成，用户返回会崩溃
@@ -126,33 +137,6 @@ public class ItHomeActivity extends BaseActivity {
         });
     }
 
-    private void getIthomeArticle() {
-        ItHomeRequest.getItHomeApi().getItHomeArticle(ItHomeUtil.getSplitNewsId(itHomeItem.getNewsid()))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ItHomeArticle>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(ItHomeArticle itHomeArticle) {
-                        if (TextUtils.isEmpty(itHomeArticle.getDetail())) {
-                            wvWeixin.loadUrl(itHomeItem.getUrl());
-                        } else {
-                            String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(), new String[]{"news.css"}, false);
-                            wvWeixin.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, itHomeItem.getUrl());
-                        }
-                    }
-                });
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_share, menu);
@@ -161,8 +145,8 @@ public class ItHomeActivity extends BaseActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK) && wvWeixin.canGoBack()) {
-            wvWeixin.goBack();
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && wvIt.canGoBack()) {
+            wvIt.goBack();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -185,5 +169,25 @@ public class ItHomeActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void showError(String error) {
+        Snackbar.make(wvIt, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getData();
+            }
+        }).show();
+    }
+
+    @Override
+    public void showItHomeArticle(ItHomeArticle itHomeArticle) {
+        if (TextUtils.isEmpty(itHomeArticle.getDetail())) {
+            wvIt.loadUrl(itHomeItem.getUrl());
+        } else {
+            String data = WebUtil.BuildHtmlWithCss(itHomeArticle.getDetail(), new String[]{"news.css"}, false);
+            wvIt.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, itHomeItem.getUrl());
+        }
     }
 }

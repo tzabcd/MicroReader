@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
@@ -29,38 +30,37 @@ import java.lang.reflect.InvocationTargetException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.guokr.GuokrRequest;
-import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.guokr.GuokrArticle;
 import name.caiyao.microreader.bean.zhihu.ZhihuStory;
+import name.caiyao.microreader.presenter.IZhihuStoryPresenter;
+import name.caiyao.microreader.presenter.impl.ZhihuStoryPresenterImpl;
+import name.caiyao.microreader.ui.iView.IZhihuStory;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 import name.caiyao.microreader.utils.WebUtil;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
-public class ZhihuStoryActivity extends BaseActivity {
+public class ZhihuStoryActivity extends BaseActivity implements IZhihuStory {
 
     public static final int TYPE_ZHIHU = 1;
     public static final int TYPE_GUOKR = 2;
+
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.wv_zhihu)
     WebView wvZhihu;
     @Bind(R.id.iv_zhihu_story)
     ImageView ivZhihuStory;
-
-    int type;
-    String id;
-    String title;
-    String url;
-
     @Bind(R.id.ctl)
     CollapsingToolbarLayout ctl;
     @Bind(R.id.nest)
     NestedScrollView nest;
     @Bind(R.id.fabButton)
     FloatingActionButton fabButton;
+
+    private int type;
+    private String id;
+    private String title;
+    private String url;
+    private IZhihuStoryPresenter mIZhihuStoryPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,14 +70,23 @@ public class ZhihuStoryActivity extends BaseActivity {
                 .setSwipeBackView(R.layout.swipe_back);
         ButterKnife.bind(this);
 
+        initData();
+        initView();
+        getData();
+    }
+
+    private void initData() {
         type = getIntent().getIntExtra("type", 0);
         id = getIntent().getStringExtra("id");
         title = getIntent().getStringExtra("title");
+        mIZhihuStoryPresenter = new ZhihuStoryPresenterImpl(this);
+    }
 
+    private void initView() {
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
-        int vibrantColor = setToolBar(fabButton,toolbar, false, isKitKat, null);
+        int vibrantColor = setToolBar(fabButton, toolbar, false, isKitKat, null);
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
         if (linearLayout != null) {
             linearLayout.setBackgroundColor(vibrantColor);
@@ -92,16 +101,10 @@ public class ZhihuStoryActivity extends BaseActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        if (type == TYPE_ZHIHU) {
-            getZhihuDaily();
-        } else if (type == TYPE_GUOKR) {
-            getGuokr();
-        }
-
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nest.smoothScrollTo(0,0);
+                nest.smoothScrollTo(0, 0);
             }
         });
 
@@ -119,6 +122,14 @@ public class ZhihuStoryActivity extends BaseActivity {
         wvZhihu.setWebChromeClient(new WebChromeClient());
         ctl.setContentScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
         ctl.setStatusBarScrimColor(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.VIBRANT, ContextCompat.getColor(this, R.color.colorPrimary)));
+    }
+
+    private void getData() {
+        if (type == TYPE_ZHIHU) {
+            mIZhihuStoryPresenter.getZhihuStory(id);
+        } else if (type == TYPE_GUOKR) {
+            mIZhihuStoryPresenter.getGuokrArticle(id);
+        }
     }
 
     @Override
@@ -140,65 +151,6 @@ public class ZhihuStoryActivity extends BaseActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void getZhihuDaily() {
-        ZhihuRequest.getZhihuApi().getZhihuStory(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<ZhihuStory>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(ZhihuStory zhihuStory) {
-                        Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
-                        url = zhihuStory.getShareUrl();
-                        if (TextUtils.isEmpty(zhihuStory.getBody())) {
-                            wvZhihu.loadUrl(zhihuStory.getShareUrl());
-                        } else {
-                            String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
-                            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
-                        }
-                    }
-                });
-    }
-
-    private void getGuokr() {
-        GuokrRequest.getGuokrApi().getGuokrArticle(id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<GuokrArticle>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(GuokrArticle guokrArticle) {
-                        Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmallImage()).into(ivZhihuStory);
-                        url = guokrArticle.getResult().getUrl();
-                        if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
-                            wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
-                        } else {
-                            //解决图片显示问题,视频现实问题
-                            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", "").replaceAll("width=\"(.*?)\"","100%").replaceAll("height=\"(.*?)\"","auto"), new String[]{"news.css"}, false);
-                            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
-                        }
-                    }
-                });
     }
 
     @Override
@@ -233,5 +185,40 @@ public class ZhihuStoryActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void showError(String error) {
+        Snackbar.make(wvZhihu, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getData();
+            }
+        }).show();
+    }
+
+    @Override
+    public void showZhihuStory(ZhihuStory zhihuStory) {
+        Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
+        url = zhihuStory.getShareUrl();
+        if (TextUtils.isEmpty(zhihuStory.getBody())) {
+            wvZhihu.loadUrl(zhihuStory.getShareUrl());
+        } else {
+            String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
+            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+        }
+    }
+
+    @Override
+    public void showGuokrArticle(GuokrArticle guokrArticle) {
+        Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmallImage()).into(ivZhihuStory);
+        url = guokrArticle.getResult().getUrl();
+        if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
+            wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
+        } else {
+            //解决图片显示问题,视频显示问题
+            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", "").replaceAll("width=\"(.*?)\"", "100%").replaceAll("height=\"(.*?)\"", "auto"), new String[]{"news.css"}, false);
+            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+        }
     }
 }

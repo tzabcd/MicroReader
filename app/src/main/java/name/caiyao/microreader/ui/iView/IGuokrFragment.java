@@ -7,12 +7,6 @@ import name.caiyao.microreader.bean.guokr.GuokrHotItem;
 /**
  * Created by 蔡小木 on 2016/4/22 0022.
  */
-public interface IGuokrFragment{
-    void showProgressDialog();
-
-    void hidProgressDialog();
-
-    void showError(String error);
-
+public interface IGuokrFragment extends IBaseFragment {
     void updateList(ArrayList<GuokrHotItem> guokrHotItems);
 }

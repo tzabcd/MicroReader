@@ -30,6 +30,8 @@ public class VideoPresenterImpl implements IVideoPresenter {
     private Gson mGson = new Gson();
 
     public VideoPresenterImpl(IVideoFragment iVideoFragment, Context context) {
+        if (iVideoFragment==null)
+            throw new IllegalArgumentException("iVideoFragment must not be null");
         mIVideoFragment = iVideoFragment;
         mCacheUtil = CacheUtil.get(context);
     }
