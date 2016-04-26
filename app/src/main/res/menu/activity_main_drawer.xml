@@ -1,39 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group
-        android:id="@+id/news"
-        android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_weixin"
-            android:checked="true"
-            android:icon="@drawable/icon_weixin"
-            android:title="@string/fragment_wexin_title" />
-        <item
-            android:id="@+id/nav_it"
-            android:icon="@drawable/it"
-            android:title="@string/fragment_it_title" />
-        <item
-            android:id="@+id/nav_zhihu"
-            android:icon="@drawable/icon_zhihu"
-            android:title="@string/fragment_zhihu_title" />
-        <item
-            android:id="@+id/nav_guokr"
-            android:icon="@drawable/icon_guokr"
-            android:title="@string/fragment_guokr_title" />
-        <item
-            android:id="@+id/nav_video"
-            android:icon="@drawable/icon_video"
-            android:title="@string/fragment_video_title" />
-    </group>
-
     <group
         android:id="@+id/settings"
         android:checkableBehavior="none">
         <item
             android:id="@+id/nav_setting"
             android:icon="@drawable/ic_settings_black_24px"
-            android:title="@string/activity_setting_title" />
+            android:title="@string/activity_setting_title"/>
     </group>
 
 </menu>

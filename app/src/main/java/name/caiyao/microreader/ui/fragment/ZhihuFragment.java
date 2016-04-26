@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.apkfuns.logutils.LogUtils;
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
@@ -149,7 +148,6 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void updateList(ZhihuDaily zhihuDaily) {
         currentLoadedDate = zhihuDaily.getDate();
-        LogUtils.i(currentLoadedDate);
         zhihuStories.addAll(zhihuDaily.getStories());
         zhihuAdapter.notifyDataSetChanged();
     }

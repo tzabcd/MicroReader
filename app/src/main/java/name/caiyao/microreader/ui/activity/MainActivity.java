@@ -1,6 +1,5 @@
 package name.caiyao.microreader.ui.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,29 +28,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.BuildConfig;
 import name.caiyao.microreader.R;
-import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.event.StatusBarEvent;
-import name.caiyao.microreader.ui.fragment.GuokrFragment;
-import name.caiyao.microreader.ui.fragment.ItHomeFragment;
-import name.caiyao.microreader.ui.fragment.VideoFragment;
-import name.caiyao.microreader.ui.fragment.WeixinFragment;
-import name.caiyao.microreader.ui.fragment.ZhihuFragment;
+import name.caiyao.microreader.presenter.IMainPresenter;
+import name.caiyao.microreader.presenter.impl.MainPresenterImpl;
+import name.caiyao.microreader.ui.iView.IMain;
 import name.caiyao.microreader.utils.RxBus;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
-import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, IMain {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -65,14 +59,11 @@ public class MainActivity extends BaseActivity
     CoordinatorLayout ctlMain;
 
     private Fragment currentFragment;
+    private ArrayList<Fragment> mFragments;
+    private ArrayList<Integer> mTitles;
     private int selectId;
     public Subscription rxSubscription;
-
-    private WeixinFragment weixinFragment = new WeixinFragment();
-    private ItHomeFragment itHomeFragment = new ItHomeFragment();
-    private ZhihuFragment zhihuFragment = new ZhihuFragment();
-    private GuokrFragment guokrFragment = new GuokrFragment();
-    private VideoFragment videoFragment = new VideoFragment();
+    private IMainPresenter mIMainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +71,10 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
+
+        mIMainPresenter = new MainPresenterImpl(this);
+        mIMainPresenter.initMenu(navView);
+
         rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
                 .subscribe(new Action1<StatusBarEvent>() {
                     @Override
@@ -90,7 +85,7 @@ public class MainActivity extends BaseActivity
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
         if (isKitKat)
             ctlMain.setFitsSystemWindows(false);
-        setToolBar(null,toolbar, true, false, drawerLayout);
+        setToolBar(null, toolbar, true, false, drawerLayout);
         //改变statusBar颜色而DrawerLayout依然可以显示在StatusBar
         //ctlMain.setStatusBarBackgroundColor(setToolBar(toolbar,true,false,null));
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,9 +95,8 @@ public class MainActivity extends BaseActivity
 
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        assert navigationView != null;
-        navigationView.setNavigationItemSelectedListener(this);
+        assert navView != null;
+        navView.setNavigationItemSelectedListener(this);
         int[][] state = new int[][]{
                 new int[]{-android.R.attr.state_checked}, // unchecked
                 new int[]{android.R.attr.state_checked}  // pressed
@@ -112,10 +106,10 @@ public class MainActivity extends BaseActivity
                 Color.BLACK,
                 getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getInt(SharePreferenceUtil.MUTED, ContextCompat.getColor(this, R.color.colorAccent))
         };
-        navigationView.setItemTextColor(new ColorStateList(state, color));
-        navigationView.setItemIconTintList(new ColorStateList(state, color));
+        navView.setItemTextColor(new ColorStateList(state, color));
+        navView.setItemIconTintList(new ColorStateList(state, color));
 
-        View headerLayout = navigationView.getHeaderView(0);
+        View headerLayout = navView.getHeaderView(0);
         LinearLayout llImage = (LinearLayout) headerLayout.findViewById(R.id.side_image);
         TextView imageDescription = (TextView) headerLayout.findViewById(R.id.image_description);
         if (new File(getFilesDir().getPath() + "/bg.jpg").exists()) {
@@ -123,42 +117,7 @@ public class MainActivity extends BaseActivity
             llImage.setBackground(bitmapDrawable);
             imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
         }
-        switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-        ZhihuRequest.getZhihuApi().getUpdateInfo()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<UpdateItem>() {
-                    @Override
-                    public void onCompleted() {
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onNext(final UpdateItem updateItem) {
-                        if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
-                            new AlertDialog.Builder(MainActivity.this)
-                                    .setTitle(getString(R.string.update_title))
-                                    .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
-                                    .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
-                                        }
-                                    })
-                                    .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-
-                                        }
-                                    })
-                                    .show();
-                    }
-                });
+        mIMainPresenter.checkUpdate();
     }
 
     @Override
@@ -177,16 +136,8 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         int id = savedInstanceState.getInt("selectId");
-        if (id == R.id.nav_weixin) {
-            switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-        } else if (id == R.id.nav_zhihu) {
-            switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
-        } else if (id == R.id.nav_it) {
-            switchFragment(itHomeFragment, getString(R.string.fragment_it_title));
-        } else if (id == R.id.nav_guokr) {
-            switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
-        } else if (id == R.id.nav_video) {
-            switchFragment(videoFragment, getString(R.string.fragment_video_title));
+        if (id < mFragments.size()) {
+            switchFragment(mFragments.get(id), getString(mTitles.get(id)));
         }
         //java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
         super.onRestoreInstanceState(savedInstanceState);
@@ -198,15 +149,6 @@ public class MainActivity extends BaseActivity
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Bundle bundle = new Bundle();
-        bundle.putInt("selectId", selectId);
-        onSaveInstanceState(bundle);
-    }
-
-    @SuppressLint("RtlHardcoded")
     private void switchFragment(Fragment fragment, String title) {
         Slide slideTransition;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -231,26 +173,14 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
         if (id != R.id.nav_setting)
             selectId = id;
-        switch (id) {
-            case R.id.nav_weixin:
-                switchFragment(weixinFragment, getString(R.string.fragment_wexin_title));
-                break;
-            case R.id.nav_zhihu:
-                switchFragment(zhihuFragment, getString(R.string.fragment_zhihu_title));
-                break;
-            case R.id.nav_it:
-                switchFragment(itHomeFragment, getString(R.string.fragment_it_title));
-                break;
-            case R.id.nav_guokr:
-                switchFragment(guokrFragment, getString(R.string.fragment_guokr_title));
-                break;
-            case R.id.nav_video:
-                switchFragment(videoFragment, getString(R.string.fragment_video_title));
-                break;
-            case R.id.nav_setting:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-        }
+        if (id < mFragments.size()) {
+            switchFragment(mFragments.get(id), getString(mTitles.get(id)));
+        } else
+            switch (id) {
+                case R.id.nav_setting:
+                    startActivity(new Intent(this, SettingsActivity.class));
+                    break;
+            }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
@@ -264,5 +194,33 @@ public class MainActivity extends BaseActivity
         if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }
+    }
+
+    @Override
+    public void initMenu(ArrayList<Fragment> fragments, ArrayList<Integer> titles) {
+        mFragments = fragments;
+        mTitles = titles;
+        switchFragment(mFragments.get(0), getString(titles.get(0)));
+    }
+
+    @Override
+    public void showUpdate(final UpdateItem updateItem) {
+        if (updateItem.getVersionCode() > BuildConfig.VERSION_CODE)
+            new AlertDialog.Builder(MainActivity.this)
+                    .setTitle(getString(R.string.update_title))
+                    .setMessage(String.format(getString(R.string.update_description), updateItem.getVersionName(), updateItem.getReleaseNote()))
+                    .setPositiveButton(getString(R.string.update_button), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateItem.getDownloadUrl())));
+                        }
+                    })
+                    .setNegativeButton(R.string.common_cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    })
+                    .show();
     }
 }
