@@ -23,7 +23,6 @@ import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,8 +48,6 @@ public class MainActivity extends BaseActivity
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.replace)
-    FrameLayout replace;
     @Bind(R.id.nav_view)
     NavigationView navView;
     @Bind(R.id.drawer_layout)
@@ -63,7 +60,6 @@ public class MainActivity extends BaseActivity
     private ArrayList<Integer> mTitles;
     private int selectId;
     public Subscription rxSubscription;
-    private IMainPresenter mIMainPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +68,8 @@ public class MainActivity extends BaseActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        mIMainPresenter = new MainPresenterImpl(this);
-        mIMainPresenter.initMenu(navView);
+        IMainPresenter IMainPresenter = new MainPresenterImpl(this);
+        IMainPresenter.initMenu(navView);
 
         rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
                 .subscribe(new Action1<StatusBarEvent>() {
@@ -117,7 +113,7 @@ public class MainActivity extends BaseActivity
             llImage.setBackground(bitmapDrawable);
             imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
         }
-        mIMainPresenter.checkUpdate();
+        IMainPresenter.checkUpdate();
     }
 
     @Override
@@ -169,18 +165,16 @@ public class MainActivity extends BaseActivity
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (id != R.id.nav_setting)
-            selectId = id;
+        selectId = id;
         if (id < mFragments.size()) {
             switchFragment(mFragments.get(id), getString(mTitles.get(id)));
-        } else
-            switch (id) {
-                case R.id.nav_setting:
-                    startActivity(new Intent(this, SettingsActivity.class));
-                    break;
-            }
+        }
+        switch (id) {
+            case R.id.nav_setting:
+                startActivity(new Intent(this, SettingsActivity.class));
+                break;
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);

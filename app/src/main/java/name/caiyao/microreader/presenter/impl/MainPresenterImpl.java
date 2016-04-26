@@ -10,12 +10,8 @@ import java.util.ArrayList;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
+import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.presenter.IMainPresenter;
-import name.caiyao.microreader.ui.fragment.GuokrFragment;
-import name.caiyao.microreader.ui.fragment.ItHomeFragment;
-import name.caiyao.microreader.ui.fragment.VideoFragment;
-import name.caiyao.microreader.ui.fragment.WeixinFragment;
-import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 import name.caiyao.microreader.ui.iView.IMain;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -29,13 +25,7 @@ public class MainPresenterImpl implements IMainPresenter {
     private ArrayList<Fragment> mFragments;
     private ArrayList<Integer> titles;
     private IMain mIMain;
-    private String[] menuItemArr = new String[]{
-            "zhihu",
-            "it",
-            "guokr",
-            "weixin",
-            "video"
-    };
+    private Config.Channel[] menuItemArr = Config.Channel.values();
 
     public MainPresenterImpl(IMain main) {
         if (main == null)
@@ -50,11 +40,11 @@ public class MainPresenterImpl implements IMainPresenter {
         Menu menu = navigationView.getMenu();
         menu.clear();
         for (int i = 0; i < menuItemArr.length; i++) {
-            MenuItem menuItem = menu.add(0, i, 0, getTitle(menuItemArr[i]));
-            titles.add(getTitle(menuItemArr[i]));
-            menuItem.setIcon(getIconId(menuItemArr[i]));
+            MenuItem menuItem = menu.add(0, i, 0, menuItemArr[i].getTitle());
+            titles.add(menuItemArr[i].getTitle());
+            menuItem.setIcon(menuItemArr[i].getIcon());
             menuItem.setCheckable(true);
-            addFragment(menuItemArr[i]);
+            mFragments.add(menuItemArr[i].getFragment());
             if (i == 0) {
                 menuItem.setChecked(true);
             }
@@ -84,57 +74,5 @@ public class MainPresenterImpl implements IMainPresenter {
                         mIMain.showUpdate(updateItem);
                     }
                 });
-    }
-
-    private void addFragment(String key) {
-        switch (key) {
-            case "guokr":
-                mFragments.add(new GuokrFragment());
-                break;
-            case "it":
-                mFragments.add(new ItHomeFragment());
-                break;
-            case "zhihu":
-                mFragments.add(new ZhihuFragment());
-                break;
-            case "weixin":
-                mFragments.add(new WeixinFragment());
-                break;
-            case "video":
-                mFragments.add(new VideoFragment());
-                break;
-        }
-    }
-
-    private int getIconId(String key) {
-        switch (key) {
-            case "guokr":
-                return R.drawable.icon_guokr;
-            case "it":
-                return R.drawable.it;
-            case "zhihu":
-                return R.drawable.icon_zhihu;
-            case "weixin":
-                return R.drawable.icon_weixin;
-            case "video":
-                return R.drawable.icon_video;
-        }
-        return 0;
-    }
-
-    private int getTitle(String key) {
-        switch (key) {
-            case "guokr":
-                return R.string.fragment_guokr_title;
-            case "it":
-                return R.string.fragment_it_title;
-            case "zhihu":
-                return R.string.fragment_zhihu_title;
-            case "weixin":
-                return R.string.fragment_wexin_title;
-            case "video":
-                return R.string.fragment_video_title;
-        }
-        return 0;
     }
 }

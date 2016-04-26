@@ -15,6 +15,7 @@ public class SharePreferenceUtil {
     public static final String VIBRANT = "vibrant";
     public static final String MUTED = "muted";
     public static final String IMAGE_GET_TIME = "image_get_time";
+    public static final String SAVED_CHANNEL = "saved_channel";
 
     public static boolean isRefreshOnlyWifi(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
