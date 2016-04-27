@@ -5,7 +5,5 @@ package name.caiyao.microreader.presenter;
  */
 public interface IChangeChannelPresenter {
 
-    void getSaved();
-
-    void getAll();
+    void getSavedChannel();
 }

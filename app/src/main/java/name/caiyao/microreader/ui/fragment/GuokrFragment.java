@@ -1,27 +1,19 @@
 package name.caiyao.microreader.ui.fragment;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
 import com.aspsine.swipetoloadlayout.OnRefreshListener;
 import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -29,12 +21,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
-import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.presenter.IGuokrPresenter;
 import name.caiyao.microreader.presenter.impl.GuokrPresenterImpl;
-import name.caiyao.microreader.ui.activity.ZhihuStoryActivity;
+import name.caiyao.microreader.ui.adapter.GuokrAdapter;
 import name.caiyao.microreader.ui.iView.IGuokrFragment;
-import name.caiyao.microreader.utils.DBUtils;
 import name.caiyao.microreader.utils.NetWorkUtil;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
 
@@ -79,7 +69,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
-        guokrAdapter = new GuokrAdapter(guokrHotItems);
+        guokrAdapter = new GuokrAdapter(guokrHotItems,getActivity());
         swipeTarget.setAdapter(guokrAdapter);
         mGuokrPresenter.getGuokrHotFromCache(0);
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
@@ -150,101 +140,5 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         guokrAdapter.notifyDataSetChanged();
     }
 
-    class GuokrAdapter extends RecyclerView.Adapter<GuokrAdapter.GuokrViewHolder> {
 
-        private ArrayList<GuokrHotItem> guokrHotItems;
-
-        public GuokrAdapter(ArrayList<GuokrHotItem> guokrHotItems) {
-            this.guokrHotItems = guokrHotItems;
-        }
-
-        @Override
-        public GuokrViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new GuokrViewHolder(getActivity().getLayoutInflater().inflate(R.layout.ithome_item, parent, false));
-        }
-
-        @Override
-        public void onBindViewHolder(final GuokrViewHolder holder, int position) {
-            final GuokrHotItem guokrHotItem = guokrHotItems.get(holder.getAdapterPosition());
-            if (DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1))
-                holder.mTvTitle.setTextColor(Color.GRAY);
-            else
-                holder.mTvTitle.setTextColor(Color.BLACK);
-            holder.mTvTitle.setText(guokrHotItem.getTitle());
-            holder.mTvDescription.setText(guokrHotItem.getSummary());
-            holder.mTvTime.setText(guokrHotItem.getTime());
-            Glide.with(getActivity()).load(guokrHotItem.getSmallImage()).into(holder.mIvIthome);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 1);
-                    holder.mTvTitle.setTextColor(Color.GRAY);
-                    Intent intent = new Intent(getActivity(), ZhihuStoryActivity.class);
-                    intent.putExtra("type", ZhihuStoryActivity.TYPE_GUOKR);
-                    intent.putExtra("id", guokrHotItem.getId());
-                    intent.putExtra("title", guokrHotItem.getTitle());
-                    startActivity(intent);
-                }
-            });
-            holder.mBtnIt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    PopupMenu popupMenu = new PopupMenu(getActivity(), holder.mBtnIt);
-                    popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
-                    popupMenu.getMenu().removeItem(R.id.pop_share);
-                    popupMenu.getMenu().removeItem(R.id.pop_fav);
-                    final boolean isRead = DBUtils.getDB(getActivity()).isRead(Config.GUOKR, guokrHotItem.getId(), 1);
-                    if (!isRead)
-                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
-                    else
-                        popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
-                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.pop_fav:
-
-                                    break;
-                                case R.id.pop_unread:
-                                    if (isRead) {
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 0);
-                                        holder.mTvTitle.setTextColor(Color.BLACK);
-                                    } else {
-                                        DBUtils.getDB(getActivity()).insertHasRead(Config.GUOKR, guokrHotItem.getId(), 1);
-                                        holder.mTvTitle.setTextColor(Color.GRAY);
-                                    }
-                                    break;
-                            }
-                            return true;
-                        }
-                    });
-                    popupMenu.show();
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return guokrHotItems.size();
-        }
-
-        public class GuokrViewHolder extends RecyclerView.ViewHolder {
-
-            @Bind(R.id.tv_title)
-            TextView mTvTitle;
-            @Bind(R.id.iv_ithome)
-            ImageView mIvIthome;
-            @Bind(R.id.tv_description)
-            TextView mTvDescription;
-            @Bind(R.id.tv_time)
-            TextView mTvTime;
-            @Bind(R.id.btn_it)
-            Button mBtnIt;
-
-            public GuokrViewHolder(View itemView) {
-                super(itemView);
-                ButterKnife.bind(this, itemView);
-            }
-        }
-    }
 }

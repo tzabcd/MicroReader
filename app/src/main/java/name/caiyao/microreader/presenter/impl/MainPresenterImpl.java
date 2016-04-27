@@ -12,6 +12,11 @@ import name.caiyao.microreader.api.zhihu.ZhihuRequest;
 import name.caiyao.microreader.bean.UpdateItem;
 import name.caiyao.microreader.config.Config;
 import name.caiyao.microreader.presenter.IMainPresenter;
+import name.caiyao.microreader.ui.fragment.GuokrFragment;
+import name.caiyao.microreader.ui.fragment.ItHomeFragment;
+import name.caiyao.microreader.ui.fragment.VideoFragment;
+import name.caiyao.microreader.ui.fragment.WeixinFragment;
+import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 import name.caiyao.microreader.ui.iView.IMain;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
@@ -44,7 +49,7 @@ public class MainPresenterImpl implements IMainPresenter {
             titles.add(menuItemArr[i].getTitle());
             menuItem.setIcon(menuItemArr[i].getIcon());
             menuItem.setCheckable(true);
-            mFragments.add(menuItemArr[i].getFragment());
+            addFragment(menuItemArr[i].name());
             if (i == 0) {
                 menuItem.setChecked(true);
             }
@@ -74,5 +79,26 @@ public class MainPresenterImpl implements IMainPresenter {
                         mIMain.showUpdate(updateItem);
                     }
                 });
+    }
+
+    private void addFragment(String name) {
+        switch (name) {
+            case "GUOKR":
+                mFragments.add(new GuokrFragment());
+                break;
+            case "WEIXIN":
+                mFragments.add(new WeixinFragment());
+                break;
+            case "ZHIHU":
+                mFragments.add(new ZhihuFragment());
+                break;
+            case "VIDEO":
+                mFragments.add(new VideoFragment());
+                break;
+            case "IT":
+                mFragments.add(new ItHomeFragment());
+                break;
+        }
+
     }
 }

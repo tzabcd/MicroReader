@@ -7,7 +7,6 @@ import com.apkfuns.logutils.LogLevel;
 import com.apkfuns.logutils.LogUtils;
 import com.bugtags.library.Bugtags;
 import com.bugtags.library.BugtagsOptions;
-import com.squareup.leakcanary.LeakCanary;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -34,7 +33,6 @@ public class MicroApplication extends Application {
                 build();
         Bugtags.start("9c1b1a3234ceeb5b9c531177a93b65ec", this, Bugtags.BTGInvocationEventNone, options);
         MobclickAgent.setCatchUncaughtExceptions(false);
-        LeakCanary.install(this);
         microApplication = this;
     }
 

@@ -45,9 +45,6 @@
     <string name="common_view_loading">正在拼命加载数据…</string>
     <string name="common_view_release">释放加载</string>
     <string name="common_view_loading_ok">加载成功</string>
-    <string name="common_empty_msg">抱歉,暂未获取到数据!\n请点击屏幕重试~</string>
-    <string name="common_error_msg">抱歉,系统出错了!\n请点击屏幕重试~</string>
-    <string name="common_no_network_msg">暂未连接上网络!\n请连接后点击屏幕重试~</string>
     <string name="common_i_know">知道了</string>
     <string name="comon_retry">重试</string>
     <string name="common_cancel">取消</string>

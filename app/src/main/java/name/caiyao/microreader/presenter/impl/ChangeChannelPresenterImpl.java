@@ -19,29 +19,33 @@ public class ChangeChannelPresenterImpl implements IChangeChannelPresenter {
 
     private IChangeChannel mIChangeChannel;
     private SharedPreferences mSharedPreferences;
-    private ArrayList<String> savedChannelList;
+    private ArrayList<Config.Channel> savedChannelList;
+    private ArrayList<Config.Channel> dismissChannelList;
 
     public ChangeChannelPresenterImpl(IChangeChannel changeChannel, Context context) {
         mIChangeChannel = changeChannel;
         mSharedPreferences = context.getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
         savedChannelList = new ArrayList<>();
+        dismissChannelList = new ArrayList<>();
     }
 
     @Override
-    public void getSaved() {
+    public void getSavedChannel() {
         String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, "");
         if (TextUtils.isEmpty(savedChannel)) {
-            for (Config.Channel channel : Config.Channel.values()) {
-                savedChannelList.add(channel.name());
-            }
+            Collections.addAll(savedChannelList, Config.Channel.values());
         } else {
-            Collections.addAll(savedChannelList, savedChannel.split(","));
+            for (String s : savedChannel.split(",")) {
+                savedChannelList.add(Config.Channel.valueOf(s));
+            }
         }
         mIChangeChannel.showSavedChannel(savedChannelList);
-    }
-
-    @Override
-    public void getAll() {
-
+        for (Config.Channel channel : Config.Channel.values()) {
+            if (!savedChannelList.contains(channel)) {
+                dismissChannelList.add(channel);
+            }
+        }
+        mIChangeChannel.showDismissChannel(dismissChannelList);
     }
 }
+
