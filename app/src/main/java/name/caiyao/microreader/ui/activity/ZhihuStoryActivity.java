@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -183,8 +184,14 @@ public class ZhihuStoryActivity extends BaseActivity implements IZhihuStory {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        //webview内存泄露
+        if (wvZhihu != null) {
+            ((ViewGroup) wvZhihu.getParent()).removeView(wvZhihu);
+            wvZhihu.destroy();
+            wvZhihu = null;
+        }
         ButterKnife.unbind(this);
+        super.onDestroy();
     }
 
     @Override

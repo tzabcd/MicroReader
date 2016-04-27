@@ -249,37 +249,42 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
                         @Override
                         public void onError(Throwable e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getActivity(), "视频解析失败！", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())));
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                                Toast.makeText(getActivity(), "视频解析失败！", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(weiboVideoBlog.getBlog().getPageInfo().getVideoUrl())));
+                            }
                         }
 
                         @Override
                         public void onNext(ResponseBody responseBody) {
-                            progressDialog.dismiss();
-                            try {
-                                String shareUrl;
-                                Pattern pattern = Pattern.compile("href\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\"'>\\s]+)).*target=\"blank\">http");
-                                final Matcher matcher = pattern.matcher(responseBody.string());
-                                shareUrl = weiboVideoBlog.getBlog().getPageInfo().getVideoUrl();
-                                if (TextUtils.isEmpty(shareUrl)) {
-                                    Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
-                                    return;
+                            //防止停止后继续执行
+                            if (progressDialog.isShowing()) {
+                                progressDialog.dismiss();
+                                try {
+                                    String shareUrl;
+                                    Pattern pattern = Pattern.compile("href\\s*=\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\"'>\\s]+)).*target=\"blank\">http");
+                                    final Matcher matcher = pattern.matcher(responseBody.string());
+                                    shareUrl = weiboVideoBlog.getBlog().getPageInfo().getVideoUrl();
+                                    if (TextUtils.isEmpty(shareUrl)) {
+                                        Toast.makeText(getActivity(), "播放地址为空", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    if (matcher.find() && matcher.group(1).endsWith(".mp4")) {
+                                        startActivity(new Intent(getActivity(), VideoActivity.class)
+                                                .putExtra("url", matcher.group(1))
+                                                .putExtra("shareUrl", shareUrl)
+                                                .putExtra("title", title));
+                                    } else {
+                                        if (SharePreferenceUtil.isUseLocalBrowser(getActivity()))
+                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(matcher.group(1))));
+                                        else
+                                            startActivity(new Intent(getActivity(), VideoWebViewActivity.class)
+                                                    .putExtra("url", matcher.group(1)));
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                                if (matcher.find() && matcher.group(1).endsWith(".mp4")) {
-                                    startActivity(new Intent(getActivity(), VideoActivity.class)
-                                            .putExtra("url", matcher.group(1))
-                                            .putExtra("shareUrl", shareUrl)
-                                            .putExtra("title", title));
-                                } else {
-                                    if (SharePreferenceUtil.isUseLocalBrowser(getActivity()))
-                                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(matcher.group(1))));
-                                    else
-                                        startActivity(new Intent(getActivity(), VideoWebViewActivity.class)
-                                                .putExtra("url", matcher.group(1)));
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
                             }
                         }
                     });
