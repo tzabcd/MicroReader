@@ -1,11 +1,15 @@
 package name.caiyao.microreader.presenter.impl;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.zhihu.ZhihuRequest;
@@ -18,6 +22,7 @@ import name.caiyao.microreader.ui.fragment.VideoFragment;
 import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 import name.caiyao.microreader.ui.iView.IMain;
+import name.caiyao.microreader.utils.SharePreferenceUtil;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -30,26 +35,40 @@ public class MainPresenterImpl implements IMainPresenter {
     private ArrayList<Fragment> mFragments;
     private ArrayList<Integer> titles;
     private IMain mIMain;
-    private Config.Channel[] menuItemArr = Config.Channel.values();
+    private ArrayList<Config.Channel> savedChannelList;
+    private SharedPreferences mSharedPreferences;
 
-    public MainPresenterImpl(IMain main) {
+    public MainPresenterImpl(IMain main, Context context) {
         if (main == null)
             throw new IllegalArgumentException("main must not be null");
+        mSharedPreferences = context.getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
         mIMain = main;
         mFragments = new ArrayList<>();
         titles = new ArrayList<>();
+        savedChannelList = new ArrayList<>();
     }
 
     @Override
     public void initMenu(NavigationView navigationView) {
+        savedChannelList.clear();
+        titles.clear();
         Menu menu = navigationView.getMenu();
         menu.clear();
-        for (int i = 0; i < menuItemArr.length; i++) {
-            MenuItem menuItem = menu.add(0, i, 0, menuItemArr[i].getTitle());
-            titles.add(menuItemArr[i].getTitle());
-            menuItem.setIcon(menuItemArr[i].getIcon());
+        mFragments.clear();
+        String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, null);
+        if (TextUtils.isEmpty(savedChannel)) {
+            Collections.addAll(savedChannelList, Config.Channel.values());
+        } else {
+            for (String s : savedChannel.split(",")) {
+                savedChannelList.add(Config.Channel.valueOf(s));
+            }
+        }
+        for (int i = 0; i < savedChannelList.size(); i++) {
+            MenuItem menuItem = menu.add(0, i, 0, savedChannelList.get(i).getTitle());
+            titles.add(savedChannelList.get(i).getTitle());
+            menuItem.setIcon(savedChannelList.get(i).getIcon());
             menuItem.setCheckable(true);
-            addFragment(menuItemArr[i].name());
+            addFragment(savedChannelList.get(i).name());
             if (i == 0) {
                 menuItem.setChecked(true);
             }

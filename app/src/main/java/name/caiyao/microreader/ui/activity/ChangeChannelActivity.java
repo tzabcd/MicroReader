@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 
 import com.hannesdorfmann.swipeback.Position;
@@ -17,9 +18,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.config.Config;
+import name.caiyao.microreader.event.StatusBarEvent;
 import name.caiyao.microreader.presenter.IChangeChannelPresenter;
 import name.caiyao.microreader.presenter.impl.ChangeChannelPresenterImpl;
+import name.caiyao.microreader.ui.adapter.ChannelAdapter;
+import name.caiyao.microreader.ui.helper.ItemDragHelperCallback;
 import name.caiyao.microreader.ui.iView.IChangeChannel;
+import name.caiyao.microreader.utils.RxBus;
 
 /**
  * Created by 蔡小木 on 2016/4/26 0026.
@@ -28,12 +33,13 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
 
     @Bind(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.rv_)
+    @Bind(R.id.rv_channel)
     RecyclerView mRv;
 
     private ArrayList<Config.Channel> savedChannel = new ArrayList<>();
-    private ArrayList<Config.Channel> dismissChannel = new ArrayList<>();
+    private ArrayList<Config.Channel> otherChannel = new ArrayList<>();
     private IChangeChannelPresenter mIChangeChannelPresenter;
+    private ChannelAdapter mChannelAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,6 +50,10 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
         ButterKnife.bind(this);
         initData();
         initView();
+    }
+
+    private void initData() {
+        mIChangeChannelPresenter = new ChangeChannelPresenterImpl(this, this);
     }
 
     private void initView() {
@@ -58,23 +68,30 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        mRv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
-
+        setToolBar(null, mToolbar, true, true, null);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRv.setLayoutManager(linearLayoutManager);
+        ItemDragHelperCallback callback = new ItemDragHelperCallback();
+        final ItemTouchHelper helper = new ItemTouchHelper(callback);
+        helper.attachToRecyclerView(mRv);
+        mRv.setHasFixedSize(true);
+        mRv.setNestedScrollingEnabled(false);
+        mChannelAdapter = new ChannelAdapter(this, mIChangeChannelPresenter, helper, savedChannel, otherChannel);
+        mRv.setAdapter(mChannelAdapter);
+        mIChangeChannelPresenter.getChannel();
     }
 
-    private void initData() {
-        mIChangeChannelPresenter = new ChangeChannelPresenterImpl(this, this);
+
+    @Override
+    public void showChannel(ArrayList<Config.Channel> savedChannel, ArrayList<Config.Channel> otherChannel) {
+        this.savedChannel.addAll(savedChannel);
+        this.otherChannel.addAll(otherChannel);
+        mChannelAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void showSavedChannel(ArrayList<Config.Channel> savedChannel) {
-
+    public void onBackPressed() {
+        RxBus.getDefault().send(new StatusBarEvent());
+        super.onBackPressed();
     }
-
-    @Override
-    public void showDismissChannel(ArrayList<Config.Channel> savedChannel) {
-
-    }
-
-
 }

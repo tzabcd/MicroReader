@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity
     private Fragment currentFragment;
     private ArrayList<Fragment> mFragments;
     private ArrayList<Integer> mTitles;
-    private int selectId;
+    private IMainPresenter IMainPresenter;
     public Subscription rxSubscription;
 
     @Override
@@ -68,16 +68,8 @@ public class MainActivity extends BaseActivity
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-        IMainPresenter IMainPresenter = new MainPresenterImpl(this);
-        IMainPresenter.initMenu(navView);
+        IMainPresenter = new MainPresenterImpl(this, this);
 
-        rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
-                .subscribe(new Action1<StatusBarEvent>() {
-                    @Override
-                    public void call(StatusBarEvent statusBarEvent) {
-                        recreate();
-                    }
-                });
         boolean isKitKat = Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT;
         if (isKitKat)
             ctlMain.setFitsSystemWindows(false);
@@ -113,7 +105,17 @@ public class MainActivity extends BaseActivity
             llImage.setBackground(bitmapDrawable);
             imageDescription.setText(getSharedPreferences(SharePreferenceUtil.SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE).getString(SharePreferenceUtil.IMAGE_DESCRIPTION, "我的愿望，就是希望你的愿望里，也有我"));
         }
+        IMainPresenter.initMenu(navView);
         IMainPresenter.checkUpdate();
+
+        rxSubscription = RxBus.getDefault().toObservable(StatusBarEvent.class)
+                .subscribe(new Action1<StatusBarEvent>() {
+                    @Override
+                    public void call(StatusBarEvent statusBarEvent) {
+                        finish();
+                        startActivity(new Intent(MainActivity.this, MainActivity.class));
+                    }
+                });
     }
 
     @Override
@@ -123,26 +125,8 @@ public class MainActivity extends BaseActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            // Can not perform this action after onSaveInstanceState
-            //super.onBackPressed();
-            finish();
+            super.onBackPressed();
         }
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        int id = savedInstanceState.getInt("selectId");
-        if (id < mFragments.size()) {
-            switchFragment(mFragments.get(id), getString(mTitles.get(id)));
-        }
-        //java.lang.IllegalStateException: Can not perform this action after onSaveInstanceState
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("selectId", selectId);
-        super.onSaveInstanceState(outState);
     }
 
     private void switchFragment(Fragment fragment, String title) {
@@ -166,13 +150,15 @@ public class MainActivity extends BaseActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        selectId = id;
         if (id < mFragments.size()) {
             switchFragment(mFragments.get(id), getString(mTitles.get(id)));
         }
         switch (id) {
             case R.id.nav_setting:
                 startActivity(new Intent(this, SettingsActivity.class));
+                break;
+            case R.id.nav_change:
+                startActivity(new Intent(this, ChangeChannelActivity.class));
                 break;
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

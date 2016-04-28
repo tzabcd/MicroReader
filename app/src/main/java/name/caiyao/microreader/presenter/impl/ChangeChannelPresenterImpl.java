@@ -30,8 +30,8 @@ public class ChangeChannelPresenterImpl implements IChangeChannelPresenter {
     }
 
     @Override
-    public void getSavedChannel() {
-        String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, "");
+    public void getChannel() {
+        String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, null);
         if (TextUtils.isEmpty(savedChannel)) {
             Collections.addAll(savedChannelList, Config.Channel.values());
         } else {
@@ -39,13 +39,22 @@ public class ChangeChannelPresenterImpl implements IChangeChannelPresenter {
                 savedChannelList.add(Config.Channel.valueOf(s));
             }
         }
-        mIChangeChannel.showSavedChannel(savedChannelList);
         for (Config.Channel channel : Config.Channel.values()) {
             if (!savedChannelList.contains(channel)) {
                 dismissChannelList.add(channel);
             }
         }
-        mIChangeChannel.showDismissChannel(dismissChannelList);
+        mIChangeChannel.showChannel(savedChannelList, dismissChannelList);
     }
+
+    @Override
+    public void saveChannel(ArrayList<Config.Channel> savedChannel) {
+        StringBuilder stringBuffer = new StringBuilder();
+        for (Config.Channel channel : savedChannel) {
+            stringBuffer.append(channel.name()).append(",");
+        }
+        mSharedPreferences.edit().putString(SharePreferenceUtil.SAVED_CHANNEL, stringBuffer.toString()).apply();
+    }
+
 }
 

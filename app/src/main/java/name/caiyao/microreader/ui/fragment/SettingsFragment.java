@@ -109,7 +109,8 @@ public class SettingsFragment extends PreferenceFragment implements ISettingFrag
 
     @Override
     public void showError(String error) {
-        Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
+        if (getActivity() != null)//Caused by: java.lang.IllegalStateException: Fragment SettingsFragment{9c95f97} not attached to Activity
+            Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -134,6 +135,7 @@ public class SettingsFragment extends PreferenceFragment implements ISettingFrag
 
     @Override
     public void showNoUpdate() {
-        Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
+        if (getActivity() != null)//Caused by: java.lang.IllegalStateException: Fragment SettingsFragment{9c95f97} not attached to Activity
+            Toast.makeText(getActivity(), getString(R.string.update_no_update), Toast.LENGTH_SHORT).show();
     }
 }

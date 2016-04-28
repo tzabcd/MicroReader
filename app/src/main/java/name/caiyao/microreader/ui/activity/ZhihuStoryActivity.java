@@ -196,36 +196,41 @@ public class ZhihuStoryActivity extends BaseActivity implements IZhihuStory {
 
     @Override
     public void showError(String error) {
-        Snackbar.make(wvZhihu, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getData();
-            }
-        }).show();
+        if (!isDestroyed())
+            Snackbar.make(wvZhihu, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getData();
+                }
+            }).show();
     }
 
     @Override
     public void showZhihuStory(ZhihuStory zhihuStory) {
-        Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
-        url = zhihuStory.getShareUrl();
-        if (TextUtils.isEmpty(zhihuStory.getBody())) {
-            wvZhihu.loadUrl(zhihuStory.getShareUrl());
-        } else {
-            String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
-            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+        if (!isDestroyed()) {
+            Glide.with(ZhihuStoryActivity.this).load(zhihuStory.getImage()).into(ivZhihuStory);
+            url = zhihuStory.getShareUrl();
+            if (TextUtils.isEmpty(zhihuStory.getBody())) {
+                wvZhihu.loadUrl(zhihuStory.getShareUrl());
+            } else {
+                String data = WebUtil.BuildHtmlWithCss(zhihuStory.getBody(), zhihuStory.getCss(), false);
+                wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+            }
         }
     }
 
     @Override
     public void showGuokrArticle(GuokrArticle guokrArticle) {
-        Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmallImage()).into(ivZhihuStory);
-        url = guokrArticle.getResult().getUrl();
-        if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
-            wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
-        } else {
-            //解决图片显示问题,视频显示问题
-            String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", "").replaceAll("width=\"(.*?)\"", "100%").replaceAll("height=\"(.*?)\"", "auto"), new String[]{"news.css"}, false);
-            wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+        if (!isDestroyed()) {
+            Glide.with(ZhihuStoryActivity.this).load(guokrArticle.getResult().getSmallImage()).into(ivZhihuStory);
+            url = guokrArticle.getResult().getUrl();
+            if (TextUtils.isEmpty(guokrArticle.getResult().getContent())) {
+                wvZhihu.loadUrl(guokrArticle.getResult().getUrl());
+            } else {
+                //解决图片显示问题,视频显示问题
+                String data = WebUtil.BuildHtmlWithCss(guokrArticle.getResult().getContent().replaceAll("(style.*?\")>", "").replaceAll("width=\"(.*?)\"", "100%").replaceAll("height=\"(.*?)\"", "auto"), new String[]{"news.css"}, false);
+                wvZhihu.loadDataWithBaseURL(WebUtil.BASE_URL, data, WebUtil.MIME_TYPE, WebUtil.ENCODING, WebUtil.FAIL_URL);
+            }
         }
     }
 }

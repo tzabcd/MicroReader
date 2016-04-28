@@ -9,7 +9,5 @@ import name.caiyao.microreader.config.Config;
  */
 public interface IChangeChannel {
 
-    void showSavedChannel(ArrayList<Config.Channel> savedChannel);
-
-    void showDismissChannel(ArrayList<Config.Channel> savedChannel);
+    void showChannel(ArrayList<Config.Channel> savedChannel, ArrayList<Config.Channel> otherChannel);
 }
