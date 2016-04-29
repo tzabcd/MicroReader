@@ -237,6 +237,11 @@ public class WeixinNewsActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (wvWeixin != null) {
+            ((ViewGroup) wvWeixin.getParent()).removeView(wvWeixin);
+            wvWeixin.destroy();
+            wvWeixin = null;
+        }
         ButterKnife.unbind(this);
     }
 

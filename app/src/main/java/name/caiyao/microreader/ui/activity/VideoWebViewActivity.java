@@ -98,4 +98,15 @@ public class VideoWebViewActivity extends BaseActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        if (wvVideo != null) {
+            ((ViewGroup) wvVideo.getParent()).removeView(wvVideo);
+            wvVideo.destroy();
+            wvVideo = null;
+        }
+        ButterKnife.unbind(this);
+        super.onDestroy();
+    }
 }

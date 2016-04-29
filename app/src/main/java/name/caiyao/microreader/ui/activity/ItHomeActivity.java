@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -172,6 +173,11 @@ public class ItHomeActivity extends BaseActivity implements IItHomeArticle {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (wvIt != null) {
+            ((ViewGroup) wvIt.getParent()).removeView(wvIt);
+            wvIt.destroy();
+            wvIt = null;
+        }
         mIItHomeArticlePresenter.unsubcrible();
         ButterKnife.unbind(this);
     }
