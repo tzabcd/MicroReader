@@ -7,11 +7,10 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.apkfuns.logutils.LogUtils;
 import com.hannesdorfmann.swipeback.Position;
 import com.hannesdorfmann.swipeback.SwipeBack;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.event.StatusBarEvent;
@@ -22,9 +21,9 @@ import rx.functions.Action1;
 
 public class SettingsActivity extends BaseActivity {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.fl_preference)
+    @BindView(R.id.fl_preference)
     FrameLayout flPreference;
 
     public Subscription rxSubscription;
@@ -68,7 +67,6 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ButterKnife.unbind(this);
         if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }

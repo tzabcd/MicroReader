@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.config.Config;
@@ -127,7 +127,7 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     class ChannelHeaderViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.tv_channel_header)
+        @BindView(R.id.tv_channel_header)
         TextView mTvChannelHeader;
 
         public ChannelHeaderViewHolder(View itemView) {
@@ -138,11 +138,11 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     class ChannelViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.iv_channel)
+        @BindView(R.id.iv_channel)
         ImageView mIvChannel;
-        @Bind(R.id.tv_channel)
+        @BindView(R.id.tv_channel)
         TextView mTvChannel;
-        @Bind(R.id.iv_drag)
+        @BindView(R.id.iv_drag)
         ImageView mIvDrag;
 
         public ChannelViewHolder(View itemView) {

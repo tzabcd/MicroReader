@@ -24,7 +24,7 @@ import android.widget.ProgressBar;
 import com.hannesdorfmann.swipeback.Position;
 import com.hannesdorfmann.swipeback.SwipeBack;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.itHome.ItHomeArticle;
@@ -39,15 +39,15 @@ import name.caiyao.microreader.utils.WebUtil;
  */
 public class ItHomeActivity extends BaseActivity implements IItHomeArticle {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.wv_it)
+    @BindView(R.id.wv_it)
     WebView wvIt;
-    @Bind(R.id.pb_web)
+    @BindView(R.id.pb_web)
     ProgressBar pbWeb;
-    @Bind(R.id.nest)
+    @BindView(R.id.nest)
     NestedScrollView nest;
-    @Bind(R.id.fabButton)
+    @BindView(R.id.fabButton)
     FloatingActionButton fabButton;
 
     private ItHomeItem itHomeItem;
@@ -179,7 +179,6 @@ public class ItHomeActivity extends BaseActivity implements IItHomeArticle {
             wvIt = null;
         }
         mIItHomeArticlePresenter.unsubcrible();
-        ButterKnife.unbind(this);
     }
 
     @Override

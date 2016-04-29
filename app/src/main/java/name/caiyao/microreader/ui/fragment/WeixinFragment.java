@@ -29,8 +29,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.weixin.WeixinNews;
 import name.caiyao.microreader.config.Config;
@@ -46,18 +47,20 @@ import name.caiyao.microreader.utils.SharePreferenceUtil;
 public class WeixinFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IWeixinFragment {
 
 
-    int currentPage = 1;
     WeixinAdapter weixinAdapter;
-    @Bind(R.id.swipe_target)
+    @BindView(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipeToLoadLayout)
+    @BindView(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
+    private Unbinder mUnbinder;
 
     private IWeixinPresenter mWeixinPresenter;
 
     private ArrayList<WeixinNews> weixinNewses = new ArrayList<>();
+
+    private int currentPage = 1;
 
     public WeixinFragment() {
     }
@@ -66,7 +69,7 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_common, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder= ButterKnife.bind(this, view);
         return view;
     }
 
@@ -108,12 +111,6 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.unbind(this);
-    }
-
-    @Override
     public void onRefresh() {
         currentPage = 1;
         weixinNewses.clear();
@@ -131,6 +128,12 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
     public void showProgressDialog() {
         if (progressBar != null)
             progressBar.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mUnbinder.unbind();
     }
 
     @Override
@@ -265,17 +268,17 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         }
 
         public class WeixinViewHolder extends RecyclerView.ViewHolder {
-            @Bind(R.id.iv_weixin)
+            @BindView(R.id.iv_weixin)
             ImageView ivWeixin;
-            @Bind(R.id.tv_title)
+            @BindView(R.id.tv_title)
             TextView tvTitle;
-            @Bind(R.id.tv_time)
+            @BindView(R.id.tv_time)
             TextView tvTime;
-            @Bind(R.id.tv_description)
+            @BindView(R.id.tv_description)
             TextView tvDescription;
-            @Bind(R.id.cv_main)
+            @BindView(R.id.cv_main)
             CardView cvMain;
-            @Bind(R.id.btn_weixin)
+            @BindView(R.id.btn_weixin)
             Button btnWeixin;
 
             public WeixinViewHolder(View itemView) {

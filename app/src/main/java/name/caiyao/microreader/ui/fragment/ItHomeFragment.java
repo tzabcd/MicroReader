@@ -25,8 +25,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.itHome.ItHomeItem;
 import name.caiyao.microreader.config.Config;
@@ -44,12 +45,14 @@ import name.caiyao.microreader.utils.SharePreferenceUtil;
 public class ItHomeFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IItHomeFragment {
 
 
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @Bind(R.id.swipe_target)
+    @BindView(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipeToLoadLayout)
+    @BindView(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
+
+    private Unbinder mUnbinder;
 
     private ArrayList<ItHomeItem> itHomeItems = new ArrayList<>();
     private ItAdapter itAdapter;
@@ -60,7 +63,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_common, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -103,7 +106,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
     }
 
     @Override
@@ -238,15 +241,15 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
 
         public class ItViewHolder extends RecyclerView.ViewHolder {
 
-            @Bind(R.id.iv_ithome)
+            @BindView(R.id.iv_ithome)
             ImageView ivIthome;
-            @Bind(R.id.tv_title)
+            @BindView(R.id.tv_title)
             TextView tvTitle;
-            @Bind(R.id.tv_description)
+            @BindView(R.id.tv_description)
             TextView tvDescription;
-            @Bind(R.id.tv_time)
+            @BindView(R.id.tv_time)
             TextView tvTime;
-            @Bind(R.id.btn_it)
+            @BindView(R.id.btn_it)
             Button btnIt;
 
             public ItViewHolder(View itemView) {

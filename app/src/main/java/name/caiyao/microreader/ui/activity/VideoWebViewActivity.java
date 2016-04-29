@@ -10,7 +10,7 @@ import android.webkit.WebView;
 
 import java.lang.reflect.InvocationTargetException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 
@@ -19,7 +19,7 @@ import name.caiyao.microreader.R;
  */
 public class VideoWebViewActivity extends BaseActivity {
 
-    @Bind(R.id.wv_video)
+    @BindView(R.id.wv_video)
     WebView wvVideo;
 
     @Override
@@ -106,7 +106,6 @@ public class VideoWebViewActivity extends BaseActivity {
             wvVideo.destroy();
             wvVideo = null;
         }
-        ButterKnife.unbind(this);
         super.onDestroy();
     }
 }

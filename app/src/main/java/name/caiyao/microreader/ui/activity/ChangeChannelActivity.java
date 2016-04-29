@@ -14,7 +14,7 @@ import com.hannesdorfmann.swipeback.SwipeBack;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.config.Config;
@@ -31,9 +31,9 @@ import name.caiyao.microreader.utils.RxBus;
  */
 public class ChangeChannelActivity extends BaseActivity implements IChangeChannel {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.rv_channel)
+    @BindView(R.id.rv_channel)
     RecyclerView mRv;
 
     private ArrayList<Config.Channel> savedChannel = new ArrayList<>();

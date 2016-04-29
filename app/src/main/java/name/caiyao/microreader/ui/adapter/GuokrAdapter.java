@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
@@ -110,15 +110,15 @@ public class GuokrAdapter extends RecyclerView.Adapter<GuokrAdapter.GuokrViewHol
 
     public class GuokrViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.tv_title)
+        @BindView(R.id.tv_title)
         TextView mTvTitle;
-        @Bind(R.id.iv_ithome)
+        @BindView(R.id.iv_ithome)
         ImageView mIvIthome;
-        @Bind(R.id.tv_description)
+        @BindView(R.id.tv_description)
         TextView mTvDescription;
-        @Bind(R.id.tv_time)
+        @BindView(R.id.tv_time)
         TextView mTvTime;
-        @Bind(R.id.btn_it)
+        @BindView(R.id.btn_it)
         Button mBtnIt;
 
         public GuokrViewHolder(View itemView) {

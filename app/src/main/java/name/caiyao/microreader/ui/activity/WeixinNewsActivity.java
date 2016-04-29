@@ -26,22 +26,22 @@ import com.hannesdorfmann.swipeback.SwipeBack;
 
 import java.lang.reflect.InvocationTargetException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.utils.NetWorkUtil;
 
 public class WeixinNewsActivity extends BaseActivity {
 
-    @Bind(R.id.wv_weixin)
+    @BindView(R.id.wv_weixin)
     WebView wvWeixin;
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.pb_web)
+    @BindView(R.id.pb_web)
     ProgressBar pbWeb;
-    @Bind(R.id.fabButton)
+    @BindView(R.id.fabButton)
     FloatingActionButton fabButton;
-    @Bind(R.id.nest)
+    @BindView(R.id.nest)
     NestedScrollView nest;
 
     String url;
@@ -242,7 +242,6 @@ public class WeixinNewsActivity extends BaseActivity {
             wvWeixin.destroy();
             wvWeixin = null;
         }
-        ButterKnife.unbind(this);
     }
 
     @Override

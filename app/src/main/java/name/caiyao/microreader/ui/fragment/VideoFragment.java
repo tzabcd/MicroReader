@@ -32,8 +32,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.api.util.UtilRequest;
 import name.caiyao.microreader.bean.weiboVideo.WeiboVideoBlog;
@@ -53,12 +54,14 @@ import rx.schedulers.Schedulers;
 
 public class VideoFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IVideoFragment {
 
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
-    @Bind(R.id.swipe_target)
+    @BindView(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipeToLoadLayout)
+    @BindView(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
+
+    private Unbinder mUnbinder;
 
     private ArrayList<WeiboVideoBlog> mWeiboVideoBlogs = new ArrayList<>();
     private int currentPage = 1;
@@ -72,7 +75,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_common, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -115,7 +118,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
     }
 
     @Override
@@ -304,15 +307,15 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
 
         public class VideoViewHolder extends RecyclerView.ViewHolder {
 
-            @Bind(R.id.tv_title)
+            @BindView(R.id.tv_title)
             TextView tvTitle;
-            @Bind(R.id.tv_time)
+            @BindView(R.id.tv_time)
             TextView tvTime;
-            @Bind(R.id.cv_video)
+            @BindView(R.id.cv_video)
             CardView cvVideo;
-            @Bind(R.id.iv_video)
+            @BindView(R.id.iv_video)
             ImageView mIvVideo;
-            @Bind(R.id.btn_video)
+            @BindView(R.id.btn_video)
             Button btnVideo;
 
             public VideoViewHolder(View itemView) {

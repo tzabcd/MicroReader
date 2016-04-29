@@ -26,8 +26,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.zhihu.ZhihuDaily;
 import name.caiyao.microreader.bean.zhihu.ZhihuDailyItem;
@@ -44,12 +45,14 @@ import name.caiyao.microreader.utils.SharePreferenceUtil;
 
 public class ZhihuFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IZhihuFragment {
 
-    @Bind(R.id.swipe_target)
+    @BindView(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipeToLoadLayout)
+    @BindView(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
+
+    private Unbinder mUnbinder;
 
     private String currentLoadedDate;
     private ZhihuAdapter zhihuAdapter;
@@ -63,7 +66,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_common, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -104,7 +107,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
     }
 
     @Override
@@ -248,15 +251,15 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
 
         public class ZhihuViewHolder extends RecyclerView.ViewHolder {
 
-            @Bind(R.id.iv_zhihu_daily)
+            @BindView(R.id.iv_zhihu_daily)
             ImageView ivZhihuDaily;
-            @Bind(R.id.tv_zhihu_daily)
+            @BindView(R.id.tv_zhihu_daily)
             TextView tvZhihuDaily;
-            @Bind(R.id.cv_zhihu)
+            @BindView(R.id.cv_zhihu)
             CardView cvZhihu;
-            @Bind(R.id.tv_time)
+            @BindView(R.id.tv_time)
             TextView tvTime;
-            @Bind(R.id.btn_zhihu)
+            @BindView(R.id.btn_zhihu)
             Button btnZhihu;
 
             public ZhihuViewHolder(View itemView) {

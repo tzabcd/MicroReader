@@ -28,7 +28,7 @@ import com.hannesdorfmann.swipeback.SwipeBack;
 
 import java.lang.reflect.InvocationTargetException;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.guokr.GuokrArticle;
@@ -44,17 +44,17 @@ public class ZhihuStoryActivity extends BaseActivity implements IZhihuStory {
     public static final int TYPE_ZHIHU = 1;
     public static final int TYPE_GUOKR = 2;
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.wv_zhihu)
+    @BindView(R.id.wv_zhihu)
     WebView wvZhihu;
-    @Bind(R.id.iv_zhihu_story)
+    @BindView(R.id.iv_zhihu_story)
     ImageView ivZhihuStory;
-    @Bind(R.id.ctl)
+    @BindView(R.id.ctl)
     CollapsingToolbarLayout ctl;
-    @Bind(R.id.nest)
+    @BindView(R.id.nest)
     NestedScrollView nest;
-    @Bind(R.id.fabButton)
+    @BindView(R.id.fabButton)
     FloatingActionButton fabButton;
 
     private int type;
@@ -193,7 +193,6 @@ public class ZhihuStoryActivity extends BaseActivity implements IZhihuStory {
             wvZhihu = null;
         }
         mIZhihuStoryPresenter.unsubcrible();
-        ButterKnife.unbind(this);
         super.onDestroy();
     }
 

@@ -17,8 +17,9 @@ import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 
 import java.util.ArrayList;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.bean.guokr.GuokrHotItem;
 import name.caiyao.microreader.presenter.IGuokrPresenter;
@@ -30,12 +31,14 @@ import name.caiyao.microreader.utils.SharePreferenceUtil;
 
 public class GuokrFragment extends BaseFragment implements OnRefreshListener, OnLoadMoreListener, IGuokrFragment {
 
-    @Bind(R.id.swipe_target)
+    @BindView(R.id.swipe_target)
     RecyclerView swipeTarget;
-    @Bind(R.id.swipeToLoadLayout)
+    @BindView(R.id.swipeToLoadLayout)
     SwipeToLoadLayout swipeToLoadLayout;
-    @Bind(R.id.progressBar)
+    @BindView(R.id.progressBar)
     ProgressBar progressBar;
+
+    private Unbinder mUnbinder;
 
     private ArrayList<GuokrHotItem> guokrHotItems = new ArrayList<>();
     private GuokrAdapter guokrAdapter;
@@ -49,7 +52,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_common, container, false);
-        ButterKnife.bind(this, view);
+        mUnbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -93,7 +96,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        mUnbinder.unbind();
     }
 
     @Override
