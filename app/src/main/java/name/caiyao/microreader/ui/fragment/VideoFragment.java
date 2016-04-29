@@ -122,6 +122,7 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     public void onRefresh() {
         currentPage = 1;
         mWeiboVideoBlogs.clear();
+        videoAdapter.notifyDataSetChanged();
         mIVideoPresenter.getVideo(currentPage);
     }
 

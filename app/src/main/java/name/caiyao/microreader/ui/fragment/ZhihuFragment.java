@@ -111,6 +111,7 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     public void onRefresh() {
         currentLoadedDate = "0";
         zhihuStories.clear();
+        zhihuAdapter.notifyDataSetChanged();
         mZhihuPresenter.getLastZhihuNews();
     }
 

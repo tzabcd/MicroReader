@@ -111,7 +111,7 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
         currentNewsId = "0";
         itHomeItems.clear();
         //2016-04-05修复Inconsistency detected. Invalid view holder adapter positionViewHolder
-        //itAdapter.notifyDataSetChanged();
+        itAdapter.notifyDataSetChanged();
         mItHomePresenter.getNewItHomeNews();
     }
 
