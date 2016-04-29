@@ -8,14 +8,17 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
  */
 public class UtilRequest {
     private static UtilApi utilApi = null;
+    protected static final Object monitor = new Object();
 
     public static UtilApi getUtilApi() {
-        if (utilApi == null) {
-            utilApi = new Retrofit.Builder()
-                    .baseUrl("http://www.baidu.com")
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .build().create(UtilApi.class);
+        synchronized (monitor) {
+            if (utilApi == null) {
+                utilApi = new Retrofit.Builder()
+                        .baseUrl("http://www.baidu.com")
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .build().create(UtilApi.class);
+            }
+            return utilApi;
         }
-        return utilApi;
     }
 }

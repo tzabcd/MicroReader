@@ -9,7 +9,6 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,8 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by YiuChoi on 2016/4/12 0012.
  */
 public class VideoRequest {
-    private static VideoRequstApi sVideoRequstApi;
-
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -39,23 +36,27 @@ public class VideoRequest {
     };
 
     static File httpCacheDirectory = new File(MicroApplication.getContext().getCacheDir(), "videoCache");
+
     static int cacheSize = 10 * 1024 * 1024; // 10 MiB
     static Cache cache = new Cache(httpCacheDirectory, cacheSize);
-
     static OkHttpClient client = new OkHttpClient.Builder()
             .addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)
             .build();
 
+    private static VideoRequstApi sVideoRequstApi = null;
+    protected static final Object monitor = new Object();
     public static VideoRequstApi getVideoRequstApi() {
-        if (sVideoRequstApi == null) {
-            sVideoRequstApi = new Retrofit.Builder()
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client)
-                    .baseUrl("http://www.baidu.com")
-                    .build().create(VideoRequstApi.class);
+        synchronized (monitor){
+            if (sVideoRequstApi == null) {
+                sVideoRequstApi = new Retrofit.Builder()
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(client)
+                        .baseUrl("http://www.baidu.com")
+                        .build().create(VideoRequstApi.class);
+            }
+            return sVideoRequstApi;
         }
-        return sVideoRequstApi;
     }
 }

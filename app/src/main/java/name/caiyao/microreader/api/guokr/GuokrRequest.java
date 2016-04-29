@@ -9,7 +9,6 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,9 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by 蔡小木 on 2016/3/7 0007.
  */
 public class GuokrRequest {
-    public static String[] channel_key = {"hot", "frontier", "review", "interview", "visual", "brief", "fact", "techb"};
-    public static String[] channel_title = {"热点", "前沿", "评论", "专访", "视觉", "速读", "谣言粉碎机", "商业科技"};
-    public static String science_channel_url = "http://www.guokr.com";
+    protected static final Object monitor = new Object();
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -53,16 +50,19 @@ public class GuokrRequest {
             .build();
 
     private static GuokrApi guokrApi = null;
+
     public static GuokrApi getGuokrApi() {
-        if (guokrApi == null) {
-            guokrApi = new Retrofit.Builder()
-                    .baseUrl(science_channel_url)
-                    .client(client)
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build().create(GuokrApi.class);
+        synchronized (monitor) {
+            if (guokrApi == null) {
+                guokrApi = new Retrofit.Builder()
+                        .baseUrl("http://www.guokr.com")
+                        .client(client)
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build().create(GuokrApi.class);
+            }
+            return guokrApi;
         }
-        return guokrApi;
     }
 
 }

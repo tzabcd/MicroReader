@@ -9,7 +9,6 @@ import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,7 +17,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by 蔡小木 on 2016/3/4 0004.
  */
 public class TxRequest {
-    private static TxApi txApi = null;
     private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() {
         @Override
         public Response intercept(Chain chain) throws IOException {
@@ -40,25 +38,28 @@ public class TxRequest {
             }
         }
     };
-
     static File httpCacheDirectory = new File(MicroApplication.getContext().getCacheDir(), "txCache");
+
     static int cacheSize = 10 * 1024 * 1024; // 10 MiB
     static Cache cache = new Cache(httpCacheDirectory, cacheSize);
-
     static OkHttpClient client = new OkHttpClient.Builder()
             . addNetworkInterceptor(REWRITE_CACHE_CONTROL_INTERCEPTOR)
             .cache(cache)
             .build();
 
+    private static TxApi txApi = null;
+    protected static final Object monitor = new Object();
     public static TxApi getTxApi() {
-        if (txApi == null) {
-            txApi = new Retrofit.Builder()
-                    .baseUrl("http://api.huceo.com")
-                    .client(client)
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build().create(TxApi.class);
+        synchronized (monitor){
+            if (txApi == null) {
+                txApi = new Retrofit.Builder()
+                        .baseUrl("http://api.huceo.com")
+                        .client(client)
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build().create(TxApi.class);
+            }
+            return txApi;
         }
-        return txApi;
     }
 }

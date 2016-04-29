@@ -9,15 +9,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ZhihuRequest {
     private static ZhihuApi zhihuApi = null;
-
+    protected static final Object monitor = new Object();
     public static ZhihuApi getZhihuApi() {
-        if (zhihuApi == null) {
-            zhihuApi = new Retrofit.Builder()
-                    .baseUrl("http://news-at.zhihu.com")
-                    .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build().create(ZhihuApi.class);
+        synchronized (monitor){
+            if (zhihuApi == null) {
+                zhihuApi = new Retrofit.Builder()
+                        .baseUrl("http://news-at.zhihu.com")
+                        .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build().create(ZhihuApi.class);
+            }
+            return zhihuApi;
         }
-        return zhihuApi;
     }
 }
