@@ -69,7 +69,7 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         swipeToLoadLayout.setOnLoadMoreListener(this);
         swipeTarget.setLayoutManager(new LinearLayoutManager(getActivity()));
         swipeTarget.setHasFixedSize(true);
-        guokrAdapter = new GuokrAdapter(guokrHotItems,getActivity());
+        guokrAdapter = new GuokrAdapter(guokrHotItems, getActivity());
         swipeTarget.setAdapter(guokrAdapter);
         mGuokrPresenter.getGuokrHotFromCache(0);
         if (SharePreferenceUtil.isRefreshOnlyWifi(getActivity())) {
@@ -83,6 +83,12 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         }
     }
 
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mGuokrPresenter.unsubcrible();
+    }
 
     @Override
     public void onDestroyView() {
@@ -112,25 +118,20 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
 
     @Override
     public void hidProgressDialog() {
-        if (swipeToLoadLayout != null) {//不加可能会崩溃
-            swipeToLoadLayout.setRefreshing(false);
-            swipeToLoadLayout.setLoadingMore(false);
-        }
-        if (progressBar != null)
-            progressBar.setVisibility(View.INVISIBLE);
+        swipeToLoadLayout.setRefreshing(false);
+        swipeToLoadLayout.setLoadingMore(false);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
     public void showError(String error) {
-        if (swipeTarget != null) {
-            mGuokrPresenter.getGuokrHotFromCache(currentOffset);
-            Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mGuokrPresenter.getGuokrHot(currentOffset);
-                }
-            }).show();
-        }
+        mGuokrPresenter.getGuokrHotFromCache(currentOffset);
+        Snackbar.make(swipeToLoadLayout, getString(R.string.common_loading_error) + error, Snackbar.LENGTH_SHORT).setAction(getString(R.string.comon_retry), new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mGuokrPresenter.getGuokrHot(currentOffset);
+            }
+        }).show();
     }
 
     @Override
@@ -139,6 +140,4 @@ public class GuokrFragment extends BaseFragment implements OnRefreshListener, On
         this.guokrHotItems.addAll(guokrHotItems);
         guokrAdapter.notifyDataSetChanged();
     }
-
-
 }

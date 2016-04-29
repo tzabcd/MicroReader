@@ -11,16 +11,18 @@ import name.caiyao.microreader.presenter.IWeixinPresenter;
 import name.caiyao.microreader.ui.iView.IWeixinFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/4/22 0022.
  */
-public class WeiXinPresenterImpl implements IWeixinPresenter {
+public class WeiXinPresenterImpl extends BasePresenterImpl implements IWeixinPresenter {
 
     private CacheUtil mCacheUtil;
     private IWeixinFragment mWeixinFragment;
+    private Gson mGson = new Gson();
 
     public WeiXinPresenterImpl(IWeixinFragment weixinFragment, Context context) {
         if (weixinFragment==null)
@@ -32,7 +34,7 @@ public class WeiXinPresenterImpl implements IWeixinPresenter {
     @Override
     public void getWeixinNews(final int page) {
         mWeixinFragment.showProgressDialog();
-        TxRequest.getTxApi().getWeixin(page).subscribeOn(Schedulers.io())
+        Subscription subscription = TxRequest.getTxApi().getWeixin(page).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<TxWeixinResponse>() {
                     @Override
@@ -50,18 +52,19 @@ public class WeiXinPresenterImpl implements IWeixinPresenter {
                         mWeixinFragment.hidProgressDialog();
                         if (txWeixinResponse.getCode() == 200) {
                             mWeixinFragment.updateList(txWeixinResponse.getNewslist());
-                            mCacheUtil.put(Config.WEIXIN + page, new Gson().toJson(txWeixinResponse));
+                            mCacheUtil.put(Config.WEIXIN + page, mGson.toJson(txWeixinResponse));
                         } else {
                             mWeixinFragment.showError("服务器内部错误！");
                         }
                     }
                 });
+        addSubscription(subscription);
     }
 
     @Override
     public void getWeixinNewsFromCache(int page) {
         if (mCacheUtil.getAsJSONObject(Config.WEIXIN + page) != null) {
-            TxWeixinResponse txWeixinResponse = new Gson().fromJson(mCacheUtil.getAsJSONObject(Config.WEIXIN + page).toString(), TxWeixinResponse.class);
+            TxWeixinResponse txWeixinResponse = mGson.fromJson(mCacheUtil.getAsJSONObject(Config.WEIXIN + page).toString(), TxWeixinResponse.class);
             mWeixinFragment.updateList(txWeixinResponse.getNewslist());
         }
     }

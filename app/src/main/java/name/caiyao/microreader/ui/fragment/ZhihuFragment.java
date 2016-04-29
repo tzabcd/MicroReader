@@ -96,6 +96,12 @@ public class ZhihuFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mZhihuPresenter.unsubcrible();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);

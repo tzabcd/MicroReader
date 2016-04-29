@@ -7,13 +7,14 @@ import name.caiyao.microreader.bean.zhihu.ZhihuStory;
 import name.caiyao.microreader.presenter.IZhihuStoryPresenter;
 import name.caiyao.microreader.ui.iView.IZhihuStory;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/4/26 0026.
  */
-public class ZhihuStoryPresenterImpl implements IZhihuStoryPresenter {
+public class ZhihuStoryPresenterImpl extends BasePresenterImpl implements IZhihuStoryPresenter {
 
     private IZhihuStory mIZhihuStory;
 
@@ -25,7 +26,7 @@ public class ZhihuStoryPresenterImpl implements IZhihuStoryPresenter {
 
     @Override
     public void getZhihuStory(String id) {
-        ZhihuRequest.getZhihuApi().getZhihuStory(id)
+        Subscription s = ZhihuRequest.getZhihuApi().getZhihuStory(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ZhihuStory>() {
@@ -44,11 +45,12 @@ public class ZhihuStoryPresenterImpl implements IZhihuStoryPresenter {
                         mIZhihuStory.showZhihuStory(zhihuStory);
                     }
                 });
+        addSubscription(s);
     }
 
     @Override
     public void getGuokrArticle(String id) {
-        GuokrRequest.getGuokrApi().getGuokrArticle(id)
+        Subscription s = GuokrRequest.getGuokrApi().getGuokrArticle(id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GuokrArticle>() {
@@ -67,5 +69,6 @@ public class ZhihuStoryPresenterImpl implements IZhihuStoryPresenter {
                         mIZhihuStory.showGuokrArticle(guokrArticle);
                     }
                 });
+        addSubscription(s);
     }
 }

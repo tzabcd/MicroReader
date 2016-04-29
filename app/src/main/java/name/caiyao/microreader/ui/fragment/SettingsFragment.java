@@ -103,6 +103,12 @@ public class SettingsFragment extends PreferenceFragment implements ISettingFrag
         showCacheSize(prefCache);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mISettingPresenter.unsubcrible();
+    }
+
     private void showCacheSize(Preference preference) {
         preference.setSummary(getActivity().getString(R.string.cache_size) + CacheUtil.getCacheSize(getActivity().getCacheDir()));
     }

@@ -6,13 +6,14 @@ import name.caiyao.microreader.presenter.IItHomeArticlePresenter;
 import name.caiyao.microreader.ui.iView.IItHomeArticle;
 import name.caiyao.microreader.utils.ItHomeUtil;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/4/26 0026.
  */
-public class ItHomeArticlePresenterImpl implements IItHomeArticlePresenter {
+public class ItHomeArticlePresenterImpl extends BasePresenterImpl implements IItHomeArticlePresenter {
 
     private IItHomeArticle mIItHomeArticle;
 
@@ -24,7 +25,7 @@ public class ItHomeArticlePresenterImpl implements IItHomeArticlePresenter {
 
     @Override
     public void getItHomeArticle(String id) {
-        ItHomeRequest.getItHomeApi().getItHomeArticle(ItHomeUtil.getSplitNewsId(id))
+        Subscription subscription = ItHomeRequest.getItHomeApi().getItHomeArticle(ItHomeUtil.getSplitNewsId(id))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ItHomeArticle>() {
@@ -43,5 +44,6 @@ public class ItHomeArticlePresenterImpl implements IItHomeArticlePresenter {
                         mIItHomeArticle.showItHomeArticle(itHomeArticle);
                     }
                 });
+        addSubscription(subscription);
     }
 }

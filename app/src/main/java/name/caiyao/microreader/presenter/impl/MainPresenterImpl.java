@@ -23,20 +23,25 @@ import name.caiyao.microreader.ui.fragment.WeixinFragment;
 import name.caiyao.microreader.ui.fragment.ZhihuFragment;
 import name.caiyao.microreader.ui.iView.IMain;
 import name.caiyao.microreader.utils.SharePreferenceUtil;
+import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by 蔡小木 on 2016/4/26 0026.
  */
-public class MainPresenterImpl implements IMainPresenter {
+public class MainPresenterImpl extends BasePresenterImpl implements IMainPresenter {
 
     private ArrayList<Fragment> mFragments;
     private ArrayList<Integer> titles;
     private IMain mIMain;
     private ArrayList<Config.Channel> savedChannelList;
     private SharedPreferences mSharedPreferences;
+    private CompositeSubscription mCompositeSubscription;
 
     public MainPresenterImpl(IMain main, Context context) {
         if (main == null)
@@ -49,37 +54,57 @@ public class MainPresenterImpl implements IMainPresenter {
     }
 
     @Override
-    public void initMenu(NavigationView navigationView) {
-        savedChannelList.clear();
-        titles.clear();
-        Menu menu = navigationView.getMenu();
-        menu.clear();
-        mFragments.clear();
-        String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, null);
-        if (TextUtils.isEmpty(savedChannel)) {
-            Collections.addAll(savedChannelList, Config.Channel.values());
-        } else {
-            for (String s : savedChannel.split(",")) {
-                savedChannelList.add(Config.Channel.valueOf(s));
+    public void initMenu(final NavigationView navigationView) {
+        //The application may be doing too much work on its main thread
+        Subscription s = Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                savedChannelList.clear();
+                titles.clear();
+                Menu menu = navigationView.getMenu();
+                menu.clear();
+                mFragments.clear();
+                String savedChannel = mSharedPreferences.getString(SharePreferenceUtil.SAVED_CHANNEL, null);
+                if (TextUtils.isEmpty(savedChannel)) {
+                    Collections.addAll(savedChannelList, Config.Channel.values());
+                } else {
+                    for (String s : savedChannel.split(",")) {
+                        savedChannelList.add(Config.Channel.valueOf(s));
+                    }
+                }
+                for (int i = 0; i < savedChannelList.size(); i++) {
+                    MenuItem menuItem = menu.add(0, i, 0, savedChannelList.get(i).getTitle());
+                    titles.add(savedChannelList.get(i).getTitle());
+                    menuItem.setIcon(savedChannelList.get(i).getIcon());
+                    menuItem.setCheckable(true);
+                    addFragment(savedChannelList.get(i).name());
+                    if (i == 0) {
+                        menuItem.setChecked(true);
+                    }
+                }
+                subscriber.onNext(true);
             }
-        }
-        for (int i = 0; i < savedChannelList.size(); i++) {
-            MenuItem menuItem = menu.add(0, i, 0, savedChannelList.get(i).getTitle());
-            titles.add(savedChannelList.get(i).getTitle());
-            menuItem.setIcon(savedChannelList.get(i).getIcon());
-            menuItem.setCheckable(true);
-            addFragment(savedChannelList.get(i).name());
-            if (i == 0) {
-                menuItem.setChecked(true);
+        }).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Boolean>() {
+            @Override
+            public void onCompleted() {
             }
-        }
-        navigationView.inflateMenu(R.menu.activity_main_drawer);
-        mIMain.initMenu(mFragments, titles);
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Boolean aBoolean) {
+                navigationView.inflateMenu(R.menu.activity_main_drawer);
+                mIMain.initMenu(mFragments, titles);
+            }
+        });
+        addSubscription(s);
     }
 
     @Override
     public void checkUpdate() {
-        ZhihuRequest.getZhihuApi().getUpdateInfo()
+        Subscription s = ZhihuRequest.getZhihuApi().getUpdateInfo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<UpdateItem>() {
@@ -98,6 +123,7 @@ public class MainPresenterImpl implements IMainPresenter {
                         mIMain.showUpdate(updateItem);
                     }
                 });
+        addSubscription(s);
     }
 
     private void addFragment(String name) {
@@ -118,6 +144,5 @@ public class MainPresenterImpl implements IMainPresenter {
                 mFragments.add(new ItHomeFragment());
                 break;
         }
-
     }
 }

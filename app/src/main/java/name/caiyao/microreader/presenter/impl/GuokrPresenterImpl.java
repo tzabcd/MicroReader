@@ -11,13 +11,14 @@ import name.caiyao.microreader.presenter.IGuokrPresenter;
 import name.caiyao.microreader.ui.iView.IGuokrFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
  * Created by 蔡小木 on 2016/4/22 0022.
  */
-public class GuokrPresenterImpl implements IGuokrPresenter {
+public class GuokrPresenterImpl extends BasePresenterImpl implements IGuokrPresenter {
 
     private IGuokrFragment mGuokrFragment;
     private CacheUtil mCacheUtil;
@@ -32,7 +33,7 @@ public class GuokrPresenterImpl implements IGuokrPresenter {
     @Override
     public void getGuokrHot(final int offset) {
         mGuokrFragment.showProgressDialog();
-        GuokrRequest.getGuokrApi().getGuokrHot(offset)
+        Subscription s = GuokrRequest.getGuokrApi().getGuokrHot(offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<GuokrHot>() {
@@ -53,6 +54,7 @@ public class GuokrPresenterImpl implements IGuokrPresenter {
                         mCacheUtil.put(Config.GUOKR + offset, new Gson().toJson(guokrHot));
                     }
                 });
+        addSubscription(s);
     }
 
     @Override

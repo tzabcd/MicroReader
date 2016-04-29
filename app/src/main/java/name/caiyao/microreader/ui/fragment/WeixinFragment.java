@@ -77,6 +77,12 @@ public class WeixinFragment extends BaseFragment implements OnRefreshListener, O
         initView();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        mWeixinPresenter.unsubcrible();
+    }
+
     private void initView() {
         showProgressDialog();
         swipeToLoadLayout.setOnRefreshListener(this);

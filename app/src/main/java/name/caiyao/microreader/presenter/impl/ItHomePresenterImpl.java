@@ -17,6 +17,7 @@ import name.caiyao.microreader.ui.iView.IItHomeFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import name.caiyao.microreader.utils.ItHomeUtil;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -24,7 +25,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by 蔡小木 on 2016/4/23 0023.
  */
-public class ItHomePresenterImpl implements IItHomePresenter {
+public class ItHomePresenterImpl extends BasePresenterImpl implements IItHomePresenter {
 
     private Gson gson = new Gson();
 
@@ -42,7 +43,7 @@ public class ItHomePresenterImpl implements IItHomePresenter {
     @Override
     public void getNewItHomeNews() {
         mItHomeFragment.showProgressDialog();
-        ItHomeRequest.getItHomeApi().getItHomeNews()
+        Subscription subscription = ItHomeRequest.getItHomeApi().getItHomeNews()
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<ItHomeResponse, ArrayList<ItHomeItem>>() {
                     @Override
@@ -78,11 +79,12 @@ public class ItHomePresenterImpl implements IItHomePresenter {
                         mCacheUtil.put(Config.IT, gson.toJson(it));
                     }
                 });
+        addSubscription(subscription);
     }
 
     @Override
     public void getMoreItHomeNews(String lastNewsId) {
-        ItHomeRequest.getItHomeApi().getMoreItHomeNews(ItHomeUtil.getMinNewsId(lastNewsId))
+        Subscription subscription = ItHomeRequest.getItHomeApi().getMoreItHomeNews(ItHomeUtil.getMinNewsId(lastNewsId))
                 .map(new Func1<ItHomeResponse, ArrayList<ItHomeItem>>() {
                     @Override
                     public ArrayList<ItHomeItem> call(ItHomeResponse itHomeResponse) {
@@ -115,6 +117,7 @@ public class ItHomePresenterImpl implements IItHomePresenter {
                         mItHomeFragment.updateList(it);
                     }
                 });
+        addSubscription(subscription);
     }
 
     @Override

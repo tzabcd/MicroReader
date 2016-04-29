@@ -95,6 +95,12 @@ public class ItHomeFragment extends BaseFragment implements OnRefreshListener, O
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mItHomePresenter.unsubcrible();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);

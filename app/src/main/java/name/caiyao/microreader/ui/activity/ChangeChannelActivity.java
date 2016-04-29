@@ -91,6 +91,7 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
 
     @Override
     public void onBackPressed() {
+        mIChangeChannelPresenter.saveChannel(savedChannel);
         RxBus.getDefault().send(new StatusBarEvent());
         super.onBackPressed();
     }

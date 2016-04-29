@@ -1,7 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -76,11 +76,11 @@ public class WeixinNewsActivity extends BaseActivity {
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nest.smoothScrollTo(0,0);
+                nest.smoothScrollTo(0, 0);
             }
         });
 
-        int vibrantColor =setToolBar(fabButton,toolbar, true, true, null);
+        int vibrantColor = setToolBar(fabButton, toolbar, true, true, null);
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.swipe_back);
         if (linearLayout != null) {
             linearLayout.setBackgroundColor(vibrantColor);
@@ -198,6 +198,9 @@ public class WeixinNewsActivity extends BaseActivity {
                 shareIntent.setType("text/plain");
                 //设置分享列表的标题，并且每次都显示分享列表
                 startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
+                break;
+            case R.id.action_use_browser:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 break;
         }
         return super.onOptionsItemSelected(item);

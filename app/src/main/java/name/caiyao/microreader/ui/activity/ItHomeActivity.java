@@ -1,6 +1,7 @@
 package name.caiyao.microreader.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -162,12 +163,16 @@ public class ItHomeActivity extends BaseActivity implements IItHomeArticle {
             //设置分享列表的标题，并且每次都显示分享列表
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share)));
         }
+        if (item.getItemId() == R.id.action_use_browser) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://ithome.com" + itHomeItem.getUrl())));
+        }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mIItHomeArticlePresenter.unsubcrible();
         ButterKnife.unbind(this);
     }
 

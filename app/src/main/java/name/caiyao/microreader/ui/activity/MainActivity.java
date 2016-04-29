@@ -174,6 +174,7 @@ public class MainActivity extends BaseActivity
         if (!rxSubscription.isUnsubscribed()) {
             rxSubscription.unsubscribe();
         }
+        IMainPresenter.unsubcrible();
     }
 
     @Override

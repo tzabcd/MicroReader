@@ -124,7 +124,6 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             mOtherChannelItems.add(toPosition - 1 - mSavedChannel.size() - 1, item);
             notifyItemMoved(fromPosition, toPosition);
         }
-        mIChangeChannelPresenter.saveChannel(mSavedChannel);
     }
 
     class ChannelHeaderViewHolder extends RecyclerView.ViewHolder {

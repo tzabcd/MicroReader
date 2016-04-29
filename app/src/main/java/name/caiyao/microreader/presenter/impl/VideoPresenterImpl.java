@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.apkfuns.logutils.LogUtils;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 
@@ -16,6 +17,7 @@ import name.caiyao.microreader.presenter.IVideoPresenter;
 import name.caiyao.microreader.ui.iView.IVideoFragment;
 import name.caiyao.microreader.utils.CacheUtil;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -23,14 +25,14 @@ import rx.schedulers.Schedulers;
 /**
  * Created by 蔡小木 on 2016/4/23 0023.
  */
-public class VideoPresenterImpl implements IVideoPresenter {
+public class VideoPresenterImpl extends BasePresenterImpl implements IVideoPresenter {
 
     private IVideoFragment mIVideoFragment;
     private CacheUtil mCacheUtil;
     private Gson mGson = new Gson();
 
     public VideoPresenterImpl(IVideoFragment iVideoFragment, Context context) {
-        if (iVideoFragment==null)
+        if (iVideoFragment == null)
             throw new IllegalArgumentException("iVideoFragment must not be null");
         mIVideoFragment = iVideoFragment;
         mCacheUtil = CacheUtil.get(context);
@@ -38,7 +40,7 @@ public class VideoPresenterImpl implements IVideoPresenter {
 
     @Override
     public void getVideo(final int page) {
-        VideoRequest.getVideoRequstApi().getWeiboVideo(page)
+        Subscription subscription = VideoRequest.getVideoRequstApi().getWeiboVideo(page)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(new Func1<WeiboVideoResponse, ArrayList<WeiboVideoBlog>>() {
@@ -78,10 +80,15 @@ public class VideoPresenterImpl implements IVideoPresenter {
                         mCacheUtil.put(Config.VIDEO + page, mGson.toJson(weiboVideoResponse));
                     }
                 });
+        addSubscription(subscription);
     }
 
     @Override
     public void getVideoFromCache(int page) {
-
+        if (mCacheUtil.getAsJSONArray(Config.VIDEO + page) != null && mCacheUtil.getAsJSONArray(Config.VIDEO + page).length() != 0) {
+            ArrayList<WeiboVideoBlog> weiboVideoBlogs = mGson.fromJson(mCacheUtil.getAsJSONArray(Config.VIDEO + page).toString(), new TypeToken<ArrayList<WeiboVideoBlog>>() {
+            }.getType());
+            mIVideoFragment.updateList(weiboVideoBlogs);
+        }
     }
 }

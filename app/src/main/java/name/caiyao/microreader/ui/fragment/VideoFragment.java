@@ -107,6 +107,12 @@ public class VideoFragment extends BaseFragment implements OnRefreshListener, On
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mIVideoPresenter.unsubcrible();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
