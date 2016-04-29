@@ -57,6 +57,7 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
     }
 
     private void initView() {
+        mToolbar.setTitle(getString(R.string.activity_change_channel_title));
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

@@ -80,9 +80,9 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (position == 0) {
-            ((ChannelHeaderViewHolder) holder).mTvChannelHeader.setText("显示的栏目");
+            ((ChannelHeaderViewHolder) holder).mTvChannelHeader.setText(R.string.activity_change_channel_show_channel);
         } else if (position == mSavedChannel.size() + 1) {
-            ((ChannelHeaderViewHolder) holder).mTvChannelHeader.setText("未显示的栏目");
+            ((ChannelHeaderViewHolder) holder).mTvChannelHeader.setText(R.string.activity_change_channel_other_channel);
         } else if (position > 0 && position < mSavedChannel.size() + 1) {
             ((ChannelViewHolder) holder).mIvChannel.setImageResource(mSavedChannel.get(position - 1).getIcon());
             ((ChannelViewHolder) holder).mTvChannel.setText(mSavedChannel.get(position - 1).getTitle());

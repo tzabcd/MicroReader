@@ -33,4 +33,8 @@
     <string name="update_no_update">Update not available</string>
     <string name="update_no_update_description">No update available. Check for updates again later!</string>
     <string name="common_cancel">Cancel</string>
+    <string name="activity_change_channel_other_channel">Other channel</string>
+    <string name="activity_change_channel_show_channel">Show channel</string>
+    <string name="activity_change_channel_title">Change Channel</string>
+    <string name="open_with_browser">Open with browser</string>
 </resources>

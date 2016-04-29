@@ -19,8 +19,11 @@
     <string name="fragment_zhihu_title">知乎日报</string>
     <string name="fragment_guokr_title">果壳热门</string>
     <string name="fragment_video_title">视频推荐</string>
+    <string name="fragment_it_title">IT之家</string>
 
     <string name="activity_setting_title">设置</string>
+    <string name="activity_change_channel_title">更改栏目</string>
+
     <string name="share_tail">\r\n(分享自微阅，小而美的阅读体验！)</string>
     <string name="share">分享到</string>
     <string name="request_storage_permission">请允许此应用的读写文件以便于缓存文件！</string>
@@ -32,13 +35,15 @@
     <string name="description">小而美的阅读体验</string>
     <string name="help_and_suggest">帮助与反馈</string>
     <string name="about">关于</string>
-    <string name="fragment_it_title">IT之家</string>
+    <string name="open_with_browser">使用浏览器打开</string>
     <string name="update_button">现在升级</string>
     <string name="update_description">新版%1$s版本可用\n更新内容\n%2$s</string>
     <string name="update_title">有更新可用</string>
     <string name="update_no_update">没有更新可用</string>
     <string name="update_no_update_description">没有更新可用，请稍后检查！</string>
     <string name="update_not_show">不再提示此更新</string>
+    <string name="activity_change_channel_show_channel">显示的栏目</string>
+    <string name="activity_change_channel_other_channel">未显示的栏目</string>
 
     <string name="common_loading">正在加载…</string>
     <string name="common_loading_error">加载失败，请检查网络！</string>

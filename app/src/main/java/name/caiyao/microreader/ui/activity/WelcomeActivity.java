@@ -41,7 +41,7 @@ public class WelcomeActivity extends BaseActivity implements IWelcome {
 
         if (!sharedPreferences.getString(SharePreferenceUtil.IMAGE_GET_TIME, "").equals(date) && SharePreferenceUtil.isChangeThemeAuto(this)) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                new AlertDialog.Builder(this).setMessage(getString(R.string.request_storage_permission)).setPositiveButton("知道了", new DialogInterface.OnClickListener() {
+                new AlertDialog.Builder(this).setMessage(getString(R.string.request_storage_permission)).setPositiveButton(R.string.common_i_know, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions(WelcomeActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_REQUEST_CODE);
