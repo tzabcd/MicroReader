@@ -3,8 +3,6 @@ package name.caiyao.microreader;
 import android.app.Application;
 import android.content.Context;
 
-import com.apkfuns.logutils.LogLevel;
-import com.apkfuns.logutils.LogUtils;
 import com.bugtags.library.Bugtags;
 import com.bugtags.library.BugtagsOptions;
 import com.umeng.analytics.MobclickAgent;
@@ -19,11 +17,6 @@ public class MicroApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogUtils.getLogConfig()
-                .configAllowLog(BuildConfig.DEBUG)
-                .configTagPrefix("MicroReader-")
-                .configShowBorders(true)
-                .configLevel(LogLevel.TYPE_VERBOSE);
 
         BugtagsOptions options = new BugtagsOptions.Builder().
                 trackingLocation(true).//是否获取位置

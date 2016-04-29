@@ -45,24 +45,24 @@ public class LoaderMoreView extends TextView implements SwipeTrigger, SwipeLoadM
     @Override
     public void onMove(int yScrolled, boolean isComplete, boolean automatic) {
         if (!isComplete) {
-            if (yScrolled >= getHeight()) {
+            if (yScrolled <= -getHeight()) {
                 setText(R.string.common_view_release);
             } else {
-                setText("SWIPE TO REFRESH");
+                setText(R.string.common_swipe_to_load_more);
             }
         } else {
-            setText("REFRESH RETURNING");
+            setText(R.string.common_view_loading_ok);
         }
     }
 
     @Override
     public void onRelease() {
-        setText("LOADING MORE");
+        setText(R.string.common_load_more);
     }
 
     @Override
     public void onComplete() {
-        setText(R.string.common_view_loading_ok);
+        setText(R.string.common_load_complete);
     }
 
     @Override

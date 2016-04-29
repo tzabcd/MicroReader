@@ -3,7 +3,6 @@ package name.caiyao.microreader.presenter.impl;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.apkfuns.logutils.LogUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -55,8 +54,6 @@ public class VideoPresenterImpl extends BasePresenterImpl implements IVideoPrese
                                 if (w.getBlog().getPageInfo() != null && !TextUtils.isEmpty(w.getBlog().getPageInfo().getVideoPic()))//处理无视频微博
                                     arrayList.add(w);
                             }
-                        } else {
-                            LogUtils.i("没有数据了！");
                         }
                         return arrayList;
                     }

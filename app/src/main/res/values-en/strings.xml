@@ -37,4 +37,9 @@
     <string name="activity_change_channel_show_channel">Show channel</string>
     <string name="activity_change_channel_title">Change Channel</string>
     <string name="open_with_browser">Open with browser</string>
+    <string name="common_load_complete">Load success</string>
+    <string name="common_load_more">Load more</string>
+    <string name="common_refresh_complete">Refresh complete</string>
+    <string name="common_swipe_to_load_more">Swipe to load more</string>
+    <string name="common_swipe_to_refresh">Swipe to refresh</string>
 </resources>

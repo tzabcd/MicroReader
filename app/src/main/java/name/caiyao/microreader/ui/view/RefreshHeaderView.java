@@ -49,10 +49,10 @@ public class RefreshHeaderView extends TextView implements SwipeRefreshTrigger, 
             if (yScrolled >= getHeight()) {
                 setText(R.string.common_view_release);
             } else {
-                setText("SWIPE TO REFRESH");
+                setText(R.string.common_swipe_to_refresh);
             }
         } else {
-            setText("REFRESH RETURNING");
+            setText(R.string.common_view_loading_ok);
         }
     }
 
@@ -63,7 +63,7 @@ public class RefreshHeaderView extends TextView implements SwipeRefreshTrigger, 
 
     @Override
     public void onComplete() {
-        setText(R.string.common_view_loading_ok);
+        setText(R.string.common_refresh_complete);
     }
 
     @Override
