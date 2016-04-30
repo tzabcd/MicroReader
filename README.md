@@ -13,3 +13,6 @@
 9. AppCompatActivity配合PreferenceFragment实现Material Design的设置界面；
 10. WebView的使用，包括显示加载进度条、播放视频等；
 11. VideoView的使用，包括自定义按钮；
+
+## 尚未解决的问题
+1. WebView加载微信网页，部分图片无法显示，还有部分手机播放视频白屏
