@@ -1,12 +1,15 @@
 package name.caiyao.microreader.ui.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -28,6 +31,24 @@ public class VideoWebViewActivity extends BaseActivity {
         setContentView(R.layout.activity_video_webview);
         ButterKnife.bind(this);
         String url = getIntent().getStringExtra("url");
+
+        WebSettings webSettings = wvVideo.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setUseWideViewPort(true);
+        webSettings.setBuiltInZoomControls(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+        webSettings.setAllowFileAccess(true);
+        webSettings.setLoadWithOverviewMode(true);
+        wvVideo.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String urlTo) {
+                //处理自动跳转到浏览器的问题
+                view.loadUrl(urlTo);
+                return true;
+            }
+        });
         wvVideo.setWebChromeClient(new WebChromeClient() {
 
             //显示全屏按钮

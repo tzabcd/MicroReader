@@ -9,6 +9,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,12 +44,12 @@ import rx.schedulers.Schedulers;
 /**
  * Created by 蔡小木 on 2016/4/29 0029.
  */
-public   class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
 
     private ArrayList<WeiboVideoBlog> gankVideoItems;
     private Context mContext;
 
-    public VideoAdapter(Context context,ArrayList<WeiboVideoBlog> gankVideoItems) {
+    public VideoAdapter(Context context, ArrayList<WeiboVideoBlog> gankVideoItems) {
         this.gankVideoItems = gankVideoItems;
         this.mContext = context;
     }
@@ -155,17 +156,22 @@ public   class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewH
                                     Toast.makeText(mContext, "播放地址为空", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
+                                Log.i("TAG", shareUrl);
                                 if (matcher.find() && matcher.group(1).endsWith(".mp4")) {
                                     mContext.startActivity(new Intent(mContext, VideoActivity.class)
                                             .putExtra("url", matcher.group(1))
                                             .putExtra("shareUrl", shareUrl)
                                             .putExtra("title", title));
                                 } else {
+                                    String url = shareUrl;
+                                    if (matcher.find())
+                                        url = matcher.group(1);
+                                    Log.i("TAG", url);
                                     if (SharePreferenceUtil.isUseLocalBrowser(mContext))
-                                        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(matcher.group(1))));
+                                        mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                                     else
                                         mContext.startActivity(new Intent(mContext, VideoWebViewActivity.class)
-                                                .putExtra("url", matcher.group(1)));
+                                                .putExtra("url", url));
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
