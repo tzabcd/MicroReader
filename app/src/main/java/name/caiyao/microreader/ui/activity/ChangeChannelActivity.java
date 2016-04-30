@@ -77,7 +77,7 @@ public class ChangeChannelActivity extends BaseActivity implements IChangeChanne
         helper.attachToRecyclerView(mRv);
         mRv.setHasFixedSize(true);
         mRv.setNestedScrollingEnabled(false);
-        mChannelAdapter = new ChannelAdapter(this, mIChangeChannelPresenter, helper, savedChannel, otherChannel);
+        mChannelAdapter = new ChannelAdapter(this, helper, savedChannel, otherChannel);
         mRv.setAdapter(mChannelAdapter);
         mIChangeChannelPresenter.getChannel();
     }

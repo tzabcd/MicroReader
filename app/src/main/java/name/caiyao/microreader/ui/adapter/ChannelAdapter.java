@@ -16,7 +16,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import name.caiyao.microreader.R;
 import name.caiyao.microreader.config.Config;
-import name.caiyao.microreader.presenter.IChangeChannelPresenter;
 import name.caiyao.microreader.ui.helper.OnItemMoveListener;
 
 /**
@@ -28,12 +27,10 @@ public class ChannelAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private ArrayList<Config.Channel> mSavedChannel, mOtherChannelItems;
     private Context mContext;
-    private IChangeChannelPresenter mIChangeChannelPresenter;
     private ItemTouchHelper mItemTouchHelper;
 
-    public ChannelAdapter(Context context, IChangeChannelPresenter changeChannelPresenter, ItemTouchHelper itemTouchHelper, ArrayList<Config.Channel> savedChannel, ArrayList<Config.Channel> otherChannelItems) {
+    public ChannelAdapter(Context context, ItemTouchHelper itemTouchHelper, ArrayList<Config.Channel> savedChannel, ArrayList<Config.Channel> otherChannelItems) {
         this.mContext = context;
-        this.mIChangeChannelPresenter = changeChannelPresenter;
         this.mItemTouchHelper = itemTouchHelper;
         this.mSavedChannel = savedChannel;
         this.mOtherChannelItems = otherChannelItems;
