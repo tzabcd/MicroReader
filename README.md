@@ -25,5 +25,5 @@
 #### 声明
 本项目所使用除果壳外API均为破解所得，原作公司拥有所有权利。本程序仅供测试学习，用于其他用途所造成的纠纷与本人无关。
 
-[1]: http://ww4.sinaimg.cn/mw690/723b2af4gw1f3hx5iwcn6j21401z4qgw.jpg
-[2]: http://ww1.sinaimg.cn/mw690/723b2af4gw1f3hx5k3uu4j21401z44kh.jpg
+[1]: /screenshot/Screenshot_20160503-085830.png
+[2]: /screenshot/Screenshot_20160503-085853.png
