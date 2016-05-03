@@ -58,5 +58,7 @@
     <string name="common_load_complete">加载完成</string>
     <string name="common_refresh_complete">刷新完成</string>
     <string name="common_swipe_to_refresh">下拉刷新</string>
+    <string name="common_set_read">标记为已读</string>
+    <string name="common_set_unread">标记为未读</string>
 
 </resources>

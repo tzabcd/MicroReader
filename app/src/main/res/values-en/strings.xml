@@ -42,4 +42,6 @@
     <string name="common_refresh_complete">Refresh complete</string>
     <string name="common_swipe_to_load_more">Swipe to load more</string>
     <string name="common_swipe_to_refresh">Swipe to refresh</string>
+    <string name="common_set_read">Set as read</string>
+    <string name="common_set_unread">Set as unread</string>
 </resources>
