@@ -1,6 +1,7 @@
 ### 微阅
 一个小而美的阅读客户端，包含微信精选，IT之家(去广告),果壳热门，知乎日报，和视频推荐栏目，每天更换主题。
-![首页][1] ![IT][2]
+
+![首页][1] ![IT][2] ![设置][3] ![视频][4]
 #### 涉及到的知识点有：
 1. Retrofit 的使用，包括使用 Http 缓存、converter 的使用等；
 2. RxJava 的使用，包括配合 Retrofit、RxBus 的使用等；
@@ -27,3 +28,5 @@
 
 [1]: /screenshot/Screenshot_20160503-085830.png
 [2]: /screenshot/Screenshot_20160503-085853.png
+[3]: /screenshot/Screenshot_20160503-085902.png
+[4]: /screenshot/Screenshot_20160503-085945.png
