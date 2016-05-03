@@ -79,9 +79,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 popupMenu.getMenu().removeItem(R.id.pop_fav);
                 final boolean isRead = DBUtils.getDB(mContext).isRead(Config.VIDEO, weiboVideoBlog.getBlog().getPageInfo().getVideoUrl(), 1);
                 if (!isRead)
-                    popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为已读");
+                    popupMenu.getMenu().findItem(R.id.pop_unread).setTitle(R.string.common_set_read);
                 else
-                    popupMenu.getMenu().findItem(R.id.pop_unread).setTitle("标记为未读");
+                    popupMenu.getMenu().findItem(R.id.pop_unread).setTitle(R.string.common_set_unread);
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
